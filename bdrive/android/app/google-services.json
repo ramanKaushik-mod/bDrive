@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "1006303637535",
+    "project_id": "bdrive-71769",
+    "storage_bucket": "bdrive-71769.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1006303637535:android:d68b5df5f3b215b56ee52a",
+        "android_client_info": {
+          "package_name": "com.example.bdrive"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1006303637535-vish6v12202hn1at8vjq1s4obl5p3ueh.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA1Rurn_KeWEBy66HzZVLeFyGZrqfwBW5g"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1006303637535-vish6v12202hn1at8vjq1s4obl5p3ueh.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
