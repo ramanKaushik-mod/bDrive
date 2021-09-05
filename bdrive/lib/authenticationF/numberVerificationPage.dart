@@ -31,8 +31,12 @@ class _NumberVerificationPageState extends State<NumberVerificationPage> {
                   shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(20)),
                   child: Container(
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(20),
+                    color: Colors.black26,
+                      ),
                     width: TU.getw(context) / 2,
-                    margin: EdgeInsets.symmetric(horizontal: 20, vertical: 15),
+                    padding: EdgeInsets.symmetric(horizontal: 20, vertical: 15),
                     child: TextFormField(
                       controller: numC,
                       autofocus: true,
@@ -47,7 +51,7 @@ class _NumberVerificationPageState extends State<NumberVerificationPage> {
                           enabledBorder:
                               UnderlineInputBorder(borderSide: BorderSide.none),
                           hintText: 'Enter your number',
-                          hintStyle: TU.tlarge(context)),
+                          hintStyle: TU.tlarge(context, 38)),
                     ),
                   ),
                 )
@@ -73,7 +77,7 @@ class _NumberVerificationPageState extends State<NumberVerificationPage> {
                       SB.sdb(context, () {
                         SB.cpi(context);
                         FirebaseFunctions.verifyNumber(context, '+91$text');
-                      }, () {},
+                      }, () {},null,
                           dialog: 'Are you sure about your number\n\n$text');
                     }
                   },
@@ -96,92 +100,92 @@ class _NumberVerificationPageState extends State<NumberVerificationPage> {
         });
         return Future.value(true);
       },
-      child: SafeArea(
-        maintainBottomViewPadding: true,
-        child: Scaffold(
-          body: Container(
-            child: Stack(
-              children: [
-                Container(
-                  width: TU.geth(context),
-                  color: Color(0xFFF2F2F2),
-                  padding: EdgeInsets.symmetric(horizontal: 10),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    children: [
-                      Card(
-                        margin: EdgeInsets.all(20),
-                        elevation: 20,
-                        shadowColor: Colors.blue,
-                        color: Colors.blue,
-                        shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(20)),
-                        child: Container(
-                          alignment: Alignment.bottomLeft,
-                          width: TU.getw(context) * 0.7,
-                          height: TU.getw(context) * 0.8,
-                          padding: EdgeInsets.all(10),
-                          margin: EdgeInsets.only(
-                              top: 10, left: 0, right: 10, bottom: 10),
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.end,
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Stack(
+      child: Scaffold(
+        backgroundColor: Color(0xFFF2F2F2),
+        body: Container(
+          child: Stack(
+            children: [
+              Container(
+                width: TU.geth(context),
+                color: Color(0xFFF2F2F2),
+                padding: EdgeInsets.symmetric(horizontal: 10),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: [
+                    SizedBox(height: 20,),
+                    Card(
+                      margin: EdgeInsets.all(20),
+                      elevation: 20,
+                      shadowColor: Colors.blue,
+                      color: Colors.blue,
+                      shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(20)),
+                      child: Container(
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(20),
+                        color: Colors.black12,),
+                        alignment: Alignment.bottomLeft,
+                        width: TU.getw(context) * 0.7,
+                        height: TU.getw(context) * 0.8,
+                        padding: EdgeInsets.all(10),
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.end,
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Stack(
+                              children: [
+                                Image.asset(
+                                  'assets\\bDrive.png',
+                                  height: 130,
+                                  width: 130,
+                                ),
+                                Image.asset(
+                                  'assets\\bDrive.png',
+                                  height: 80,
+                                  width: 80,
+                                  color: Colors.black,
+                                ),
+                              ],
+                            ),
+                            SizedBox(
+                              height: 10,
+                            ),
+                            Container(
+                              margin: EdgeInsets.symmetric(horizontal: 20),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  Image.asset(
-                                    'assets\\bDrive.png',
-                                    height: 130,
-                                    width: 130,
+                                  Text(
+                                    TS.nvp,
+                                    style: TU.telarge(context),
                                   ),
-                                  Image.asset(
-                                    'assets\\bDrive.png',
-                                    height: 80,
-                                    width: 80,
-                                    color: Colors.black,
+                                  SizedBox(
+                                    height: 30,
+                                  ),
+                                  Text(
+                                    TS.nvp1,
+                                    style: TU.tesmall(context, 50),
+                                  ),
+                                  SizedBox(
+                                    height: 10,
+                                  ),
+                                  Text(
+                                    TS.nvp2,
+                                    style: TU.tsmall(context),
                                   ),
                                 ],
                               ),
-                              SizedBox(
-                                height: 10,
-                              ),
-                              Container(
-                                margin: EdgeInsets.symmetric(horizontal: 20),
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Text(
-                                      TS.nvp,
-                                      style: TU.telarge(context),
-                                    ),
-                                    SizedBox(
-                                      height: 30,
-                                    ),
-                                    Text(
-                                      TS.nvp1,
-                                      style: TU.tesmall(context),
-                                    ),
-                                    SizedBox(
-                                      height: 10,
-                                    ),
-                                    Text(
-                                      TS.nvp2,
-                                      style: TU.tsmall(context),
-                                    ),
-                                  ],
-                                ),
-                              )
-                            ],
-                          ),
+                            )
+                          ],
                         ),
-                      )
-                    ],
-                  ),
+                      ),
+                    )
+                  ],
                 ),
-                Container(child: column)
-              ],
-            ),
+              ),
+              Container(child: column)
+            ],
           ),
         ),
       ),

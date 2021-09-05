@@ -1,5 +1,10 @@
+import 'dart:convert';
+import 'dart:typed_data';
+
 import 'package:bdrive/utilityF/constants.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class Utility {
@@ -35,6 +40,33 @@ class Utility {
 
   static getVFyId() async =>
       await gsi().then((value) => value.getString(Constants.vFyId));
+
+  //**************Image Preferences */
+
+  static saveImageToPreferences(String image) =>
+      gsi().then((value) => value.setString(Constants.imgKey, image));
+
+  static Future<String> getImageFromPreferences() async =>
+      await gsi().then((value) => value.getString(Constants.imgKey) ?? '');
+
+  static removeImage() async =>
+      await gsi().then((value) => value.remove(Constants.imgKey));
+
+  static String base64String(Uint8List data) => base64Encode(data);
+
+  static Image imageFromBase64String(String base64String) => Image.memory(
+        base64Decode(base64String),
+        fit: BoxFit.fill,
+      );
+  static void exitApp(BuildContext context) {
+    SystemNavigator.pop();
+  }
+
+  static setProfileStatus() =>
+      gsi().then((value) => value.setBool(Constants.pStatus, true));
+
+  static getProfileStatus() =>
+      gsi().then((value) => value.getBool(Constants.pStatus) ?? false);
 }
 
 class SB {
@@ -45,52 +77,79 @@ class SB {
         text,
         style: TextStyle(color: Colors.white),
       ),
-      backgroundColor: Colors.black,
+      backgroundColor: Colors.grey[900],
       elevation: 10,
       behavior: SnackBarBehavior.floating,
       duration: Duration(milliseconds: 2000),
     ));
   }
 
-  static sdb(context, yesFunc, noFunc, {required String dialog}) => showDialog(
-      context: context,
-      builder: (con) => AlertDialog(
-            backgroundColor: Colors.black,
-            shape:
-                RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-            content: Wrap(
-              children: [
-                Container(
-                  child: Center(
-                    child: Text(dialog, style: TU.tsmall(con)),
-                  ),
-                )
+  static sdb(context, yesFunc, noFunc, create, {required String dialog}) =>
+      showDialog(
+          context: context,
+          builder: (con) {
+            return AlertDialog(
+              backgroundColor: Colors.black,
+              title: create != null
+                  ? Text(dialog, style: TU.tsmall(context))
+                  : null,
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(20)),
+              content: Wrap(
+                children: [
+                  if (create == null) ...[
+                    Container(
+                      child: Center(
+                        child: Text(dialog, style: TU.tsmall(con)),
+                      ),
+                    ),
+                  ],
+                  if (create != null) ...[
+                    TextFormField(
+                      controller: create,
+                      autofocus: true,
+                      textAlign: TextAlign.left,
+                      style: TU.tsmall(context),
+                      cursorColor: Colors.white,
+                      cursorWidth: 2,
+                      keyboardType: TextInputType.text,
+                      decoration: InputDecoration(
+                        focusedBorder: UnderlineInputBorder(
+                            borderSide: BorderSide(color: Colors.white)),
+                      ),
+                    ),
+                  ]
+                ],
+              ),
+              actions: [
+                if (noFunc != null) ...[
+                  IconButton(
+                      splashColor: Colors.white,
+                      splashRadius: 20,
+                      onPressed: () {
+                        // noFunc();
+                        Navigator.pop(con);
+                      },
+                      icon: Icon(Icons.close_rounded, color: Colors.white))
+                ],
+                if (yesFunc != null) ...[
+                  IconButton(
+                      splashColor: Colors.white,
+                      splashRadius: 20,
+                      onPressed: () {
+                        Future.delayed(Duration(milliseconds: 2), () {
+                          yesFunc();
+                        });
+                        Navigator.pop(context);
+                      },
+                      icon: Icon(
+                        Icons.arrow_forward_ios,
+                        color: Colors.white,
+                      ))
+                ]
               ],
-            ),
-            actions: [
-              if (noFunc != null) ...[
-                IconButton(
-                    onPressed: () {
-                      // noFunc();
-                      Navigator.pop(con);
-                    },
-                    icon: Icon(Icons.close_rounded, color: Colors.white))
-              ],
-              if (yesFunc != null) ...[
-                IconButton(
-                    onPressed: () {
-                      Future.delayed(Duration(milliseconds: 2), () {
-                        yesFunc();
-                      });
-                      Navigator.pop(context);
-                    },
-                    icon: Icon(
-                      Icons.arrow_forward_ios,
-                      color: Colors.white,
-                    ))
-              ]
-            ],
-          ));
+            );
+          });
 
   static cpi(context) => showDialog(
       context: context,
@@ -126,14 +185,22 @@ class TU {
 
   static tsmall(context) =>
       TextStyle(fontSize: geth(context) / 48, color: Colors.white);
-  static tlarge(context) => TextStyle(
-      fontSize: geth(context) / 38,
+  static tlarge(context, factor) => GoogleFonts.montserratAlternates(
+      fontSize: geth(context) / factor,
       color: Colors.white,
       fontWeight: FontWeight.w400);
-  static tesmall(context) => TextStyle(
-      fontSize: geth(context) / 50,
+  static tesmall(context, factor) => TextStyle(
+      fontSize: geth(context) / factor,
       color: Colors.black,
       fontWeight: FontWeight.w500);
+  static teesmall(context) => TextStyle(
+      fontSize: geth(context) / 60,
+      color: Colors.black,
+      fontWeight: FontWeight.w700);
+  static teeesmall(context, factor) => GoogleFonts.mulish(
+      fontSize: geth(context) / factor,
+      color: Colors.white,
+      fontWeight: FontWeight.w400);
   static tesmallw(context) => TextStyle(
       fontSize: geth(context) / 50,
       color: Colors.white,
@@ -150,16 +217,39 @@ class TU {
           color: Colors.grey,
         ),
       );
-
-  static tTitle(BuildContext context) =>
-      TextStyle(fontSize: geth(context) / 30,
+  static tuDw() => Container(
+        margin: EdgeInsets.symmetric(horizontal: 4),
+        height: 20,
+        width: 2,
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(10),
+          color: Colors.grey,
+        ),
+      );
+  static tTitle(BuildContext context) => TextStyle(
+      fontSize: geth(context) / 30,
       color: Colors.grey,
-      fontWeight: FontWeight.w700 );
+      fontWeight: FontWeight.w700);
 }
 
 class GetChanges extends ChangeNotifier {
+  Image image = Image.asset('assets\\bDrive.png');
+  Image getUserImage() => image;
   int time = 30;
   int getUpdateTime() => time;
+  int view = 0;
+  int getView() => view;
+
+  Future<Image> updateUserImage() async {
+    return await Utility.getImageFromPreferences().then((value) {
+      return Utility.imageFromBase64String(value);
+    });
+  }
+
+  updateView() {
+    view = view == 1 ? 0 : 1;
+    notifyListeners();
+  }
 
   updateSmsWaitingTime({required Function cancelTimer}) {
     if (time == 1) {
@@ -182,23 +272,26 @@ class IU {
   static dicon(
           {required IconData icon,
           required Function callback,
-          required double size}) =>
+          required double size,
+          required double cSize}) =>
       Padding(
         padding: const EdgeInsets.all(8.0),
         child: CircleAvatar(
-          radius: 26,
-          backgroundColor: Colors.grey[300],
+          radius: cSize,
+          backgroundColor: Colors.grey[200],
           child: CircleAvatar(
-            radius: 24,
-            backgroundColor: Color(0xFFF2F2F2),
-            child: IconButton(
-              splashRadius: 20,
-              icon: Icon(
-                icon,
-                size: size,
-                color: Colors.grey,
+            radius: cSize - 1,
+            backgroundColor: Colors.black,
+            child: Center(
+              child: IconButton(
+                splashRadius: 20,
+                icon: Icon(
+                  icon,
+                  size: size,
+                  color: Colors.grey,
+                ),
+                onPressed: () => callback(),
               ),
-              onPressed: () => callback(),
             ),
           ),
         ),
@@ -209,6 +302,7 @@ class IU {
           required Function callback,
           required double size}) =>
       IconButton(
+        splashRadius: 20,
         icon: Icon(
           icon,
           size: size,
@@ -221,20 +315,46 @@ class IU {
           {required IconData icon,
           required Function callback,
           required double size}) =>
-      CircleAvatar(
-        radius: 29,
-        backgroundColor: Colors.grey,
-        child: CircleAvatar(
-          radius: 28,
-          backgroundColor: Colors.white,
-          child: IconButton(
-            icon: Icon(
-              icon,
-              size: size,
-              color: Colors.grey,
-            ),
-            onPressed: () => callback(),
-          ),
+      IconButton(
+        splashColor: Colors.blue,
+        icon: Icon(
+          icon,
+          size: size,
+          color: Colors.grey[400],
         ),
+        onPressed: () => callback(),
       );
+}
+
+class TF {
+  static getTField(context,
+          {required TextEditingController con, required String htext}) =>
+      Row(children: [
+        Expanded(
+          child: Container(
+            padding: EdgeInsets.symmetric(horizontal: 10),
+            decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(10), color: Colors.black26),
+            child: TextFormField(
+              controller: con,
+              style: TU.tlarge(context, 44),
+              cursorColor: Colors.white,
+              keyboardType: TextInputType.text,
+              decoration: InputDecoration(
+                  focusedBorder:
+                      UnderlineInputBorder(borderSide: BorderSide.none),
+                  enabledBorder:
+                      UnderlineInputBorder(borderSide: BorderSide.none),
+                  hintText: htext,
+                  hintStyle: TU.tesmall(context, 54)),
+            ),
+          ),
+        )
+      ]);
+
+  static inst(context, {required text}) => Expanded(
+          child: Text(
+        text,
+        style: TU.teeesmall(context, 50),
+      ));
 }

@@ -1,8 +1,10 @@
 import 'dart:async';
 
 import 'package:bdrive/utilityF/localUtility.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_phoenix/flutter_phoenix.dart';
 
 class FirebaseFunctions {
@@ -56,9 +58,9 @@ class FirebaseFunctions {
       }
     } on FirebaseAuthException catch (e) {
       if (e.code == 'invalid-verification-code') {
-        // showBottomModal(context, dialogCode: "invalid code");
+        SB.ssb(context, text: "invalid code");
       } else {
-        // showBottomModal(context, dialogCode: 'something went wrong');
+        SB.ssb(context, text: 'something went wrong');
       }
     }
   }
@@ -67,5 +69,19 @@ class FirebaseFunctions {
     await FirebaseAuth.instance.signOut();
     await Utility.clearPreferences();
   }
+}
 
+class HandlingFS {
+  final String contactID;
+
+  final CollectionReference _userCollection =
+          FirebaseFirestore.instance.collection('Users'),
+      chatCollection = FirebaseFirestore.instance.collection('Chats');
+  HandlingFS({required this.contactID});
+
+  DocumentReference getUserDoc() => _userCollection.doc(contactID);
+
+  updateUserImage() async => await _userCollection
+      .doc(this.contactID)
+      .update({'imageStr': await Utility.getImageFromPreferences()});
 }

@@ -16,8 +16,13 @@ class _LogoPageState extends State<LogoPage> {
     super.initState();
     Timer(Duration(seconds: 3), () async {
       bool b = await Utility.getUserSignedInStatus();
+      bool bb = await Utility.getProfileStatus();
       if (b) {
-        Navigator.pushNamed(context, '/hp');
+        if (bb) {
+          Navigator.pushNamed(context, '/hp');
+        } else {
+          Navigator.pushNamed(context, '/pp');
+        }
       } else {
         Navigator.pushNamed(context, '/nvp');
       }
@@ -26,7 +31,8 @@ class _LogoPageState extends State<LogoPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(backgroundColor:Color(0xFFF2F2F2),
+    return Scaffold(
+      backgroundColor: Color(0xFFF2F2F2),
       body: Container(
         color: Colors.blue[400],
         child: Column(
@@ -39,16 +45,16 @@ class _LogoPageState extends State<LogoPage> {
                   child: Stack(
                     children: [
                       Image.asset(
-                    'assets\\bDrive.png',
-                    height: 230,
-                    width: 230,
-                  ),
+                        'assets\\bDrive.png',
+                        height: 230,
+                        width: 230,
+                      ),
                       Image.asset(
-                    'assets\\bDrive.png',
-                    height: 140,
-                    width: 140,
-                    color: Colors.black,
-                  ),
+                        'assets\\bDrive.png',
+                        height: 140,
+                        width: 140,
+                        color: Colors.black,
+                      ),
                     ],
                   ),
                 )
