@@ -6,17 +6,15 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:image_cropper/image_cropper.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:provider/provider.dart';
 
 class ImageCapture extends StatefulWidget {
-  final Function function;
-  ImageCapture({required this.function});
-
   @override
   _ImageCaptureState createState() => _ImageCaptureState();
 }
 
 class _ImageCaptureState extends State<ImageCapture> {
-  late File _imageFile;
+  File _imageFile = File('assets\\bDrive.png');
   late HandlingFS handlingFirebaseDB;
 
   @override
@@ -26,16 +24,14 @@ class _ImageCaptureState extends State<ImageCapture> {
   }
 
   getDBInstance() async {
-    handlingFirebaseDB =
-        HandlingFS(contactID: await Utility.getUserContact());
+    handlingFirebaseDB = HandlingFS(contactID: await Utility.getUserContact());
   }
 
   Future<void> _pickImage(ImageSource source) async {
     XFile? selected =
         await ImagePicker().pickImage(source: source, imageQuality: 50);
-    setState(() {
-      _imageFile = selected as File;
-    });
+    Provider.of<GetChanges>(context, listen: false)
+        .updatePickedFile(file: File(selected!.path));
   }
 
   Future<void> _cropImage() async {
@@ -57,19 +53,23 @@ class _ImageCaptureState extends State<ImageCapture> {
     });
   }
 
-  // void _clear() {
-  //   setState(() => _imageFile = null);
-  // }
-
   @override
   Widget build(BuildContext context) {
-    return SafeArea(
+    return WillPopScope(
+      onWillPop: () {
+        Provider.of<GetChanges>(context, listen: false).updatePickedFileExist();
+        return Future.value(true);
+      },
       child: Scaffold(
         appBar: appBar(),
         backgroundColor: Colors.white,
-        body: _imageFile == null
-            ? getBodyWhenFileNotPresent()
-            : getBodyWhenFilePresent(),
+        body: Consumer<GetChanges>(
+          builder: (BuildContext context, value, win) {
+            return value.tellPickedFileExist() == false
+                ? getBodyWhenFileNotPresent()
+                : getBodyWhenFilePresent();
+          },
+        ),
         bottomNavigationBar: Card(
           shape:
               RoundedRectangleBorder(borderRadius: BorderRadius.circular(40)),
@@ -110,7 +110,6 @@ class _ImageCaptureState extends State<ImageCapture> {
   }
 
   Widget getBodyWhenFilePresent() {
-    final width = MediaQuery.of(context).size.width;
     return Container(
       color: Colors.white,
       child: Stack(
@@ -122,17 +121,18 @@ class _ImageCaptureState extends State<ImageCapture> {
                   ListView(
                     shrinkWrap: true,
                     children: [
-                      if (_imageFile != null) ...[
-                        Center(
+                      Consumer<GetChanges>(
+                          builder: (BuildContext context, value, win) {
+                        return Center(
                           child: Container(
                               color: Colors.grey[100],
                               padding: EdgeInsets.all(4),
                               child: Image.file(
-                                File(_imageFile.path),
-                                height: width,
+                                value.pickedFile,
+                                height: TU.getw(context),
                               )),
-                        )
-                      ],
+                        );
+                      })
                     ],
                   ),
                 ],
@@ -165,10 +165,15 @@ class _ImageCaptureState extends State<ImageCapture> {
                         )),
                     FloatingActionButton(
                         onPressed: () async {
-                          if (_imageFile != null) {
+                          GetChanges changes =
+                              Provider.of<GetChanges>(context, listen: false);
+                          bool flag = changes.tellPickedFileExist();
+
+                          if (flag) {
                             String base64String = Utility.base64String(
-                                File(_imageFile.path).readAsBytesSync());
-                            if (File(_imageFile.path)
+                                changes.getPickedFile().readAsBytesSync());
+                            if (changes
+                                    .getPickedFile()
                                     .readAsBytesSync()
                                     .length >=
                                 800000) {
@@ -180,21 +185,17 @@ class _ImageCaptureState extends State<ImageCapture> {
                             }
                             await Utility.saveImageToPreferences(base64String);
 
-                            Future.delayed(Duration(milliseconds: 20),()async{
+                            Future.delayed(Duration(milliseconds: 20),
+                                () async {
                               await handlingFirebaseDB
-                                .getUserDoc()
-                                .get()
-                                .then((value) async {
-                              if (value.exists) {
-                                await handlingFirebaseDB.updateUserImage();
-                              }
-                            });
-                            });
-                            if (widget.function != null) {
-                              Future.delayed(Duration(seconds: 2), () {
-                                widget.function();
+                                  .getUserDoc()
+                                  .get()
+                                  .then((value) async {
+                                if (value.exists) {
+                                  await handlingFirebaseDB.updateUserImage();
+                                }
                               });
-                            }
+                            });
                             Navigator.of(context).pop();
                           } else {
                             SB.ssb(
@@ -211,9 +212,7 @@ class _ImageCaptureState extends State<ImageCapture> {
                           color: Colors.blue,
                         )),
                     FloatingActionButton(
-                        onPressed: (){
-                          
-                        },
+                        onPressed: () {},
                         heroTag: "btn3",
                         backgroundColor: Colors.blue[50],
                         elevation: 0,

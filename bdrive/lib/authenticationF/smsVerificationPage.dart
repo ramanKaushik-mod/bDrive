@@ -152,7 +152,6 @@ class _SMSVerificationPageState extends State<SMSVerificationPage> {
                           color: Colors.black12),
                         alignment: Alignment.bottomLeft,
                         width: TU.getw(context) * 0.7,
-                        height: TU.getw(context) * 0.8,
                         padding: EdgeInsets.symmetric(horizontal:10, vertical: 20),
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.end,

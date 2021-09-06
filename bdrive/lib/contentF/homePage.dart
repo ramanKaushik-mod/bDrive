@@ -247,8 +247,4 @@ class _HomePageState extends State<HomePage> {
     fCon.dispose();
   }
 }
-
-
-
-// final fileName =
-//         file != null ? file!.path.split('/').last : "No File Selected";
+ 

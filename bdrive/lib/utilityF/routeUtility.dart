@@ -1,6 +1,7 @@
 import 'package:bdrive/authenticationF/numberVerificationPage.dart';
 import 'package:bdrive/authenticationF/smsVerificationPage.dart';
 import 'package:bdrive/contentF/homePage.dart';
+import 'package:bdrive/contentF/imageCapture.dart';
 import 'package:bdrive/contentF/logoPage.dart';
 import 'package:bdrive/contentF/profileScreen.dart';
 import 'package:bdrive/contentF/settingsPage.dart';
@@ -26,6 +27,8 @@ class RouteGenerator {
         return MaterialPageRoute(builder: (_) => SettingsPage());
       case '/pp':
         return MaterialPageRoute(builder: (_) => ProfileScreen());
+      case '/imc':
+        return MaterialPageRoute(builder: (_) => ImageCapture());
       // case '/messageScreen':
       //   return MaterialPageRoute(
       //       builder: (_) => MessageScreen(contactModel: args,));

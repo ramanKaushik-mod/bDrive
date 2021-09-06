@@ -1,7 +1,6 @@
 import 'package:bdrive/utilityF/localUtility.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'dart:convert';
 
 class FolderTile extends StatefulWidget {
   final Folder folder;
@@ -141,16 +140,16 @@ class Folder {
 
 //***********************   USER MODEL  ***********************/
 
-class User {
-  final String uName;
-  final String uNName;
-  final String uEmail;
-  final String upasscode;
-  final String uimgString;
-  final String uJoin;
-  final String contactId;
+class Users {
+  String uName;
+  String uNName;
+  String uEmail;
+  String upasscode;
+  String uimgString;
+  String uJoin;
+  String contactId;
 
-  User(
+  Users(
       {required this.uName,
       required this.uNName,
       required this.uEmail,
@@ -160,7 +159,7 @@ class User {
       required this.contactId});
 
   Map<String, dynamic> toJson() => {
-        'uName': this.uNName,
+        'uName': this.uName,
         'uNName': this.uNName,
         'uEmail': this.uEmail,
         'upasscode': this.upasscode,
@@ -169,12 +168,14 @@ class User {
         'contactId': this.contactId
       };
 
-  User fromJson(Map<String, dynamic> map) => User(
-      uName: map[uName],
-      uNName: map[uNName],
-      uEmail: map[uEmail],
-      upasscode: map[upasscode],
-      uimgString: map[uimgString],
-      uJoin: map['uJoin'],
-      contactId: map['contactId']);
+  factory Users.fromJson(Map<String, dynamic> map) {
+    return Users(
+        uName: map['uName'],
+        uNName: map['uNName'],
+        uEmail: map['uEmail'],
+        upasscode: map['upasscode'],
+        uimgString: map['uimgString'],
+        uJoin: map['uJoin'],
+        contactId: map['contactId']);
+  }
 }

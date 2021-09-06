@@ -1,6 +1,8 @@
 import 'dart:convert';
+import 'dart:io';
 import 'dart:typed_data';
 
+import 'package:bdrive/models/models.dart';
 import 'package:bdrive/utilityF/constants.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -67,6 +69,33 @@ class Utility {
 
   static getProfileStatus() =>
       gsi().then((value) => value.getBool(Constants.pStatus) ?? false);
+
+  //***************advanced************** */
+
+  static setUserDetails({required Map<String, dynamic> map}) async {
+    await gsi().then((value) {
+      value.setString(Constants.userName, map['uName']);
+      value.setString(Constants.uID, map['uNName']);
+      value.setString(Constants.uEmail, map['uEmail']);
+      value.setString(Constants.imgKey, map['uimgString']);
+      value.setString(Constants.userCon, map['contactId']);
+      value.setString(Constants.uJoin, map['uJoin']);
+      value.setString(Constants.upasscode, map['upasscode']);
+    });
+  }
+
+  static Future<Users> getUserDetails() async {
+    return await gsi().then((value) {
+      return Users(
+          uName: value.getString(Constants.userName) ?? '',
+          uNName: value.getString(Constants.uID) ?? '',
+          uEmail: value.getString(Constants.uEmail) ?? '',
+          upasscode: value.getString(Constants.upasscode) ?? '',
+          uimgString: value.getString(Constants.imgKey) ?? '',
+          contactId: value.getString(Constants.userCon) ?? '',
+          uJoin: value.getString(Constants.uJoin) ?? '');
+    });
+  }
 }
 
 class SB {
@@ -233,12 +262,33 @@ class TU {
 }
 
 class GetChanges extends ChangeNotifier {
+  bool pickedFileExist = false;
+  bool tellPickedFileExist() => pickedFileExist;
+  File pickedFile = File('assets\\bDrive.png');
+  File getPickedFile() => pickedFile;
+  bool imageExist = false;
+  bool tellImageExist() => imageExist;
   Image image = Image.asset('assets\\bDrive.png');
   Image getUserImage() => image;
   int time = 30;
   int getUpdateTime() => time;
   int view = 0;
   int getView() => view;
+
+  updatePickedFile({required File file}) {
+    pickedFile = file;
+    notifyListeners();
+  }
+
+  updatePickedFileExist() {
+    pickedFileExist = true;
+    notifyListeners();
+  }
+
+  updateImageExists() {
+    imageExist = true;
+    notifyListeners();
+  }
 
   Future<Image> updateUserImage() async {
     return await Utility.getImageFromPreferences().then((value) {

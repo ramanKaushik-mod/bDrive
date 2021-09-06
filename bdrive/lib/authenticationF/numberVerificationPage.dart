@@ -168,7 +168,7 @@ class _NumberVerificationPageState extends State<NumberVerificationPage> {
                                     style: TU.tesmall(context, 50),
                                   ),
                                   SizedBox(
-                                    height: 10,
+                                    height: 15,
                                   ),
                                   Text(
                                     TS.nvp2,
