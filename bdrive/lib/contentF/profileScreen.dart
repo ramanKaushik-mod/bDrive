@@ -3,6 +3,7 @@ import 'package:bdrive/utilityF/constants.dart';
 import 'package:bdrive/utilityF/firebaseUtility.dart';
 import 'package:bdrive/utilityF/localUtility.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_phoenix/flutter_phoenix.dart';
 import 'package:provider/provider.dart';
 
 class ProfileScreen extends StatefulWidget {
@@ -30,6 +31,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
     handlingFirebaseDB = HandlingFS(contactID: await Utility.getUserContact());
     bool check = await handlingFirebaseDB.cue();
     if (check) {
+      await Provider.of<GetChanges>(context, listen: false).updateUserImage();
+      await Provider.of<GetChanges>(context, listen: false).updateImageExists();
       Users user = await Utility.getUserDetails();
       nCon.text = user.uName;
       uNCon.text = user.uNName;
@@ -58,16 +61,17 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   Container(
                     child: Container(
                       padding: EdgeInsets.only(
-                          top: 0, left: 20, right: 10, bottom: 0),
+                          top: 10, left: 20, right: 10, bottom: 0),
                       decoration: BoxDecoration(
                         borderRadius: BorderRadius.only(
                             topLeft: Radius.circular(5),
                             topRight: Radius.circular(5)),
                         color: Colors.black,
                       ),
-                      height: TU.geth(context) / 2,
                       width: TU.getw(context),
-                      child: Column(
+                      child: Wrap(
+                        runAlignment: WrapAlignment.end,
+                        alignment: WrapAlignment.end,
                         children: [
                           Row(
                             mainAxisAlignment: MainAxisAlignment.end,
@@ -75,7 +79,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                               Expanded(
                                   child: Text(
                                 TS.firstTime,
-                                style: TU.tlarge(context, 44),
+                                style: TU.tlarge(context, 40),
                               )),
                               Stack(
                                 children: [
@@ -95,8 +99,16 @@ class _ProfileScreenState extends State<ProfileScreen> {
                             ],
                           ),
                           TF.inst(context, text: TS.inst1),
+                          Container(height: 50),
                           TF.inst(context, text: TS.inst2),
-                          TF.inst(context, text: TS.inst3)
+                          Container(height: 60),
+                          Align(
+                            alignment: Alignment.center,
+                            child: TF.inst(context, text: TS.inst3),
+                          ),
+                          Container(
+                            height: 30,
+                          )
                         ],
                       ),
                     ),
@@ -136,22 +148,33 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                           child: IU.dicon(
                                               icon: Icons.edit,
                                               callback: () {
-                                    Navigator.pushNamed(context, '/imc');},
+                                                Navigator.pushNamed(
+                                                    context, '/imc');
+                                              },
                                               size: 16,
                                               cSize: 16)),
                                     ],
                                   ),
                                 )
-                              : Container(
-                                  margin: EdgeInsets.all(8),
-                                  padding: EdgeInsets.only(right: 15),
-                                  child: CircleAvatar(
-                                    radius: 30,
-                                    backgroundColor: Colors.white,
+                              : InkResponse(
+                                  onTap: () {
+                                    Navigator.pushNamed(context, '/imc');
+                                  },
+                                  child: Container(
+                                    margin: EdgeInsets.all(8),
+                                    padding: EdgeInsets.only(right: 15),
                                     child: CircleAvatar(
-                                      radius: 29.5,
-                                      backgroundColor: Colors.black,
-                                      child: value.getUserImage(),
+                                      radius: 30,
+                                      backgroundColor: Colors.white,
+                                      child: CircleAvatar(
+                                        radius: 29.5,
+                                        backgroundColor: Colors.black,
+                                        child: ClipRRect(
+                                          borderRadius:
+                                              BorderRadius.circular(50),
+                                          child: value.getUserImage(),
+                                        ),
+                                      ),
                                     ),
                                   ),
                                 );
@@ -201,20 +224,31 @@ class _ProfileScreenState extends State<ProfileScreen> {
           elevation: 10,
           splashColor: Colors.blue,
           onPressed: () async {
-            Users user = Users(
-                uName: nCon.text.trim(),
-                uNName: uNCon.text.trim(),
-                uEmail: eCon.text.trim(),
-                upasscode: pCon.text.trim(),
-                uimgString: await Utility.getImageFromPreferences(),
-                uJoin: DateTime.now().toString(),
-                contactId: await Utility.getUserContact());
-            await handlingFirebaseDB.setUserDetails(user: user);
-            // print("function is called");
-            // Map<String, dynamic> map =
-            //     await handlingFirebaseDB.getUserDetails();
-            // user = Users.fromJson(map);
-            // print('print json ${user.toJson()}');
+            bool check = await handlingFirebaseDB.cue();
+            if (check) {
+              Users user = Users(
+                  uName: nCon.text.trim(),
+                  uNName: uNCon.text.trim(),
+                  uEmail: eCon.text.trim(),
+                  upasscode: pCon.text.trim(),
+                  uimgString: await Utility.getImageFromPreferences(),
+                  uJoin: DateTime.now().toString(),
+                  contactId: await Utility.getUserContact());
+              await handlingFirebaseDB.setUserDetails(user: user);
+              await Utility.setProfileStatus();
+              Phoenix.rebirth(context);
+            } else {
+              Map<String, dynamic> map = {
+                'uName': nCon.text.trim(),
+                'uNName': uNCon.text.trim(),
+                'uEmail': eCon.text.trim(),
+                'upasscode': pCon.text.trim(),
+                'uimgString': await Utility.getUserContact()
+              };
+
+              handlingFirebaseDB.setSubSetInfo(map: map);
+              Phoenix.rebirth(context);
+            }
           },
           child: Icon(Icons.arrow_forward_ios),
         ),

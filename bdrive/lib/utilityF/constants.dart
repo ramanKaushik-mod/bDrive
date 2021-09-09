@@ -16,24 +16,28 @@ class Constants {
 
 class TS {
   static String svp =
-      'If somehow the app could not be able to auto retrieve the SMS-CODE';
-  static String svp2 = 'You need to Enter it manually';
-
-  static String svp3 = "We'll wait for 30 seconds";
+      'If somehow the app could not be able to auto retrieve the SMS-CODE, You need to Enter it manually.';
+  static String svp2 = 'Enter your number to proceed.';
+  static String svp3 = "We'll wait for ";
+  static String seconds = " seconds";
 
   static String nvp = 'Welcome to bCLOUD';
-  static String nvp1 = 'We will be verifying your number';
-  static String nvp2 = 'A 6-digit SMS-Code will be sent to your number';
+  static String nvp1 =
+      'Here, \n\n             we will be verifying your number and A 6-digit SMS-Code will be sent to your number.';
   static String pyourName = 'your name';
   static String puserName = '@nickname (at least 3 characters)';
   static String pemailId = 'your email id';
   static String ppcode = 'your passcode (at least 8 characters with no space)';
 
   static String firstTime =
-      "If it's your first time with CLOUD you need to enter your above information";
+      "If it's your first time with bCLOUD you need to enter the required information";
   static String inst1 =
       "If it's not the first time, then we will automatically fetch your details, and in case you want to change any of your information, you can now";
   static String inst2 =
       "We need above information, So that you can access your account on WEB as well";
   static String inst3 = "www.bCLOUD.com";
+
+  //*******Authentication Page**** */
+  static String numHint = 'Enter your Number';
+  static String smsCodeHint = 'SMS Code';
 }

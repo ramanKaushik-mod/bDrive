@@ -52,13 +52,16 @@ class _DrawerPageState extends State<DrawerPage> {
                                 children: [
                                   IU.dicon(
                                       icon: Icons.home_outlined,
-                                      callback: () {},
+                                      callback: () async {
+                                        
+                                      },
                                       cSize: 26,
                                       size: 25),
                                   IU.dicon(
                                       icon:
                                           Icons.star_border_purple500_outlined,
-                                      callback: () {},
+                                      callback: () {
+                                      },
                                       cSize: 26,
                                       size: 25),
                                   IU.dicon(
@@ -110,7 +113,7 @@ class _DrawerPageState extends State<DrawerPage> {
                                         width: 120,
                                         child: Center(
                                             child: Text(
-                                          "CLOUD",
+                                          "bCLOUD",
                                           style: TU.tTitle(context),
                                         )),
                                       ),

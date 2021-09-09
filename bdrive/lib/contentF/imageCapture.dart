@@ -14,7 +14,6 @@ class ImageCapture extends StatefulWidget {
 }
 
 class _ImageCaptureState extends State<ImageCapture> {
-  File _imageFile = File('assets\\bDrive.png');
   late HandlingFS handlingFirebaseDB;
 
   @override
@@ -30,14 +29,17 @@ class _ImageCaptureState extends State<ImageCapture> {
   Future<void> _pickImage(ImageSource source) async {
     XFile? selected =
         await ImagePicker().pickImage(source: source, imageQuality: 50);
-    Provider.of<GetChanges>(context, listen: false)
-        .updatePickedFile(file: File(selected!.path));
+    if (selected != null) {
+      Provider.of<GetChanges>(context, listen: false)
+          .updatePickedFile(file: File(selected.path));
+      Provider.of<GetChanges>(context, listen: false).updatePickedFileExist();
+    }
   }
 
-  Future<void> _cropImage() async {
+  Future<void> _cropImage({required File file}) async {
     File? cropped = await ImageCropper.cropImage(
         aspectRatio: CropAspectRatio(ratioX: 1, ratioY: 1),
-        sourcePath: _imageFile.path,
+        sourcePath: file.path,
         cropStyle: CropStyle.circle,
         androidUiSettings: AndroidUiSettings(
           toolbarTitle: "edit your profile pic",
@@ -47,71 +49,136 @@ class _ImageCaptureState extends State<ImageCapture> {
           activeControlsWidgetColor: Colors.blue,
         ));
     PickedFile pickedFile =
-        PickedFile(cropped == null ? _imageFile.path : cropped.path);
-    setState(() {
-      _imageFile = pickedFile as File;
-    });
+        PickedFile(cropped == null ? file.path : cropped.path);
+    Provider.of<GetChanges>(context, listen: false)
+        .updatePickedFile(file: File(pickedFile.path));
   }
 
   @override
   Widget build(BuildContext context) {
     return WillPopScope(
-      onWillPop: () {
-        Provider.of<GetChanges>(context, listen: false).updatePickedFileExist();
-        return Future.value(true);
-      },
-      child: Scaffold(
-        appBar: appBar(),
-        backgroundColor: Colors.white,
-        body: Consumer<GetChanges>(
-          builder: (BuildContext context, value, win) {
-            return value.tellPickedFileExist() == false
-                ? getBodyWhenFileNotPresent()
-                : getBodyWhenFilePresent();
-          },
-        ),
-        bottomNavigationBar: Card(
-          shape:
-              RoundedRectangleBorder(borderRadius: BorderRadius.circular(40)),
-          margin: EdgeInsets.only(left: 10, right: 10, bottom: 10),
-          elevation: 1,
-          child: Padding(
-            padding: const EdgeInsets.all(10),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
-              children: [
-                FloatingActionButton(
-                  onPressed: () => _pickImage(ImageSource.camera),
-                  heroTag: "btn4",
-                  elevation: 0,
-                  backgroundColor: Colors.blue[50],
-                  child: Icon(
-                    Icons.photo_camera,
-                    color: Colors.blue,
-                    size: 30,
-                  ),
-                ),
-                FloatingActionButton(
-                    onPressed: () => _pickImage(ImageSource.gallery),
-                    heroTag: "btn5",
-                    elevation: 0,
-                    backgroundColor: Colors.blue[50],
-                    child: Icon(
-                      Icons.photo_library,
-                      color: Colors.blue,
-                      size: 30,
-                    ))
-              ],
+        onWillPop: () {
+          Provider.of<GetChanges>(context, listen: false)
+              .updatePickedFileExistsToFalse();
+          return Future.value(true);
+        },
+        child: Scaffold(
+          backgroundColor: Colors.blue[600],
+          body: Container(
+            color: Colors.black38,
+            child: Consumer<GetChanges>(
+              builder: (BuildContext context, value, win) {
+                return value.tellPickedFileExist() == false
+                    ? getBodyWhenFileNotPresent()
+                    : getBodyWhenFilePresent();
+              },
             ),
           ),
-        ),
-      ),
-    );
+          bottomNavigationBar: Container(
+              padding: const EdgeInsets.all(10),
+              color: Colors.black,
+              child: Consumer<GetChanges>(
+                builder: (BuildContext context, value, win) {
+                  return Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceAround,
+                    children: value.tellPickedFileExist() == true
+                        ? [
+                            IU.dicon(
+                                icon: Icons.camera,
+                                callback: () {
+                                  _pickImage(ImageSource.camera);
+                                },
+                                size: 25,
+                                cSize: 26),
+                            IU.dicon(
+                                icon: Icons.photo_library,
+                                callback: () {
+                                  _pickImage(ImageSource.gallery);
+                                },
+                                size: 25,
+                                cSize: 26),
+                            IU.dicon(
+                                icon: Icons.crop,
+                                callback: () {
+                                  _cropImage(
+                                      file: Provider.of<GetChanges>(context,
+                                              listen: false)
+                                          .getPickedFile());
+                                },
+                                size: 25,
+                                cSize: 26),
+                            IU.dicon(
+                                icon: Icons.save,
+                                callback: () async {
+                                  GetChanges changes = Provider.of<GetChanges>(
+                                      context,
+                                      listen: false);
+                                  bool flag = changes.tellPickedFileExist();
+
+                                  if (flag) {
+                                    String base64String = Utility.base64String(
+                                        changes
+                                            .getPickedFile()
+                                            .readAsBytesSync());
+                                    if (changes
+                                            .getPickedFile()
+                                            .readAsBytesSync()
+                                            .length >=
+                                        800000) {
+                                      SB.ssb(
+                                        context,
+                                        text: 'Image size is too big',
+                                      );
+                                      return;
+                                    }
+                                    await Utility.saveImageToPreferences(
+                                        base64String);
+                                    changes.updateImageExists();
+                                    changes.updateUserImage();
+                                    changes.updatePickedFileExistsToFalse();
+                                    Navigator.pop(context);
+                                  } else {
+                                    SB.ssb(
+                                      context,
+                                      text: 'no image is selected',
+                                    );
+                                  }
+                                },
+                                size: 25,
+                                cSize: 26),
+                            IU.dicon(
+                                icon: Icons.refresh,
+                                callback: () {
+                                  _clear();
+                                },
+                                size: 25,
+                                cSize: 26),
+                          ]
+                        : [
+                            IU.dicon(
+                                icon: Icons.camera,
+                                callback: () {
+                                  _pickImage(ImageSource.camera);
+                                },
+                                size: 25,
+                                cSize: 26),
+                            IU.dicon(
+                                icon: Icons.photo_library,
+                                callback: () {
+                                  _pickImage(ImageSource.gallery);
+                                },
+                                size: 25,
+                                cSize: 26),
+                          ],
+                  );
+                },
+              )),
+        ));
   }
 
   Widget getBodyWhenFilePresent() {
     return Container(
-      color: Colors.white,
+      color: Colors.transparent,
       child: Stack(
         children: [
           Center(
@@ -125,11 +192,13 @@ class _ImageCaptureState extends State<ImageCapture> {
                           builder: (BuildContext context, value, win) {
                         return Center(
                           child: Container(
-                              color: Colors.grey[100],
-                              padding: EdgeInsets.all(4),
-                              child: Image.file(
-                                value.pickedFile,
-                                height: TU.getw(context),
+                              color: Colors.transparent,
+                              margin: EdgeInsets.all(10),
+                              child: ClipRRect(
+                                borderRadius: BorderRadius.circular(10),
+                                child: Image.file(
+                                  value.pickedFile,
+                                ),
                               )),
                         );
                       })
@@ -143,85 +212,11 @@ class _ImageCaptureState extends State<ImageCapture> {
             bottom: 0,
             left: 0,
             right: 0,
-            child: Card(
-              color: Colors.white,
-              shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(40)),
-              margin: EdgeInsets.all(10),
-              elevation: 1,
-              child: Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceAround,
-                  children: [
-                    FloatingActionButton(
-                        onPressed: _cropImage,
-                        heroTag: "btn1",
-                        backgroundColor: Colors.blue[50],
-                        elevation: 0,
-                        child: Icon(
-                          Icons.crop,
-                          color: Colors.blue,
-                        )),
-                    FloatingActionButton(
-                        onPressed: () async {
-                          GetChanges changes =
-                              Provider.of<GetChanges>(context, listen: false);
-                          bool flag = changes.tellPickedFileExist();
-
-                          if (flag) {
-                            String base64String = Utility.base64String(
-                                changes.getPickedFile().readAsBytesSync());
-                            if (changes
-                                    .getPickedFile()
-                                    .readAsBytesSync()
-                                    .length >=
-                                800000) {
-                              SB.ssb(
-                                context,
-                                text: 'Image size is too big',
-                              );
-                              return;
-                            }
-                            await Utility.saveImageToPreferences(base64String);
-
-                            Future.delayed(Duration(milliseconds: 20),
-                                () async {
-                              await handlingFirebaseDB
-                                  .getUserDoc()
-                                  .get()
-                                  .then((value) async {
-                                if (value.exists) {
-                                  await handlingFirebaseDB.updateUserImage();
-                                }
-                              });
-                            });
-                            Navigator.of(context).pop();
-                          } else {
-                            SB.ssb(
-                              context,
-                              text: 'no image is selected',
-                            );
-                          }
-                        },
-                        heroTag: "btn2",
-                        backgroundColor: Colors.blue[50],
-                        elevation: 0,
-                        child: Icon(
-                          Icons.save,
-                          color: Colors.blue,
-                        )),
-                    FloatingActionButton(
-                        onPressed: () {},
-                        heroTag: "btn3",
-                        backgroundColor: Colors.blue[50],
-                        elevation: 0,
-                        child: Icon(
-                          Icons.refresh,
-                          color: Colors.blue,
-                        )),
-                  ],
-                ),
+            child: Container(
+              padding: const EdgeInsets.all(8.0),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceAround,
+                children: [],
               ),
             ),
           ),
@@ -254,31 +249,8 @@ class _ImageCaptureState extends State<ImageCapture> {
     );
   }
 
-  appBar() {
-    final width = MediaQuery.of(context).size.width;
-    return AppBar(
-      elevation: 0,
-      automaticallyImplyLeading: false,
-      backgroundColor: Colors.white,
-      title: Container(
-        padding: EdgeInsets.all(10),
-        // height: 40,
-        width: width / 2,
-        decoration: BoxDecoration(
-          color: Colors.blue[50],
-          borderRadius: BorderRadius.circular(40),
-        ),
-        child: Align(
-          alignment: Alignment.centerLeft,
-          child: Text(
-            "grab your profile pic",
-            style: GoogleFonts.mulish(
-                fontSize: MediaQuery.of(context).size.width / 20,
-                color: Colors.blue,
-                fontWeight: FontWeight.w600),
-          ),
-        ),
-      ),
-    );
+  void _clear() {
+    Provider.of<GetChanges>(context, listen: false)
+        .updatePickedFileExistsToFalse();
   }
 }

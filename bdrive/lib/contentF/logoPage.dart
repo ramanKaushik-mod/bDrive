@@ -24,7 +24,7 @@ class _LogoPageState extends State<LogoPage> {
           Navigator.pushNamed(context, '/pp');
         }
       } else {
-        Navigator.pushNamed(context, '/nvp');
+        Navigator.pushNamed(context, '/aup');
       }
     });
   }

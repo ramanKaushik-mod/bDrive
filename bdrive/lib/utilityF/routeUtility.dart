@@ -1,5 +1,4 @@
-import 'package:bdrive/authenticationF/numberVerificationPage.dart';
-import 'package:bdrive/authenticationF/smsVerificationPage.dart';
+import 'package:bdrive/authenticationF/authenticationPage.dart';
 import 'package:bdrive/contentF/homePage.dart';
 import 'package:bdrive/contentF/imageCapture.dart';
 import 'package:bdrive/contentF/logoPage.dart';
@@ -19,35 +18,14 @@ class RouteGenerator {
         return MaterialPageRoute(builder: (_) => LogoPage());
       case '/hp':
         return MaterialPageRoute(builder: (_) => HomePage());
-      case '/nvp':
-        return MaterialPageRoute(builder: (_) => NumberVerificationPage());
-      case '/svp':
-        return MaterialPageRoute(builder: (_) => SMSVerificationPage());
       case '/sep':
         return MaterialPageRoute(builder: (_) => SettingsPage());
       case '/pp':
         return MaterialPageRoute(builder: (_) => ProfileScreen());
       case '/imc':
         return MaterialPageRoute(builder: (_) => ImageCapture());
-      // case '/messageScreen':
-      //   return MaterialPageRoute(
-      //       builder: (_) => MessageScreen(contactModel: args,));
-      // case '/userScreen':
-      //   return MaterialPageRoute(builder: (_) => UserProfile(contactNo: args,));
-      // case '/verifyNumberScreen':
-      //   return MaterialPageRoute(builder: (_) => VerifyNumberScreen());
-      // case '/verifySmsScreen':
-      //   return MaterialPageRoute(
-      //       builder: (_) => VerifySmsScreen(
-      //             data: args,
-      //           ));
-      // case '/profileScreen':
-      //   return MaterialPageRoute(builder: (_) => ProfileScreen());
-      // case '/imageCapture':
-      //   return MaterialPageRoute(
-      //       builder: (_) => ImageCapture(
-      //             function: args,
-      //           ));
+      case '/aup':
+        return MaterialPageRoute(builder: (_) => AuthenticationPage());
       default:
         return _errorRoute();
     }

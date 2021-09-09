@@ -1,6 +1,7 @@
 import 'package:bdrive/utilityF/localUtility.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:provider/provider.dart';
 
 class FolderTile extends StatefulWidget {
   final Folder folder;
@@ -66,48 +67,71 @@ class _FolderTileState extends State<FolderTile> {
                 ),
               ],
             ))
-        : Container(
-            margin: EdgeInsets.symmetric(horizontal: 10, vertical: 10),
-            padding: EdgeInsets.all(10),
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(8),
-              color: Colors.black38,
-            ),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Icon(
-                  Icons.folder,
-                  color: Colors.black,
-                  size: TU.geth(context) / 7,
+        : InkResponse(
+            onTap: () {},
+            onLongPress: () {
+              Provider.of<GetChanges>(context, listen: false)
+                  .updateSelectColor();
+            },
+            child: Consumer<GetChanges>(
+                builder: (BuildContext context, value, win) {
+              return Container(
+                alignment: Alignment.center,
+                margin: EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+                padding: EdgeInsets.all(0),
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(8),
+                  color: value.selectColor,
                 ),
-                Row(
+                child: Stack(
                   children: [
-                    Expanded(
-                      child: Container(
-                        padding: EdgeInsets.symmetric(horizontal: 10),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
+                    Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(
+                          Icons.folder,
+                          color: Colors.black,
+                          size: TU.geth(context) / 7,
+                        ),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            RichText(
-                              text: TextSpan(text: widget.folder.fName),
-                              textAlign: TextAlign.left,
-                              softWrap: true,
-                              overflow: TextOverflow.ellipsis,
+                            Container(
+                              child: RichText(
+                                text: TextSpan(
+                                    text: widget.folder.fName,
+                                    style: TU.teeesmall(context, 66)),
+                                textAlign: TextAlign.center,
+                                softWrap: true,
+                                overflow: TextOverflow.ellipsis,
+                              ),
                             ),
                           ],
                         ),
-                      ),
+                      ],
                     ),
-                    Icon(
-                      FontAwesomeIcons.ellipsisV,
-                      color: Colors.white,
-                      size: 16,
-                    ),
+                    Consumer<GetChanges>(
+                        builder: (BuildContext context, value, win) {
+                      return value.selectColor == Colors.black12? Positioned(
+                    right: 1,
+                    bottom: 1,
+                        child: IconButton(
+                          onPressed: () {
+
+                            
+                          },
+                          icon: Icon(
+                            Icons.circle_outlined,
+                            size: 20,
+                          ),
+                          color: Colors.white,
+                        ),
+                      ):Text('');
+                    })
                   ],
                 ),
-              ],
-            ),
+              );
+            }),
           );
   }
 }

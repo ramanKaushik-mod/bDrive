@@ -4,13 +4,13 @@ import 'package:bdrive/models/models.dart';
 import 'package:bdrive/utilityF/localUtility.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter_phoenix/flutter_phoenix.dart';
 import 'package:provider/provider.dart';
 
 class FirebaseFunctions {
   static verifyNumber(context, String phoneNumber) async {
     FirebaseAuth auth = FirebaseAuth.instance;
+    phoneNumber = '+91$phoneNumber';
     try {
       await auth.verifyPhoneNumber(
           phoneNumber: phoneNumber,
@@ -24,30 +24,29 @@ class FirebaseFunctions {
                   .then((value) async {
                 if (value.isNotEmpty) {
                   await Utility.setUserDetails(map: value);
-                  Provider.of<GetChanges>(context, listen: false)
-                      .updateImageExists();
-                  Provider.of<GetChanges>(context, listen: false)
-                      .updateUserImage();
                 }
               });
-              Timer(Duration(seconds: 3), () {
-                Phoenix.rebirth(context);
-              });
+              Phoenix.rebirth(context);
             }
           },
           verificationFailed: (FirebaseAuthException e) {
             if (e.code == 'invalid-phone-number') {
-            } else {}
+              SB.ssb(context, text: 'Invalid phone number');
+            } else {
+              SB.ssb(context, text: 'Check your Internet Connection');
+            }
             // Handle other errors
           },
-          codeSent: (String verificationId, int? resendToken) {
-            Utility.saveUserContact(userCon: phoneNumber);
-            Utility.setVFyId(vid: verificationId);
-            Navigator.pushNamed(context, '/svp');
+          codeSent: (String verificationId, int? resendToken) async {
+            await Utility.saveUserContact(userCon: phoneNumber);
+            await Utility.setVFyId(vid: verificationId);
+            SB.ssb(context, text: 'Code Sent Successfully');
+            await Provider.of<GetChanges>(context, listen: false)
+                .updateCodeSentSemaphore(flag: true);
           },
           codeAutoRetrievalTimeout: (String verificationId) {});
     } on FirebaseAuthException catch (e) {
-      SB.ssb(context, text: '$e');
+      SB.ssb(context, text: 'Check your Internect Connecton');
     }
   }
 
@@ -72,6 +71,9 @@ class FirebaseFunctions {
             await Utility.setUserDetails(map: value);
           }
         });
+        await Provider.of<GetChanges>(context, listen: false)
+            .updateCodeSentSemaphore(flag: false);
+        await Provider.of<GetChanges>(context, listen: false).turnTimeTo30();
         Phoenix.rebirth(context);
       }
     } on FirebaseAuthException catch (e) {
@@ -111,10 +113,9 @@ class HandlingFS {
     });
   }
 
+  setSubSetInfo({required Map<String, dynamic> map}) async =>
+      await getUserDoc().set(map);
+
   Future<bool> cue() async =>
       await getUserDoc().get().then((value) => value.exists ? true : false);
-
-  updateUserImage() async => await _userCollection
-      .doc(this.contactID)
-      .update({'imageStr': await Utility.getImageFromPreferences()});
 }

@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 import 'dart:typed_data';
@@ -106,7 +107,7 @@ class SB {
         text,
         style: TextStyle(color: Colors.white),
       ),
-      backgroundColor: Colors.grey[900],
+      backgroundColor: Colors.blue[800],
       elevation: 10,
       behavior: SnackBarBehavior.floating,
       duration: Duration(milliseconds: 2000),
@@ -118,7 +119,7 @@ class SB {
           context: context,
           builder: (con) {
             return AlertDialog(
-              backgroundColor: Colors.black,
+              backgroundColor: Colors.blue[900],
               title: create != null
                   ? Text(dialog, style: TU.tsmall(context))
                   : null,
@@ -180,35 +181,42 @@ class SB {
             );
           });
 
-  static cpi(context) => showDialog(
-      context: context,
-      builder: (_) => new AlertDialog(
-            backgroundColor: Colors.transparent,
-            insetPadding: EdgeInsets.symmetric(horizontal: 150),
-            contentPadding: EdgeInsets.zero,
-            shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.all(Radius.circular(10.0))),
-            content: Container(
-              height: 90,
-              width: 90,
-              child: Center(
-                child: Container(
-                  height: 90,
-                  width: 90,
-                  padding: EdgeInsets.all(25),
-                  decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(10),
-                      color: Colors.black),
-                  child: CircularProgressIndicator(
-                    color: Colors.white,
+  static cpi(context) {
+    Timer(Duration(seconds: 3), () {
+      Navigator.of(context);
+    });
+    return showDialog(
+        context: context,
+        builder: (_) => new AlertDialog(
+              backgroundColor: Colors.transparent,
+              insetPadding: EdgeInsets.symmetric(horizontal: 150),
+              contentPadding: EdgeInsets.zero,
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.all(Radius.circular(10.0))),
+              content: Container(
+                height: 90,
+                width: 90,
+                child: Center(
+                  child: Container(
+                    height: 90,
+                    width: 90,
+                    padding: EdgeInsets.all(25),
+                    decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(10),
+                        color: Colors.black),
+                    child: CircularProgressIndicator(
+                      color: Colors.white,
+                    ),
                   ),
                 ),
               ),
-            ),
-          ));
+            ));
+  }
 }
 
 class TU {
+  //text utitlity
+
   static geth(context) => MediaQuery.of(context).size.height;
   static getw(context) => MediaQuery.of(context).size.width;
 
@@ -285,15 +293,21 @@ class GetChanges extends ChangeNotifier {
     notifyListeners();
   }
 
+  updatePickedFileExistsToFalse() {
+    pickedFileExist = false;
+    notifyListeners();
+  }
+
   updateImageExists() {
     imageExist = true;
     notifyListeners();
   }
 
-  Future<Image> updateUserImage() async {
-    return await Utility.getImageFromPreferences().then((value) {
+  updateUserImage() async {
+    image = await Utility.getImageFromPreferences().then((value) {
       return Utility.imageFromBase64String(value);
     });
+    notifyListeners();
   }
 
   updateView() {
@@ -314,6 +328,24 @@ class GetChanges extends ChangeNotifier {
 
   turnTimeTo30() {
     time = 30;
+    notifyListeners();
+  }
+
+  //*****************Authentication Page *************** */
+  bool codeSentSemaphore = false;
+
+  bool getCodeSentSemaphore() => codeSentSemaphore;
+  updateCodeSentSemaphore({required bool flag}) {
+    codeSentSemaphore = flag;
+    notifyListeners();
+  }
+
+  //*******************HomePage******************** */
+  Color selectColor = Colors.transparent;
+  Color getSelectColor() => selectColor;
+
+  updateSelectColor() {
+    selectColor = Colors.black12;
     notifyListeners();
   }
 }
@@ -402,9 +434,38 @@ class TF {
         )
       ]);
 
-  static inst(context, {required text}) => Expanded(
-          child: Text(
+  static getTField2(context,
+          {required TextEditingController con, required String htext}) =>
+      Row(children: [
+        Expanded(
+          child: Container(
+            padding: EdgeInsets.symmetric(horizontal: 10),
+            decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(10), color: Colors.black26),
+            child: TextFormField(
+              controller: con,
+              style: TU.tlarge(context, 44),
+              cursorColor: Colors.white,
+              keyboardType: TextInputType.number,
+              textAlign: TextAlign.center,
+              decoration: InputDecoration(
+                  focusedBorder:
+                      UnderlineInputBorder(borderSide: BorderSide.none),
+                  enabledBorder:
+                      UnderlineInputBorder(borderSide: BorderSide.none),
+                  hintText: htext,
+                  hintStyle: TU.tesmall(context, 54)),
+            ),
+          ),
+        )
+      ]);
+
+  static inst(context, {required text}) => Text(
         text,
         style: TU.teeesmall(context, 50),
-      ));
+      );
+  static instl(context, {required text, required double fSize}) => Text(
+        text,
+        style: TU.teeesmall(context, fSize),
+      );
 }
