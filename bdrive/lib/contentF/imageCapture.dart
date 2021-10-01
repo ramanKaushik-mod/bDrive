@@ -3,7 +3,6 @@ import 'dart:io';
 import 'package:bdrive/utilityF/firebaseUtility.dart';
 import 'package:bdrive/utilityF/localUtility.dart';
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:image_cropper/image_cropper.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
@@ -63,9 +62,9 @@ class _ImageCaptureState extends State<ImageCapture> {
           return Future.value(true);
         },
         child: Scaffold(
-          backgroundColor: Colors.blue[600],
+          backgroundColor: Colors.black87,
           body: Container(
-            color: Colors.black38,
+            color: Colors.white12,
             child: Consumer<GetChanges>(
               builder: (BuildContext context, value, win) {
                 return value.tellPickedFileExist() == false
@@ -234,7 +233,7 @@ class _ImageCaptureState extends State<ImageCapture> {
         children: [
           Icon(
             Icons.insert_drive_file,
-            color: Colors.blue[50],
+            color: Colors.grey[700],
             size: MediaQuery.of(context).size.width * 0.5,
           ),
           Padding(

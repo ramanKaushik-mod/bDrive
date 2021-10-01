@@ -2,6 +2,8 @@ import 'package:bdrive/models/models.dart';
 import 'package:bdrive/utilityF/constants.dart';
 import 'package:bdrive/utilityF/firebaseUtility.dart';
 import 'package:bdrive/utilityF/localUtility.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_phoenix/flutter_phoenix.dart';
 import 'package:provider/provider.dart';
@@ -33,6 +35,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
     if (check) {
       await Provider.of<GetChanges>(context, listen: false).updateUserImage();
       await Provider.of<GetChanges>(context, listen: false).updateImageExists();
+      print("image status is updated");
       Users user = await Utility.getUserDetails();
       nCon.text = user.uName;
       uNCon.text = user.uNName;
@@ -49,10 +52,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
         return Future<bool>.value(true);
       },
       child: Scaffold(
-        backgroundColor: Colors.blue[600],
+        backgroundColor: Colors.black87,
         resizeToAvoidBottomInset: false,
         body: Container(
-          color: Colors.black26,
+          color: Colors.white12,
           child: Stack(
             children: [
               Column(
@@ -79,7 +82,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                               Expanded(
                                   child: Text(
                                 TS.firstTime,
-                                style: TU.tlarge(context, 40),
+                                style: TU.teeesmall(context, 38),
                               )),
                               Stack(
                                 children: [
@@ -165,7 +168,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                     padding: EdgeInsets.only(right: 15),
                                     child: CircleAvatar(
                                       radius: 30,
-                                      backgroundColor: Colors.white,
+                                      backgroundColor: Colors.red,
                                       child: CircleAvatar(
                                         radius: 29.5,
                                         backgroundColor: Colors.black,
@@ -187,7 +190,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                 color: Colors.black26),
                             child: TextFormField(
                               controller: nCon,
-                              style: TU.tlarge(context, 44),
+                              style: TU.tesmall(context, 44),
                               cursorColor: Colors.white,
                               keyboardType: TextInputType.text,
                               decoration: InputDecoration(
@@ -222,10 +225,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
         ),
         floatingActionButton: FloatingActionButton(
           elevation: 10,
-          splashColor: Colors.blue,
+          backgroundColor: Colors.grey[900],
           onPressed: () async {
             bool check = await handlingFirebaseDB.cue();
-            if (check) {
+            if (!check) {
               Users user = Users(
                   uName: nCon.text.trim(),
                   uNName: uNCon.text.trim(),
@@ -233,8 +236,17 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   upasscode: pCon.text.trim(),
                   uimgString: await Utility.getImageFromPreferences(),
                   uJoin: DateTime.now().toString(),
-                  contactId: await Utility.getUserContact());
+                  contactId: await Utility.getUserContact(),
+                  homeUid: handlingFirebaseDB.getHomeCollection().doc().id);
               await handlingFirebaseDB.setUserDetails(user: user);
+              await Utility.setUserDetails(map: user.toJson());
+              await handlingFirebaseDB.setUserHomeFolder(
+                  home: Folder(
+                      docUid: user.homeUid,
+                      fName: 'Home',
+                      createdAt: user.uJoin,
+                      folderList: [],
+                      fileList: []));
               await Utility.setProfileStatus();
               Phoenix.rebirth(context);
             } else {
@@ -243,14 +255,15 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 'uNName': uNCon.text.trim(),
                 'uEmail': eCon.text.trim(),
                 'upasscode': pCon.text.trim(),
-                'uimgString': await Utility.getUserContact()
+                'uimgString': await Utility.getImageFromPreferences()
               };
 
-              handlingFirebaseDB.setSubSetInfo(map: map);
+              handlingFirebaseDB.updatteSubSetInfo(map: map);
+              await Utility.setProfileStatus();
               Phoenix.rebirth(context);
             }
           },
-          child: Icon(Icons.arrow_forward_ios),
+          child: Icon(Icons.arrow_forward_ios, color: Colors.red),
         ),
       ),
     );

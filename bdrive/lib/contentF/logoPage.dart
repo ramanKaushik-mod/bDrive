@@ -17,7 +17,7 @@ class _LogoPageState extends State<LogoPage> {
     Timer(Duration(seconds: 3), () async {
       bool b = await Utility.getUserSignedInStatus();
       bool bb = await Utility.getProfileStatus();
-      if (b) {
+      if (b) { 
         if (bb) {
           Navigator.pushNamed(context, '/hp');
         } else {
@@ -32,9 +32,9 @@ class _LogoPageState extends State<LogoPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Color(0xFFF2F2F2),
+      backgroundColor: Colors.black87,
       body: Container(
-        color: Colors.blue[400],
+        color: Colors.white12,
         child: Column(
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: [
@@ -53,7 +53,7 @@ class _LogoPageState extends State<LogoPage> {
                         'assets\\bDrive.png',
                         height: 140,
                         width: 140,
-                        color: Colors.black,
+                        color: Colors.white54,
                       ),
                     ],
                   ),
@@ -63,20 +63,8 @@ class _LogoPageState extends State<LogoPage> {
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Card(
-                  elevation: 20,
-                  color: Colors.black,
-                  shadowColor: Colors.black,
-                  shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(20)),
-                  child: Container(
-                    margin: EdgeInsets.all(25),
-                    height: 40,
-                    width: 40,
-                    child: CircularProgressIndicator(
-                      color: Colors.white,
-                    ),
-                  ),
+                CircularProgressIndicator(
+                  color: Colors.red,
                 )
               ],
             )

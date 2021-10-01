@@ -5,6 +5,7 @@ import 'dart:typed_data';
 
 import 'package:bdrive/models/models.dart';
 import 'package:bdrive/utilityF/constants.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -82,6 +83,7 @@ class Utility {
       value.setString(Constants.userCon, map['contactId']);
       value.setString(Constants.uJoin, map['uJoin']);
       value.setString(Constants.upasscode, map['upasscode']);
+      value.setString(Constants.homeUid, map['homeUid']);
     });
   }
 
@@ -94,9 +96,13 @@ class Utility {
           upasscode: value.getString(Constants.upasscode) ?? '',
           uimgString: value.getString(Constants.imgKey) ?? '',
           contactId: value.getString(Constants.userCon) ?? '',
-          uJoin: value.getString(Constants.uJoin) ?? '');
+          uJoin: value.getString(Constants.uJoin) ?? '',
+          homeUid: value.getString(Constants.homeUid) ?? '');
     });
   }
+
+  static Future<String> getHomeUID() async =>
+      await gsi().then((value) => value.getString(Constants.homeUid) ?? '');
 }
 
 class SB {
@@ -107,7 +113,7 @@ class SB {
         text,
         style: TextStyle(color: Colors.white),
       ),
-      backgroundColor: Colors.blue[800],
+      backgroundColor: Colors.grey[800],
       elevation: 10,
       behavior: SnackBarBehavior.floating,
       duration: Duration(milliseconds: 2000),
@@ -119,7 +125,7 @@ class SB {
           context: context,
           builder: (con) {
             return AlertDialog(
-              backgroundColor: Colors.blue[900],
+              backgroundColor: Colors.grey[900],
               title: create != null
                   ? Text(dialog, style: TU.tsmall(context))
                   : null,
@@ -137,7 +143,6 @@ class SB {
                   if (create != null) ...[
                     TextFormField(
                       controller: create,
-                      autofocus: true,
                       textAlign: TextAlign.left,
                       style: TU.tsmall(context),
                       cursorColor: Colors.white,
@@ -181,36 +186,27 @@ class SB {
             );
           });
 
-  static cpi(context) {
-    Timer(Duration(seconds: 3), () {
-      Navigator.of(context);
-    });
-    return showDialog(
-        context: context,
-        builder: (_) => new AlertDialog(
-              backgroundColor: Colors.transparent,
-              insetPadding: EdgeInsets.symmetric(horizontal: 150),
-              contentPadding: EdgeInsets.zero,
-              shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.all(Radius.circular(10.0))),
-              content: Container(
-                height: 90,
-                width: 90,
-                child: Center(
-                  child: Container(
-                    height: 90,
-                    width: 90,
-                    padding: EdgeInsets.all(25),
-                    decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(10),
-                        color: Colors.black),
-                    child: CircularProgressIndicator(
-                      color: Colors.white,
-                    ),
-                  ),
-                ),
-              ),
-            ));
+  static cpi() {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        Card(
+          elevation: 20,
+          color: Colors.black,
+          shadowColor: Colors.black,
+          shape:
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+          child: Container(
+            margin: EdgeInsets.all(25),
+            height: 40,
+            width: 40,
+            child: CircularProgressIndicator(
+              color: Colors.white,
+            ),
+          ),
+        )
+      ],
+    );
   }
 }
 
@@ -224,11 +220,11 @@ class TU {
       TextStyle(fontSize: geth(context) / 48, color: Colors.white);
   static tlarge(context, factor) => GoogleFonts.montserratAlternates(
       fontSize: geth(context) / factor,
-      color: Colors.white,
+      color: Colors.red,
       fontWeight: FontWeight.w400);
   static tesmall(context, factor) => TextStyle(
       fontSize: geth(context) / factor,
-      color: Colors.black,
+      color: Colors.white70,
       fontWeight: FontWeight.w500);
   static teesmall(context) => TextStyle(
       fontSize: geth(context) / 60,
@@ -236,7 +232,7 @@ class TU {
       fontWeight: FontWeight.w700);
   static teeesmall(context, factor) => GoogleFonts.mulish(
       fontSize: geth(context) / factor,
-      color: Colors.white,
+      color: Colors.white54,
       fontWeight: FontWeight.w400);
   static tesmallw(context) => TextStyle(
       fontSize: geth(context) / 50,
@@ -247,8 +243,9 @@ class TU {
       color: Colors.blue[900],
       fontWeight: FontWeight.w600);
 
-  static tuD() => Container(
+  static tuD(context) => Container(
         height: 2,
+        margin: EdgeInsets.symmetric(horizontal: 140),
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(10),
           color: Colors.grey,
@@ -341,11 +338,74 @@ class GetChanges extends ChangeNotifier {
   }
 
   //*******************HomePage******************** */
+
   Color selectColor = Colors.transparent;
   Color getSelectColor() => selectColor;
 
   updateSelectColor() {
     selectColor = Colors.black12;
+    notifyListeners();
+  }
+
+  //****************** HIERARCHY LIST ***************** */
+
+  List<List<String>> pathList = [];
+  List<List<String>> getPathList() => pathList;
+
+  //call this method when you need to add a path element (when you click on folder)
+  updatePathListA({required List<String> list}) {
+    pathList.add(list);
+    notifyListeners();
+  }
+
+  //call this method when you need to remove a path element (when you press back)
+  updatePathListD() {
+    pathList.removeLast();
+    notifyListeners();
+  }
+
+  emptyPathList() {
+    pathList.clear();
+    notifyListeners();
+  }
+
+  //********************  Initializing Database hold variable  */
+
+  int readyDB = 0;
+  int getReadyDBStatus() => readyDB;
+
+  updateReadyDBStatus({required int status}) {
+    //   'status' is holding only values either 1 or 0
+    // 0 for notReady and 1 for Ready
+
+    readyDB = status;
+    notifyListeners();
+  }
+
+  //*****************  Updating Upload task */
+  UploadTask? task;
+  UploadTask? getUploadTask() => task;
+
+  updateUploadTask({required UploadTask? tsk}) {
+    task = tsk;
+    notifyListeners();
+  }
+
+  ValueNotifier<bool> dial = ValueNotifier(false);
+
+  getDialStatus() => dial;
+
+  updateDialStatus() {
+    dial.value = false;
+    notifyListeners();
+  }
+
+  int niindex = 2;
+
+  int getNIIndex() => niindex;
+
+  updateNIIndex(int index) {
+    niindex = index;
     notifyListeners();
   }
 }
@@ -360,7 +420,7 @@ class IU {
         padding: const EdgeInsets.all(8.0),
         child: CircleAvatar(
           radius: cSize,
-          backgroundColor: Colors.grey[200],
+          backgroundColor: Colors.red,
           child: CircleAvatar(
             radius: cSize - 1,
             backgroundColor: Colors.black,
@@ -388,7 +448,7 @@ class IU {
         icon: Icon(
           icon,
           size: size,
-          color: Colors.grey,
+          color: Colors.red,
         ),
         onPressed: () => callback(),
       );
@@ -398,13 +458,22 @@ class IU {
           required Function callback,
           required double size}) =>
       IconButton(
-        splashColor: Colors.blue,
+        splashColor: Colors.red,
+        splashRadius: 20,
         icon: Icon(
           icon,
           size: size,
-          color: Colors.grey[400],
+          color: Colors.red,
         ),
         onPressed: () => callback(),
+      );
+
+  static dNIcon({required IconData icon, required double size}) => Padding(
+        padding: EdgeInsets.symmetric(vertical: 10),
+        child: Icon(
+          icon,
+          size: size,
+        ),
       );
 }
 
@@ -419,7 +488,7 @@ class TF {
                 borderRadius: BorderRadius.circular(10), color: Colors.black26),
             child: TextFormField(
               controller: con,
-              style: TU.tlarge(context, 44),
+              style: TU.tesmall(context, 44),
               cursorColor: Colors.white,
               keyboardType: TextInputType.text,
               decoration: InputDecoration(
@@ -468,4 +537,16 @@ class TF {
         text,
         style: TU.teeesmall(context, fSize),
       );
+}
+
+class Mapping {
+  static List<FolderTile> mapper(
+      {required List<dynamic> list, required bool flag}) {
+    List<FolderTile> fList = [];
+    list.forEach((element) {
+      fList.add(FolderTile(folder: ShortFD.fromJson(map: element), type: flag));
+    });
+
+    return fList;
+  }
 }

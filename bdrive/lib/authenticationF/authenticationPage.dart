@@ -22,6 +22,7 @@ class _AuthenticationPageState extends State<AuthenticationPage> {
     return Scaffold(
       resizeToAvoidBottomInset: false,
       floatingActionButton: FloatingActionButton(
+        backgroundColor: Colors.grey[900],
         onPressed: () async {
           GetChanges val = Provider.of<GetChanges>(context, listen: false);
           if (val.getCodeSentSemaphore() == false) {
@@ -57,11 +58,11 @@ class _AuthenticationPageState extends State<AuthenticationPage> {
             }
           }
         },
-        child: Icon(Icons.arrow_forward_ios),
+        child: Icon(Icons.arrow_forward_ios, color: Colors.red,),
       ),
-      backgroundColor: Colors.blue[600],
+      backgroundColor: Colors.black87,
       body: Container(
-        color: Colors.black26,
+        color: Colors.white24,
         child: Stack(
           children: [
             Column(
@@ -182,7 +183,7 @@ class _AuthenticationPageState extends State<AuthenticationPage> {
                           padding: EdgeInsets.symmetric(horizontal: 10),
                           decoration: BoxDecoration(
                               borderRadius: BorderRadius.circular(10),
-                              color: Colors.black26),
+                              color: Colors.white12),
                           child: Consumer<GetChanges>(
                               builder: (BuildContext context, value, win) {
                             bool flag =
@@ -190,7 +191,7 @@ class _AuthenticationPageState extends State<AuthenticationPage> {
                             return TextFormField(
                               enabled: flag,
                               controller: nCon,
-                              style: TU.tlarge(context, 44),
+                              style: TU.tesmall(context, 44),
                               cursorColor: Colors.white,
                               keyboardType: TextInputType.number,
                               textAlign: TextAlign.center,

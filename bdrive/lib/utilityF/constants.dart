@@ -10,6 +10,7 @@ class Constants {
   static String userCon = 'USER_CONTACT';
   static String upasscode = 'USER_PASSCODE';
   static String uJoin = 'USER_JOIN_TIME';
+  static String homeUid = 'HOME_UID';
 
   static String pStatus = 'PROFILE_STATUS';
 }
