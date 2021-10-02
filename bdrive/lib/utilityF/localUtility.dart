@@ -228,8 +228,8 @@ class TU {
       fontWeight: FontWeight.w500);
   static teesmall(context) => TextStyle(
       fontSize: geth(context) / 60,
-      color: Colors.black,
-      fontWeight: FontWeight.w700);
+      color: Colors.white,
+      fontWeight: FontWeight.w300);
   static teeesmall(context, factor) => GoogleFonts.mulish(
       fontSize: geth(context) / factor,
       color: Colors.white54,
@@ -264,6 +264,20 @@ class TU {
       fontSize: geth(context) / 30,
       color: Colors.grey,
       fontWeight: FontWeight.w700);
+
+  static tSDLabel({required context, required String label}) => Card(
+        color: Colors.black,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        child: Container(
+            margin: EdgeInsets.all(1),
+            padding: EdgeInsets.symmetric(horizontal: 15, vertical: 6),
+            decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(20), color: Colors.white24),
+            child: Text(
+              label,
+              style: TU.teesmall(context),
+            )),
+      );
 }
 
 class GetChanges extends ChangeNotifier {

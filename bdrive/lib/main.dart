@@ -30,6 +30,7 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
       create: (context) => GetChanges(),
       child: MaterialApp(
         themeMode: ThemeMode.light,
+        title: 'bCLOUD',
         debugShowCheckedModeBanner: false,
         initialRoute: '/',
         onGenerateRoute: RouteGenerator.generateRoute,

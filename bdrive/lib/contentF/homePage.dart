@@ -84,21 +84,37 @@ class _HomePageState extends State<HomePage> {
           child: Row(
             children: [
               Expanded(
-                child: Card(
-                  margin:
-                      EdgeInsets.only(left: 20, right: 10, top: 5, bottom: 5),
-                  color: Colors.black38,
-                  elevation: 0,
-                  shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(10)),
-                  child: Container(
-                    decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(10),
-                        color: Colors.white24),
+                child: InkResponse(
+                  onTap: ()=>Navigator.pushNamed(context, '/seap'),
+                  child: Hero(
+                    tag:'searchbox',
+                    child: Card(
+                      margin:
+                          EdgeInsets.only(left: 20, right: 10, top: 5, bottom: 5),
+                      color: Colors.black38,
+                      elevation: 0,
+                      shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(10)),
+                      child: Container(
+                        alignment: Alignment.centerLeft,
+                        padding: EdgeInsets.only(left: 20, right: 10),
+                        height: 50,
+                        decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(10),
+                            color: Colors.white24),
+                            child:Text('Search bCLOUD', style: TU.tesmall(context, 44),)
+                      ),
+                    ),
                   ),
                 ),
               ),
-              IU.diconl(icon: Icons.search, callback: () {}, size: 28),
+              IconButton(
+                onPressed: ()=>Navigator.pushNamed(context, '/seap'),
+                icon: Hero(
+                    tag: 'seap',
+                    child: Icon(Icons.search, color:Colors.red,size: 28,),
+                  ),
+              ),
               Padding(
                 padding: const EdgeInsets.only(right: 10.0),
                 child: Consumer<GetChanges>(
@@ -215,28 +231,36 @@ class _HomePageState extends State<HomePage> {
                         size: 22,
                         cSize: 22,
                       )
-                    : Container(
-                        margin: EdgeInsets.all(8),
-                        padding: EdgeInsets.only(right: 15),
-                        child: CircleAvatar(
-                          radius: 22,
-                          backgroundColor: Colors.red,
-                          child: CircleAvatar(
-                            radius: 21.5,
-                            backgroundColor: Colors.black,
-                            child: ClipRRect(
-                              borderRadius: BorderRadius.circular(50),
-                              child: value.getUserImage(),
+                    : InkResponse(
+                      onTap: ()=>Navigator.pushNamed(context, '/sep'),
+                      child: Hero(
+                        tag: 'settingPage',
+                        child: Container(
+                            margin: EdgeInsets.all(8),
+                            padding: EdgeInsets.only(right: 15),
+                            child: CircleAvatar(
+                              radius: 22,
+                              backgroundColor: Colors.red,
+                              child: CircleAvatar(
+                                radius: 21.5,
+                                backgroundColor: Colors.black,
+                                child: ClipRRect(
+                                  borderRadius: BorderRadius.circular(50),
+                                  child: value.getUserImage(),
+                                ),
+                              ),
                             ),
                           ),
-                        ),
-                      );
+                      ),
+                    );
               }),
               title: Consumer<GetChanges>(
                 builder: (BuildContext context, change, win) {
                   int i = change.niindex;
                   if (i == 2)
-                    return Text(change.pathList.length != 0?change.pathList.last[1]:"");
+                    return Text(change.pathList.length != 0
+                        ? change.pathList.last[1]
+                        : "");
                   else if (i == 1)
                     return Text('Recent');
                   else
@@ -277,7 +301,7 @@ class _HomePageState extends State<HomePage> {
             children: [
               SpeedDialChild(
                 backgroundColor: Colors.transparent,
-                label: 'Upload',
+                labelWidget: TU.tSDLabel(context: context, label: 'upload'),
                 child: IU.ditask(
                     icon: Icons.upload_outlined,
                     callback: () async {
@@ -289,7 +313,8 @@ class _HomePageState extends State<HomePage> {
               ),
               SpeedDialChild(
                   backgroundColor: Colors.transparent,
-                  label: 'create folder',
+                  labelWidget:
+                      TU.tSDLabel(context: context, label: 'create folder'),
                   child: IU.ditask(
                       icon: Icons.create_new_folder_outlined,
                       callback: () async {
