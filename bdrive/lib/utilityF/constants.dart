@@ -11,6 +11,8 @@ class Constants {
   static String upasscode = 'USER_PASSCODE';
   static String uJoin = 'USER_JOIN_TIME';
   static String homeUid = 'HOME_UID';
+  static String recentId = 'RECENT_ID';
+  static String starId = 'STAR_ID';
 
   static String pStatus = 'PROFILE_STATUS';
 }

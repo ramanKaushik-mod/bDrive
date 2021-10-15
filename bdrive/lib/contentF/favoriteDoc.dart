@@ -1,11 +1,17 @@
-
-
 import 'package:bdrive/utilityF/firebaseUtility.dart';
+import 'package:bdrive/utilityF/localUtility.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class StarDocPage extends StatefulWidget {
   final HandlingFS handlingFS;
-  const StarDocPage({ Key? key,required this.handlingFS }) : super(key: key);
+  final String docId;
+  const StarDocPage({
+    Key? key,
+    required this.handlingFS,
+    required this.docId,
+  }) : super(key: key);
 
   @override
   _StarDocPageState createState() => _StarDocPageState();
@@ -14,10 +20,90 @@ class StarDocPage extends StatefulWidget {
 class _StarDocPageState extends State<StarDocPage> {
   @override
   Widget build(BuildContext context) {
-    return Container(
-      child: Center(
-        child: Text('Star Documents appear here'),
-      ),
+    return Expanded(
+      child: Container(
+          padding: EdgeInsets.all(10),
+          color: Colors.black38,
+          child: Consumer<GetChanges>(
+            builder: (BuildContext context, value, win) {
+              bool flag = value.view == 1 ? true : false;
+              return StreamBuilder<DocumentSnapshot>(
+                  stream:
+                      widget.handlingFS.getStarDocAsStream(docId: widget.docId),
+                  builder: (BuildContext context,
+                      AsyncSnapshot<DocumentSnapshot> snapShot) {
+                    if (snapShot.hasError) {
+                      return Center(
+                          child: Wrap(
+                        children: [
+                          Container(
+                              child: CircularProgressIndicator(
+                            color: Colors.red,
+                          ))
+                        ],
+                      ));
+                    }
+                    if (snapShot.hasData) {
+                      Map<String, dynamic> map =
+                          snapShot.data!.data() as Map<String, dynamic>;
+                      List<Widget> list = map['folderList'].length > 0
+                          ? Mapping.mapper(
+                              list: map['folderList'],
+                              flag: flag,
+                              handlingFS: widget.handlingFS)
+                          : [];
+                      List<Widget> flist = map['fileList'].length > 0
+                          ? Mapping.mapFiles(
+                              list: map['fileList'],
+                              flag: flag,
+                              handlingFS: widget.handlingFS)
+                          : [];
+                      flist.forEach((element) {
+                        list.add(element);
+                      });
+                      if (list.isEmpty) {
+                        return Center(
+                          child: Wrap(
+                            children: [
+                              Container(
+                                  child: CircularProgressIndicator(
+                                color: Colors.red,
+                              ))
+                            ],
+                          ),
+                        );
+                      }
+
+                      return value.getView() == 1
+                          ? SingleChildScrollView(
+                              scrollDirection: Axis.vertical,
+                              physics: BouncingScrollPhysics(),
+                              child: Column(
+                                children: list,
+                              ),
+                            )
+                          : GridView.count(
+                              shrinkWrap: true,
+                              crossAxisSpacing: 2,
+                              mainAxisSpacing: 10,
+                              physics: BouncingScrollPhysics(),
+                              crossAxisCount: 2,
+                              children: list,
+                            );
+                    }
+
+                    return Center(
+                        child: Wrap(
+                      children: [
+                        Container(
+                            child: CircularProgressIndicator(
+                          color: Colors.red,
+                        ))
+                      ],
+                    ));
+                  });
+            },
+          )),
     );
   }
 }

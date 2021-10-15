@@ -2,8 +2,6 @@ import 'package:bdrive/models/models.dart';
 import 'package:bdrive/utilityF/constants.dart';
 import 'package:bdrive/utilityF/firebaseUtility.dart';
 import 'package:bdrive/utilityF/localUtility.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_phoenix/flutter_phoenix.dart';
 import 'package:provider/provider.dart';
@@ -35,7 +33,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
     if (check) {
       await Provider.of<GetChanges>(context, listen: false).updateUserImage();
       await Provider.of<GetChanges>(context, listen: false).updateImageExists();
-      print("image status is updated");
+
       Users user = await Utility.getUserDetails();
       nCon.text = user.uName;
       uNCon.text = user.uNName;
@@ -91,12 +89,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                     height: TU.geth(context) / 5.5,
                                     width: TU.geth(context) / 5.5,
                                   ),
-                                  Image.asset(
-                                    'assets\\bDrive.png',
-                                    height: TU.geth(context) / 8,
-                                    width: TU.geth(context) / 8,
-                                    color: Colors.yellow,
-                                  ),
+                                  Image.asset('assets\\bDrive.png',
+                                      height: TU.geth(context) / 8,
+                                      width: TU.geth(context) / 8,
+                                      color: Colors.white60),
                                 ],
                               ),
                             ],
@@ -237,7 +233,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   uimgString: await Utility.getImageFromPreferences(),
                   uJoin: DateTime.now().toString(),
                   contactId: await Utility.getUserContact(),
-                  homeUid: handlingFirebaseDB.getHomeCollection().doc().id);
+                  homeUid: handlingFirebaseDB.getHomeCollection().doc().id,
+                  recentId: handlingFirebaseDB.getRecentCollection().doc().id,
+                  starId: handlingFirebaseDB.getStarCollection().doc().id);
               await handlingFirebaseDB.setUserDetails(user: user);
               await Utility.setUserDetails(map: user.toJson());
               await handlingFirebaseDB.setUserHomeFolder(
@@ -246,7 +244,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       fName: 'Home',
                       createdAt: user.uJoin,
                       folderList: [],
-                      fileList: []));
+                      fileList: [],
+                      star: false));
               await Utility.setProfileStatus();
               Phoenix.rebirth(context);
             } else {

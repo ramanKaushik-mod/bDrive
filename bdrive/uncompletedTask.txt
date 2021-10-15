@@ -1,0 +1,10 @@
+
+download facility of file
+share facility of file
+implementing or materialising the detailsOf page
+need to add size attribute to users class to calculate the size
+    and sync this feature with uploading and deleting files
+
+need to add fingerpring authentication to application
+share, ghost & make Available offline facility to recent docs
+implementation of search delegate

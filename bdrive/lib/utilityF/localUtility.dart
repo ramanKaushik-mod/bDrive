@@ -5,10 +5,13 @@ import 'dart:typed_data';
 
 import 'package:bdrive/models/models.dart';
 import 'package:bdrive/utilityF/constants.dart';
+import 'package:bdrive/utilityF/firebaseUtility.dart';
+import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class Utility {
@@ -84,6 +87,8 @@ class Utility {
       value.setString(Constants.uJoin, map['uJoin']);
       value.setString(Constants.upasscode, map['upasscode']);
       value.setString(Constants.homeUid, map['homeUid']);
+      value.setString(Constants.recentId, map['recentId']);
+      value.setString(Constants.starId, map['starId']);
     });
   }
 
@@ -97,52 +102,59 @@ class Utility {
           uimgString: value.getString(Constants.imgKey) ?? '',
           contactId: value.getString(Constants.userCon) ?? '',
           uJoin: value.getString(Constants.uJoin) ?? '',
-          homeUid: value.getString(Constants.homeUid) ?? '');
+          homeUid: value.getString(Constants.homeUid) ?? '',
+          recentId: value.getString(Constants.recentId) ?? '',
+          starId: value.getString(Constants.starId) ?? '');
     });
   }
 
   static Future<String> getHomeUID() async =>
       await gsi().then((value) => value.getString(Constants.homeUid) ?? '');
+
+  static Future<String> getStarDID() async =>
+      await gsi().then((value) => value.getString(Constants.starId) ?? '');
+
+  static Future<String> getRecentDID() async =>
+      await gsi().then((value) => value.getString(Constants.recentId) ?? '');
 }
 
 class SB {
   static ssb(context, {required String text}) {
     ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
       content: Text(
         text,
         style: TextStyle(color: Colors.white),
       ),
-      backgroundColor: Colors.grey[800],
-      elevation: 10,
-      behavior: SnackBarBehavior.floating,
-      duration: Duration(milliseconds: 2000),
+      backgroundColor: Colors.grey[900],
+      behavior: SnackBarBehavior.fixed,
+      duration: Duration(seconds: 2),
     ));
   }
 
-  static sdb(context, yesFunc, noFunc, create, {required String dialog}) =>
+  static sdb(context, Function yesFunc, Function noFunc, controller,
+          {required String dialog}) =>
       showDialog(
           context: context,
           builder: (con) {
             return AlertDialog(
               backgroundColor: Colors.grey[900],
-              title: create != null
+              title: controller != null
                   ? Text(dialog, style: TU.tsmall(context))
                   : null,
               shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(20)),
               content: Wrap(
                 children: [
-                  if (create == null) ...[
+                  if (controller == null) ...[
                     Container(
                       child: Center(
                         child: Text(dialog, style: TU.tsmall(con)),
                       ),
                     ),
                   ],
-                  if (create != null) ...[
+                  if (controller != null) ...[
                     TextFormField(
-                      controller: create,
+                      controller: controller,
                       textAlign: TextAlign.left,
                       style: TU.tsmall(context),
                       cursorColor: Colors.white,
@@ -157,57 +169,30 @@ class SB {
                 ],
               ),
               actions: [
-                if (noFunc != null) ...[
-                  IconButton(
-                      splashColor: Colors.white,
-                      splashRadius: 20,
-                      onPressed: () {
-                        // noFunc();
-                        Navigator.pop(con);
-                      },
-                      icon: Icon(Icons.close_rounded, color: Colors.white))
-                ],
-                if (yesFunc != null) ...[
-                  IconButton(
-                      splashColor: Colors.white,
-                      splashRadius: 20,
-                      onPressed: () {
-                        Future.delayed(Duration(milliseconds: 2), () {
-                          yesFunc();
-                        });
-                        Navigator.pop(context);
-                      },
-                      icon: Icon(
-                        Icons.arrow_forward_ios,
-                        color: Colors.white,
-                      ))
-                ]
+                IconButton(
+                    splashColor: Colors.white,
+                    splashRadius: 20,
+                    onPressed: () {
+                      noFunc();
+                      Navigator.pop(con);
+                    },
+                    icon: Icon(Icons.close_rounded, color: Colors.white)),
+                IconButton(
+                    splashColor: Colors.white,
+                    splashRadius: 20,
+                    onPressed: () {
+                      Future.delayed(Duration(milliseconds: 2), () {
+                        yesFunc();
+                      });
+                      Navigator.pop(con);
+                    },
+                    icon: Icon(
+                      Icons.arrow_forward_ios,
+                      color: Colors.white,
+                    ))
               ],
             );
           });
-
-  static cpi() {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        Card(
-          elevation: 20,
-          color: Colors.black,
-          shadowColor: Colors.black,
-          shape:
-              RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-          child: Container(
-            margin: EdgeInsets.all(25),
-            height: 40,
-            width: 40,
-            child: CircularProgressIndicator(
-              color: Colors.white,
-            ),
-          ),
-        )
-      ],
-    );
-  }
 }
 
 class TU {
@@ -246,6 +231,15 @@ class TU {
   static tuD(context) => Container(
         height: 2,
         margin: EdgeInsets.symmetric(horizontal: 140),
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(10),
+          color: Colors.grey,
+        ),
+      );
+
+  static tuDFBM(context, factor) => Container(
+        width: getw(context) / factor,
+        height: 1.5,
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(10),
           color: Colors.grey,
@@ -353,7 +347,7 @@ class GetChanges extends ChangeNotifier {
 
   //*******************HomePage******************** */
 
-  Color selectColor = Colors.transparent;
+  Color selectColor = Colors.black;
   Color getSelectColor() => selectColor;
 
   updateSelectColor() {
@@ -397,11 +391,35 @@ class GetChanges extends ChangeNotifier {
   }
 
   //*****************  Updating Upload task */
+  bool isUploadCancelled = false;
+  bool getUploadCancellationStatus() => isUploadCancelled;
+
+  updateUploadCancellationStatus({required bool flag}) {
+    isUploadCancelled = flag;
+    notifyListeners();
+  }
+
+  int handleUTaskSema = 0;
+  int getHandleUTaskSema() => handleUTaskSema;
+  updateHandleUTaskSema({required int sema}) {
+    handleUTaskSema = sema;
+    notifyListeners();
+  }
+
   UploadTask? task;
   UploadTask? getUploadTask() => task;
 
   updateUploadTask({required UploadTask? tsk}) {
     task = tsk;
+    notifyListeners();
+  }
+
+  cancelUploadTask(context) async {
+    updateHandleUTaskSema(sema: 0);
+    await task!.cancel().then((value) {
+      SB.ssb(context, text: "Upload Cancelled");
+    });
+    task = null;
     notifyListeners();
   }
 
@@ -420,6 +438,42 @@ class GetChanges extends ChangeNotifier {
 
   updateNIIndex(int index) {
     niindex = index;
+    notifyListeners();
+  }
+
+  Users user = Users(
+      uName: '',
+      uNName: '',
+      uEmail: '',
+      upasscode: '',
+      uimgString: '',
+      uJoin: '',
+      contactId: '',
+      homeUid: '',
+      recentId: '',
+      starId: '');
+  Users getUser() => user;
+
+  updateUser() async {
+    user = await Utility.getUserDetails();
+    notifyListeners();
+  }
+
+  /// **********HANDLING NOTIFICATION *********** */
+
+  bool isVisible = false;
+
+  bool getIsVisible() => isVisible;
+  updateIsVisible({required bool flag}) {
+    isVisible = flag;
+    notifyListeners();
+  }
+
+  bool loadingIndicator = false;
+  bool getLoadingIndicatorStatus() => loadingIndicator;
+
+  updateLoadingIndicatorStatus({required bool flag}) {
+    loadingIndicator = flag;
     notifyListeners();
   }
 }
@@ -477,7 +531,7 @@ class IU {
         icon: Icon(
           icon,
           size: size,
-          color: Colors.red,
+          color: Colors.white54,
         ),
         onPressed: () => callback(),
       );
@@ -524,10 +578,10 @@ class TF {
           child: Container(
             padding: EdgeInsets.symmetric(horizontal: 10),
             decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(10), color: Colors.black26),
+                color: Colors.white12, borderRadius: BorderRadius.circular(10)),
             child: TextFormField(
               controller: con,
-              style: TU.tlarge(context, 44),
+              style: TU.tesmall(context, 44),
               cursorColor: Colors.white,
               keyboardType: TextInputType.number,
               textAlign: TextAlign.center,
@@ -554,13 +608,118 @@ class TF {
 }
 
 class Mapping {
-  static List<FolderTile> mapper(
-      {required List<dynamic> list, required bool flag}) {
-    List<FolderTile> fList = [];
+  static List<Widget> mapper(
+      {required List<dynamic> list,
+      required bool flag,
+      required HandlingFS handlingFS}) {
+    List<Widget> fList = [];
+    List<ShortFD> folderList = [];
     list.forEach((element) {
-      fList.add(FolderTile(folder: ShortFD.fromJson(map: element), type: flag));
+      folderList.add(ShortFD.fromJson(map: element));
+    });
+    folderList
+        .sort((a, b) => a.fName.toLowerCase().compareTo(b.fName.toLowerCase()));
+    folderList.forEach((element) {
+      fList.add(FolderTile(
+        folder: element,
+        type: flag,
+        handlingFS: handlingFS,
+      ));
+    });
+    return fList;
+  }
+
+  static List<Widget> mapFiles(
+      {required List<dynamic> list,
+      required bool flag,
+      required HandlingFS handlingFS}) {
+    List<Widget> fList = [];
+    List<CFile> fileList = [];
+    list.forEach((element) {
+      fileList.add(CFile.fromJson(json: element));
+    });
+    fileList.sort(
+        (a, b) => a.fileName.toLowerCase().compareTo(b.fileName.toLowerCase()));
+    fileList.forEach((element) {
+      fList.add(FileTile(
+        cFile: element,
+        type: flag,
+        handlingFS: handlingFS,
+      ));
+    });
+    return fList;
+  }
+
+  static List<Widget> mapRecents(
+      {required List<dynamic> list,
+      required bool flag,
+      required HandlingFS handlingFS}) {
+    List<Widget> fList = [];
+    list.forEach((element) {
+      fList.add(RecentDocTile(
+          cFile: CFile.fromJson(json: element),
+          type: flag,
+          handlingFS: handlingFS));
     });
 
     return fList;
   }
+}
+
+class Help {
+  static String trimExtension({required String filename}) {
+    List<String> list = filename.split('.');
+    String name = '';
+    if (list.length == 1 || list.length == 0) {
+      return filename;
+    }
+    for (int i = 0; i < list.length - 1; i++) {
+      if (i == list.length - 2) {
+        name += list[i];
+      } else {
+        name += '${list[i]}.';
+      }
+    }
+    return name;
+  }
+}
+
+class CIC {
+  static Future<bool> checkConnectivity(context) async {
+    ConnectivityResult connectivityResult =
+        await Connectivity().checkConnectivity();
+
+    if (connectivityResult == ConnectivityResult.mobile ||
+        connectivityResult == ConnectivityResult.wifi ||
+        connectivityResult == ConnectivityResult.ethernet) {
+      return true;
+    } else {
+      SB.ssb(context, text: 'no internet connection found');
+      return false;
+    }
+  }
+
+  static Future<bool> checkConnectivityforModals(context) async {
+    ConnectivityResult connectivityResult =
+        await Connectivity().checkConnectivity();
+
+    if (connectivityResult == ConnectivityResult.mobile ||
+        connectivityResult == ConnectivityResult.wifi ||
+        connectivityResult == ConnectivityResult.ethernet) {
+      return true;
+    } else {
+      return false;
+    }
+  }
+  static StreamSubscription<ConnectivityResult> getSubscription(context,
+          {required Function callback}) =>
+      Connectivity().onConnectivityChanged.listen((event) {
+        if (event == ConnectivityResult.none) {
+          GetChanges changes = Provider.of<GetChanges>(context, listen: false);
+          changes.updateDialStatus();
+          SB.ssb(context, text: 'no internet connection found');
+        } else {
+          callback();
+        }
+      });
 }

@@ -27,6 +27,13 @@ class _HomeDocPageState extends State<HomeDocPage> {
                   .getFilesAndFoldersStream(path: value.pathList.last[0]),
               builder: (BuildContext context,
                   AsyncSnapshot<DocumentSnapshot> snapShot) {
+                if (snapShot.hasError) {
+                  return Center(
+                    child: CircularProgressIndicator(
+                      color: Colors.white,
+                    ),
+                  );
+                }
                 if (!snapShot.hasData) {
                   return Center(
                     child: CircularProgressIndicator(
@@ -36,27 +43,37 @@ class _HomeDocPageState extends State<HomeDocPage> {
                 }
                 Map<String, dynamic> map =
                     snapShot.data!.data() as Map<String, dynamic>;
+                List<Widget> list = map['folderList'].length > 0
+                    ? Mapping.mapper(
+                        list: map['folderList'],
+                        flag: flag,
+                        handlingFS: widget.handlingFS)
+                    : [];
+                List<Widget> flist = map['fileList'].length > 0
+                    ? Mapping.mapFiles(
+                        list: map['fileList'],
+                        flag: flag,
+                        handlingFS: widget.handlingFS)
+                    : [];
+                flist.forEach((element) {
+                  list.add(element);
+                });
 
                 return value.getView() == 1
                     ? SingleChildScrollView(
                         scrollDirection: Axis.vertical,
                         physics: BouncingScrollPhysics(),
                         child: Column(
-                          children: map['folderList'].length > 0
-                              ? Mapping.mapper(
-                                  list: map['folderList'], flag: flag)
-                              : [],
+                          children: list,
                         ),
                       )
                     : GridView.count(
                         shrinkWrap: true,
-                        crossAxisSpacing: 10,
+                        crossAxisSpacing: 2,
+                        mainAxisSpacing: 10,
                         physics: BouncingScrollPhysics(),
                         crossAxisCount: 2,
-                        children: map['folderList'].length > 0
-                            ? Mapping.mapper(
-                                list: map['folderList'], flag: flag)
-                            : [],
+                        children: list,
                       );
               });
         },

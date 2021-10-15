@@ -62,7 +62,7 @@ class _AuthenticationPageState extends State<AuthenticationPage> {
       ),
       backgroundColor: Colors.black87,
       body: Container(
-        color: Colors.white24,
+        color: Colors.white12,
         child: Stack(
           children: [
             Column(
@@ -100,7 +100,7 @@ class _AuthenticationPageState extends State<AuthenticationPage> {
                                 'assets\\bDrive.png',
                                 height: TU.getw(context) / 4.2,
                                 width: TU.getw(context) / 4.2,
-                                color: Colors.yellow,
+                                color: Colors.white60,
                               ),
                             ],
                           ),
@@ -130,8 +130,9 @@ class _AuthenticationPageState extends State<AuthenticationPage> {
                                 Container(
                                   padding: EdgeInsets.symmetric(horizontal: 20),
                                   decoration: BoxDecoration(
+                                    
                                       borderRadius: BorderRadius.circular(20),
-                                      color: Colors.white),
+                                      color: Colors.grey[700]),
                                   child: Consumer<GetChanges>(
                                     builder: (context, value, w) {
                                       return value.getCodeSentSemaphore() ==
