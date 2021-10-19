@@ -2,6 +2,7 @@ import 'package:bdrive/utilityF/firebaseUtility.dart';
 import 'package:bdrive/utilityF/localUtility.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:provider/provider.dart';
 
 class DetailOfFolder extends StatefulWidget {
   final String docID;
@@ -35,10 +36,7 @@ class _DetailOfFolderState extends State<DetailOfFolder> {
                   headerSliverBuilder:
                       (BuildContext context, bool innerBoxIsScrolled) => [
                             SliverAppBar(
-                              shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.only(
-                                      bottomLeft: Radius.circular(10),
-                                      bottomRight: Radius.circular(10))),
+              toolbarHeight: 70,
                               backgroundColor: Colors.white12,
                               leading: IU.diconl(
                                   icon: Icons.arrow_back_ios_new_outlined,
@@ -48,37 +46,21 @@ class _DetailOfFolderState extends State<DetailOfFolder> {
                                   size: 28),
                               title: Text(
                                 map['fName'],
-                                style: TU.teeesmall(context, 42),
+                                style: TU.teeesmall(context, 32),
                               ),
                             )
                           ],
                   body: Container(
-                    color: Colors.black87,
+                    padding: EdgeInsets.all(10),
+                    color: Colors.white10,
                     child: SingleChildScrollView(
                       child: Column(children: [
-                        Stack(
-                          children: [
-                            Container(
-                              height: TU.getw(context) / 1.5,
-                              width: TU.getw(context),
-                              child: Icon(
-                                FontAwesomeIcons.solidFolder,
-                                color: Colors.white38,
-                                size: TU.getw(context) / 4,
-                              ),
-                            ),
-                            if (map['star'] == true) ...[
-                              Container(
-                                height: TU.getw(context) / 1.5,
-                                width: TU.getw(context),
-                                child: Icon(
-                                  FontAwesomeIcons.star,
-                                  color: Colors.black,
-                                  size: 24,
-                                ),
-                              ),
-                            ]
-                          ],
+                        SizedBox(
+                          height: 20,
+                        ),
+                        getTItle(text: "folder details"),
+                        SizedBox(
+                          height: 20,
                         ),
                         Card(
                           elevation: 0,
@@ -86,33 +68,64 @@ class _DetailOfFolderState extends State<DetailOfFolder> {
                           shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(20)),
                           child: Container(
-                            padding: EdgeInsets.all(10),
-                            decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(19.8),
-                                color: Colors.black),
-                            margin: EdgeInsets.symmetric(
-                                horizontal: 0.5, vertical: 0.7),
-                            child: Column(
-                              children: [
-                                SizedBox(
-                                  height: 10,
-                                ),
-                                detailOfFolder(
-                                    label: 'created at  :  ',
-                                    detail: map['createdAt'].split(' ')[0]),
-                                detailOfFolder(
-                                    label: 'last modified  :  ',
-                                    detail: map['createdAt'].split(' ')[0]),
-                                detailOfFolder(
-                                    label: 'sub folders  :  ',
-                                    detail:
-                                        map['folderList'].length.toString()),
-                                detailOfFolder(
-                                    label: 'files  :  ',
-                                    detail: map['fileList'].length.toString()),
-                              ],
-                            ),
-                          ),
+                              padding: EdgeInsets.all(10),
+                              decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(19.8),
+                                  color: Colors.black),
+                              margin: EdgeInsets.symmetric(
+                                  horizontal: 0.5, vertical: 0.7),
+                              child: Row(
+                                children: [
+                                  Container(
+                                    child: Stack(
+                                      children: [
+                                        Image.asset(
+                                          'assets\\bDrive.png',
+                                          height: 110,
+                                          width: 110,
+                                        ),
+                                        Icon(
+                                          Icons.folder_outlined,
+                                          color: Colors.white70,
+                                          size: 60,
+                                        )
+                                      ],
+                                    ),
+                                  ),
+                                  Expanded(
+                                    child: Container(
+                                      child: Column(
+                                        children: [
+                                          SizedBox(
+                                            height: 10,
+                                          ),
+                                          detailOfFolder(
+                                              label: 'name',
+                                              detail: map['fName']),
+                                          detailOfFolder(
+                                              label: 'created on',
+                                              detail: map['createdAt']
+                                                  .split(' ')[0]),
+                                          detailOfFolder(
+                                              label: 'sub folders',
+                                              detail: map['folderList']
+                                                  .length
+                                                  .toString()),
+                                          detailOfFolder(
+                                              label: 'files',
+                                              detail: map['fileList']
+                                                  .length
+                                                  .toString()),
+                                          detailOfFolder(
+                                              label: 'location',
+                                              detail: Provider.of<GetChanges>(context, listen:false).getPathList().last[1].toLowerCase()
+                                                  .toString()),
+                                        ],
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              )),
                         )
                       ]),
                     ),
@@ -123,28 +136,37 @@ class _DetailOfFolderState extends State<DetailOfFolder> {
     );
   }
 
-  detailOfFolder({required String label, required String detail}) => Column(
+  detailOfFolder({required String label, required String detail}) => Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Row(
-            children: [
-              Container(
-                  alignment: Alignment.centerRight,
-                  width: TU.getw(context) / 2.5,
-                  child: Text(
-                    label,
-                    style: TU.teeesmall(context, 40),
-                  )),
-              Text(
-                detail,
-                style: TU.teeesmall(context, 40),
-              ),
-            ],
+          Padding(
+            padding: const EdgeInsets.all(5.0),
+            child: RichText(
+                text: TextSpan(text: label, style: TU.teeesmall(context, 66)),
+                textAlign: TextAlign.center,
+                softWrap: true,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis),
           ),
-          SizedBox(
-            height: 10,
-          )
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 10.0, vertical: 5),
+            child: RichText(
+                text: TextSpan(
+                    text: detail.toString(), style: TU.teeesmall(context, 66)),
+                textAlign: TextAlign.center,
+                softWrap: true,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis),
+          ),
         ],
       );
+  getTItle({required String text}) => Row(children: [
+        TU.tuDw(),
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 8.0),
+          child: Text(text, style: TU.tesmall(context, 38)),
+        ),
+      ]);
 }
 
 class DetailOfFile extends StatefulWidget {
@@ -168,7 +190,10 @@ class _DetailOfFileState extends State<DetailOfFile> {
     return Scaffold(
       backgroundColor: Colors.black87,
       body: FutureBuilder(
-          future: widget.handlingFS.getFileDetails(dan: widget.dan, parentDocID: widget.parentDocID,),
+          future: widget.handlingFS.getFileDetails(
+            dan: widget.dan,
+            parentDocID: widget.parentDocID,
+          ),
           builder: (BuildContext context, snapshot) {
             if (snapshot.hasError) {
               Center(
@@ -183,10 +208,7 @@ class _DetailOfFileState extends State<DetailOfFile> {
                   headerSliverBuilder:
                       (BuildContext context, bool innerBoxIsScrolled) => [
                             SliverAppBar(
-                              shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.only(
-                                      bottomLeft: Radius.circular(10),
-                                      bottomRight: Radius.circular(10))),
+              toolbarHeight: 70,
                               backgroundColor: Colors.white12,
                               leading: IU.diconl(
                                   icon: Icons.arrow_back_ios_new_outlined,
@@ -196,37 +218,21 @@ class _DetailOfFileState extends State<DetailOfFile> {
                                   size: 28),
                               title: Text(
                                 map['fileName'],
-                                style: TU.teeesmall(context, 42),
+                                style: TU.teeesmall(context, 32),
                               ),
                             )
                           ],
                   body: Container(
-                    color: Colors.black87,
+                    padding: EdgeInsets.all(10),
+                    color: Colors.white10,
                     child: SingleChildScrollView(
                       child: Column(children: [
-                        Stack(
-                          children: [
-                            Container(
-                              height: TU.getw(context) / 1.5,
-                              width: TU.getw(context),
-                              child: Icon(
-                                FontAwesomeIcons.file,
-                                color: Colors.white38,
-                                size: TU.getw(context) / 4,
-                              ),
-                            ),
-                            if (map['star'] == true) ...[
-                              Container(
-                                height: TU.getw(context) / 1.5,
-                                width: TU.getw(context),
-                                child: Icon(
-                                  FontAwesomeIcons.star,
-                                  color: Colors.grey,
-                                  size: 24,
-                                ),
-                              ),
-                            ]
-                          ],
+                        SizedBox(
+                          height: 20,
+                        ),
+                        getTItle(text: 'file details'),
+                        SizedBox(
+                          height: 20,
                         ),
                         Card(
                           elevation: 0,
@@ -240,20 +246,49 @@ class _DetailOfFileState extends State<DetailOfFile> {
                                 color: Colors.black),
                             margin: EdgeInsets.symmetric(
                                 horizontal: 0.5, vertical: 0.7),
-                            child: Column(
+                            child: Row(
                               children: [
-                                SizedBox(
-                                  height: 10,
+                                Container(
+                                  child: Stack(
+                                    children: [
+                                      Image.asset(
+                                        'assets\\bDrive.png',
+                                        height: 110,
+                                        width: 110,
+                                      ),
+                                      Icon(
+                                        FontAwesomeIcons.file,
+                                        color: Colors.white70,
+                                        size: 50,
+                                      )
+                                    ],
+                                  ),
                                 ),
-                                detailOfile(
-                                    label: 'uploaded at  :  ',
-                                    detail: map['uploadTime'].split(' ')[0]),
-                                detailOfile(
-                                    label: 'location : ',
-                                    detail: map['path']),
-                                detailOfile(
-                                    label: 'size : ',
-                                    detail: map['size'].toStringAsFixed(2) + ' mb'),
+                                Expanded(
+                                    child: Container(
+                                  child: Column(
+                                    children: [
+                                      detailOfile(
+                                          label: 'uploaded at',
+                                          detail:
+                                              map['uploadTime'].split(' ')[0]),
+                                      detailOfile(
+                                          label: 'type',
+                                          detail: map['fileName']
+                                              .split('.')
+                                              .last
+                                              .toUpperCase()),
+                                      detailOfile(
+                                          label: 'location',
+                                          detail: map['path']),
+                                      detailOfile(
+                                          label: 'size',
+                                          detail:
+                                              map['size'].toStringAsFixed(2) +
+                                                  ' mb'),
+                                    ],
+                                  ),
+                                ))
                               ],
                             ),
                           ),
@@ -267,26 +302,36 @@ class _DetailOfFileState extends State<DetailOfFile> {
     );
   }
 
-  detailOfile({required String label, required String detail}) => Column(
+  detailOfile({required String label, required String detail}) => Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Row(
-            children: [
-              Container(
-                  alignment: Alignment.centerRight,
-                  width: TU.getw(context) / 2.5,
-                  child: Text(
-                    label,
-                    style: TU.teeesmall(context, 40),
-                  )),
-              Text(
-                detail,
-                style: TU.teeesmall(context, 40),
-              ),
-            ],
+          Padding(
+            padding: const EdgeInsets.all(5.0),
+            child: RichText(
+                text: TextSpan(text: label, style: TU.teeesmall(context, 66)),
+                textAlign: TextAlign.center,
+                softWrap: true,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis),
           ),
-          SizedBox(
-            height: 10,
-          )
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 10.0, vertical: 5),
+            child: RichText(
+                text: TextSpan(
+                    text: detail.toString(), style: TU.teeesmall(context, 66)),
+                textAlign: TextAlign.center,
+                softWrap: true,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis),
+          ),
         ],
       );
+
+  getTItle({required String text}) => Row(children: [
+        TU.tuDw(),
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 8.0),
+          child: Text(text, style: TU.tesmall(context, 38)),
+        ),
+      ]);
 }

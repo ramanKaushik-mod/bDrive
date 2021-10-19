@@ -5,8 +5,10 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:provider/provider.dart';
+import 'package:transparent_image/transparent_image.dart';
 
 class FolderTile extends StatefulWidget {
+  final String callFrom;
   final HandlingFS handlingFS;
   final ShortFD folder;
   final bool type;
@@ -14,7 +16,8 @@ class FolderTile extends StatefulWidget {
       {Key? key,
       required this.folder,
       required this.type,
-      required this.handlingFS})
+      required this.handlingFS,
+      required this.callFrom})
       : super(key: key);
 
   @override
@@ -36,15 +39,17 @@ class _FolderTileState extends State<FolderTile> {
               }
             },
             onLongPress: () {
-              FolderDModals.smbs(
-                  context: context,
-                  shortFD: widget.folder,
-                  handlingFS: widget.handlingFS,
-                  callback: ({required String msg}) {
-                    if (msg.length > 0) {
-                      SB.ssb(context, text: msg);
-                    }
-                  });
+              if (widget.callFrom != 'star') {
+                FolderDModals.smbs(
+                    context: context,
+                    shortFD: widget.folder,
+                    handlingFS: widget.handlingFS,
+                    callback: ({required String msg}) {
+                      if (msg.length > 0) {
+                        SB.ssb(context, text: msg);
+                      }
+                    });
+              }
             },
             child: Card(
               color: Colors.white10,
@@ -83,32 +88,37 @@ class _FolderTileState extends State<FolderTile> {
                         ),
                       ),
                       if (widget.folder.star == true) ...[
-                        Icon(
-                          Icons.star,
-                          color: Colors.white70,
-                          size: 20,
+                        Container(
+                          padding: const EdgeInsets.only(right: 10),
+                          child: Icon(
+                            Icons.star,
+                            color: Colors.white70,
+                            size: 20,
+                          ),
                         )
                       ],
-                      IconButton(
-                        splashRadius: 20,
-                        splashColor: Colors.red,
-                        onPressed: () {
-                          FolderDModals.smbs(
-                              context: context,
-                              shortFD: widget.folder,
-                              handlingFS: widget.handlingFS,
-                              callback: ({required String msg}) {
-                                if (msg.length > 0) {
-                                  SB.ssb(context, text: msg);
-                                }
-                              });
-                        },
-                        icon: Icon(
-                          FontAwesomeIcons.ellipsisV,
-                          color: Colors.white54,
-                          size: 16,
+                      if (widget.callFrom != 'star') ...[
+                        IconButton(
+                          splashRadius: 20,
+                          splashColor: Colors.red,
+                          onPressed: () {
+                            FolderDModals.smbs(
+                                context: context,
+                                shortFD: widget.folder,
+                                handlingFS: widget.handlingFS,
+                                callback: ({required String msg}) {
+                                  if (msg.length > 0) {
+                                    SB.ssb(context, text: msg);
+                                  }
+                                });
+                          },
+                          icon: Icon(
+                            FontAwesomeIcons.ellipsisV,
+                            color: Colors.white54,
+                            size: 16,
+                          ),
                         ),
-                      ),
+                      ]
                     ],
                   )),
             ),
@@ -129,15 +139,17 @@ class _FolderTileState extends State<FolderTile> {
             // },
 
             onLongPress: () {
-              FolderDModals.smbs(
-                  context: context,
-                  shortFD: widget.folder,
-                  handlingFS: widget.handlingFS,
-                  callback: ({required String msg}) {
-                    if (msg.length > 0) {
-                      SB.ssb(context, text: msg);
-                    }
-                  });
+              if (widget.callFrom != 'star') {
+                FolderDModals.smbs(
+                    context: context,
+                    shortFD: widget.folder,
+                    handlingFS: widget.handlingFS,
+                    callback: ({required String msg}) {
+                      if (msg.length > 0) {
+                        SB.ssb(context, text: msg);
+                      }
+                    });
+              }
             },
             child: Consumer<GetChanges>(
                 builder: (BuildContext context, value, win) {
@@ -222,6 +234,7 @@ class _FolderTileState extends State<FolderTile> {
 }
 
 class FileTile extends StatefulWidget {
+  final String callFrom;
   final CFile cFile;
   final bool type;
   final HandlingFS handlingFS;
@@ -229,7 +242,8 @@ class FileTile extends StatefulWidget {
       {Key? key,
       required this.cFile,
       required this.type,
-      required this.handlingFS})
+      required this.handlingFS,
+      required this.callFrom})
       : super(key: key);
 
   @override
@@ -262,13 +276,15 @@ class _FileTileState extends State<FileTile> {
     return widget.type == true
         ? InkResponse(
             onLongPress: () {
-              FileDModals.smbs(
-                  context: context,
-                  cFile: widget.cFile,
-                  handlingFS: widget.handlingFS,
-                  callback: ({required String msg}) {
-                    SB.ssb(context, text: msg);
-                  });
+              if (widget.callFrom != 'star') {
+                FileDModals.smbs(
+                    ctx: context,
+                    cFile: widget.cFile,
+                    handlingFS: widget.handlingFS,
+                    callback: ({required String msg}) {
+                      SB.ssb(context, text: msg);
+                    });
+              }
             },
             onTap: () async {
               Provider.of<GetChanges>(context, listen: false)
@@ -306,23 +322,39 @@ class _FileTileState extends State<FileTile> {
                                                     .split('.')
                                                     .last)) ...[
                                               Container(
-                                                  height: 50,
-                                                  width: 50,
-                                                  decoration: BoxDecoration(
-                                                    borderRadius:
-                                                        BorderRadius.circular(
-                                                            10),
-                                                    color: Colors.black,
-                                                  ),
-                                                  child: ClipRRect(
+                                                height: 50,
+                                                width: 50,
+                                                decoration: BoxDecoration(
+                                                  borderRadius:
+                                                      BorderRadius.circular(10),
+                                                      color: Colors.black
+                                                ),
+                                                child: Stack(
+                                                  children: [
+                                                    Center(
+                                                        child: Image.asset(
+                                                            'assets\\bDrive.png')),
+                                                    ClipRRect(
                                                       borderRadius:
                                                           BorderRadius.circular(
                                                               10),
-                                                      child: Image.network(
-                                                        widget.cFile.dLink,
-                                                        fit: BoxFit.cover,
-                                                        width: double.maxFinite,
-                                                      )))
+                                                      child: FadeInImage
+                                                          .memoryNetwork(
+                                                              height: 50,
+                                                              width: 50,
+                                                              fadeInDuration:
+                                                                  Duration(
+                                                                      seconds:
+                                                                          2),
+                                                              fit: BoxFit.cover,
+                                                              placeholder:
+                                                                  kTransparentImage,
+                                                              image: widget
+                                                                  .cFile.dLink),
+                                                    )
+                                                  ],
+                                                ),
+                                              )
                                             ]
                                           ],
                                         )
@@ -346,30 +378,35 @@ class _FileTileState extends State<FileTile> {
                             ),
                           ),
                           if (widget.cFile.star == true) ...[
-                            Icon(
-                              Icons.star,
-                              color: Colors.white70,
-                              size: 20,
+                            Container(
+                              padding: const EdgeInsets.only(right: 10),
+                              child: Icon(
+                                Icons.star,
+                                color: Colors.white70,
+                                size: 20,
+                              ),
                             )
                           ],
-                          IconButton(
-                            splashRadius: 20,
-                            splashColor: Colors.red,
-                            onPressed: () {
-                              FileDModals.smbs(
-                                  context: context,
-                                  cFile: widget.cFile,
-                                  handlingFS: widget.handlingFS,
-                                  callback: ({required String msg}) {
-                                    SB.ssb(context, text: msg);
-                                  });
-                            },
-                            icon: Icon(
-                              FontAwesomeIcons.ellipsisV,
-                              color: Colors.white54,
-                              size: 16,
+                          if (widget.callFrom != 'star') ...[
+                            IconButton(
+                              splashRadius: 20,
+                              splashColor: Colors.red,
+                              onPressed: () {
+                                FileDModals.smbs(
+                                    ctx: context,
+                                    cFile: widget.cFile,
+                                    handlingFS: widget.handlingFS,
+                                    callback: ({required String msg}) {
+                                      SB.ssb(context, text: msg);
+                                    });
+                              },
+                              icon: Icon(
+                                FontAwesomeIcons.ellipsisV,
+                                color: Colors.white54,
+                                size: 16,
+                              ),
                             ),
-                          ),
+                          ],
                         ],
                       )),
                 ),
@@ -391,13 +428,15 @@ class _FileTileState extends State<FileTile> {
                   url: widget.cFile.dLink, fileName: widget.cFile.fileName);
             },
             onLongPress: () {
-              FileDModals.smbs(
-                  context: context,
-                  cFile: widget.cFile,
-                  handlingFS: widget.handlingFS,
-                  callback: ({required String msg}) {
-                    SB.ssb(context, text: msg);
-                  });
+              if (widget.callFrom != 'star') {
+                FileDModals.smbs(
+                    ctx: context,
+                    cFile: widget.cFile,
+                    handlingFS: widget.handlingFS,
+                    callback: ({required String msg}) {
+                      SB.ssb(context, text: msg);
+                    });
+              }
             },
             child: Consumer<GetChanges>(
                 builder: (BuildContext context, value, win) {
@@ -464,19 +503,31 @@ class _FileTileState extends State<FileTile> {
               imageExtensions
                   .contains(widget.cFile.fileName.split('.').last)) ...[
             Container(
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(8),
-                  color: Colors.black,
-                ),
-                child: ClipRRect(
-                    borderRadius: BorderRadius.circular(8),
-                    child: Image.network(
-                      widget.cFile.dLink,
-                      fit: BoxFit.cover,
-                      width: double.maxFinite,
-                      height: double.maxFinite,
-                    )))
+              decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(10), color: Colors.black),
+              child: Stack(
+                children: [
+                  Center(child: Image.asset('assets\\bDrive.png')),
+                  ClipRRect(
+                    borderRadius: BorderRadius.circular(10),
+                    child: FadeInImage.memoryNetwork(
+                        fadeInDuration: Duration(seconds: 2),
+                        fit: BoxFit.cover,
+                        width: double.maxFinite,
+                        height: double.maxFinite,
+                        placeholder: kTransparentImage,
+                        image: widget.cFile.dLink),
+                  )
+                ],
+              ),
+            )
           ],
+          Container(
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(8),
+              color: Colors.black12,
+            ),
+          ),
           Column(
             mainAxisAlignment: MainAxisAlignment.end,
             children: [
@@ -574,15 +625,6 @@ class _RecentDocTileState extends State<RecentDocTile> {
   Widget build(BuildContext context) {
     return widget.type == true
         ? InkResponse(
-            onLongPress: () {
-              FileDModals.smbs(
-                  context: context,
-                  cFile: widget.cFile,
-                  handlingFS: widget.handlingFS,
-                  callback: ({required String msg}) {
-                    SB.ssb(context, text: msg);
-                  });
-            },
             onTap: () async {
               Provider.of<GetChanges>(context, listen: false)
                   .updateLoadingIndicatorStatus(flag: true);
@@ -617,21 +659,37 @@ class _RecentDocTileState extends State<RecentDocTile> {
                                             .split('.')
                                             .last)) ...[
                                           Container(
-                                              height: 50,
-                                              width: 50,
-                                              decoration: BoxDecoration(
-                                                borderRadius:
-                                                    BorderRadius.circular(10),
-                                                color: Colors.black,
-                                              ),
-                                              child: ClipRRect(
+                                            height: 50,
+                                            width: 50,
+                                            decoration: BoxDecoration(
+                                              borderRadius:
+                                                  BorderRadius.circular(10),
+                                                  color:Colors.black
+                                            ),
+                                            child: Stack(
+                                              children: [
+                                                Center(
+                                                    child: Image.asset(
+                                                        'assets\\bDrive.png')),
+                                                ClipRRect(
                                                   borderRadius:
                                                       BorderRadius.circular(10),
-                                                  child: Image.network(
-                                                    widget.cFile.dLink,
-                                                    fit: BoxFit.cover,
-                                                    width: double.maxFinite,
-                                                  )))
+                                                  child:
+                                                      FadeInImage.memoryNetwork(
+                                                          height: 50,
+                                                          width: 50,
+                                                          fadeInDuration:
+                                                              Duration(
+                                                                  seconds: 2),
+                                                          fit: BoxFit.cover,
+                                                          placeholder:
+                                                              kTransparentImage,
+                                                          image: widget
+                                                              .cFile.dLink),
+                                                )
+                                              ],
+                                            ),
+                                          )
                                         ]
                                       ],
                                     );
@@ -659,30 +717,49 @@ class _RecentDocTileState extends State<RecentDocTile> {
                           IconButton(
                             splashRadius: 20,
                             splashColor: Colors.red,
-                            onPressed: () {},
+                            onPressed: () async {
+                              if (await CIC
+                                  .checkConnectivityforModals(context)) {
+                                await FileOps().mAO(
+                                    url: widget.cFile.dLink,
+                                    fileName: widget.cFile.fileName);
+                              }
+                            },
                             icon: Icon(
                               FontAwesomeIcons.getPocket,
-                              color: Colors.green,
+                              color: Colors.white60,
                               size: 16,
                             ),
                           ),
                           IconButton(
                             splashRadius: 20,
                             splashColor: Colors.red,
-                            onPressed: () {},
+                            onPressed: () async {
+                              await widget.handlingFS.removeFileFromRecent(
+                                  recentId: await Utility.getRecentDID(),
+                                  cFile: widget.cFile);
+                            },
                             icon: Icon(
                               FontAwesomeIcons.ghost,
-                              color: Colors.red,
+                              color: Colors.white60,
                               size: 16,
                             ),
                           ),
                           IconButton(
                             splashRadius: 20,
                             splashColor: Colors.red,
-                            onPressed: () {},
+                            onPressed: () async {
+                              if (await CIC.checkConnectivity(context)) {
+                                Provider.of<GetChanges>(context, listen: false)
+                                    .updateLoadingIndicatorStatus(flag: true);
+                                await FileOps().shareFile(context,
+                                    url: widget.cFile.dLink,
+                                    fileName: widget.cFile.fileName);
+                              }
+                            },
                             icon: Icon(
                               FontAwesomeIcons.share,
-                              color: Colors.blue,
+                              color: Colors.white60,
                               size: 16,
                             ),
                           ),
@@ -732,7 +809,7 @@ class _RecentDocTileState extends State<RecentDocTile> {
         width: 50,
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(10),
-          color: Colors.black,
+          color: Colors.white12,
         ),
         child: Icon(
           map[widget.cFile.fileName.split('.').last] ?? FontAwesomeIcons.file,
@@ -759,19 +836,25 @@ class _RecentDocTileState extends State<RecentDocTile> {
               imageExtensions
                   .contains(widget.cFile.fileName.split('.').last)) ...[
             Container(
-                alignment: Alignment.centerLeft,
-                height: 150,
-                // width: TU.getw(context)/2,
-                decoration: BoxDecoration(
+              height: 150,
+              decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(20), color: Colors.black),
+              child: Stack(
+                children: [
+                  Center(child: Image.asset('assets\\bDrive.png')),
+                  ClipRRect(
                     borderRadius: BorderRadius.circular(20),
-                    color: Colors.black),
-                child: ClipRRect(
-                    borderRadius: BorderRadius.circular(20),
-                    child: Image.network(
-                      widget.cFile.dLink,
-                      fit: BoxFit.fitWidth,
-                      width: double.maxFinite,
-                    ))),
+                    child: FadeInImage.memoryNetwork(
+                        fadeInDuration: Duration(seconds: 2),
+                        fit: BoxFit.cover,
+                        width: double.maxFinite,
+                        height: 150,
+                        placeholder: kTransparentImage,
+                        image: widget.cFile.dLink),
+                  )
+                ],
+              ),
+            )
           ],
           Container(
             color: Colors.black26,
@@ -827,7 +910,13 @@ class _RecentDocTileState extends State<RecentDocTile> {
                     children: [
                       IconButton(
                         tooltip: 'make available offline',
-                        onPressed: () {},
+                        onPressed: () async {
+                          if (await CIC.checkConnectivityforModals(context)) {
+                            await FileOps().mAO(
+                                url: widget.cFile.dLink,
+                                fileName: widget.cFile.fileName);
+                          }
+                        },
                         icon: Icon(
                           FontAwesomeIcons.getPocket,
                           color: Colors.white54,
@@ -836,7 +925,11 @@ class _RecentDocTileState extends State<RecentDocTile> {
                       ),
                       IconButton(
                         tooltip: 'remove from recent',
-                        onPressed: () {},
+                        onPressed: () async {
+                          await widget.handlingFS.removeFileFromRecent(
+                              recentId: await Utility.getRecentDID(),
+                              cFile: widget.cFile);
+                        },
                         icon: Icon(
                           FontAwesomeIcons.ghost,
                           color: Colors.white54,
@@ -851,6 +944,7 @@ class _RecentDocTileState extends State<RecentDocTile> {
                   children: [
                     Expanded(
                       child: Container(
+                        padding: EdgeInsets.only(left: 20),
                         alignment: Alignment.centerRight,
                         child: RichText(
                           text: TextSpan(
@@ -863,14 +957,14 @@ class _RecentDocTileState extends State<RecentDocTile> {
                     ),
                     IconButton(
                       tooltip: 'share',
-                      onPressed: () {
-                        FileDModals.smbs(
-                            context: context,
-                            cFile: widget.cFile,
-                            handlingFS: widget.handlingFS,
-                            callback: ({required String msg}) {
-                              SB.ssb(context, text: msg);
-                            });
+                      onPressed: () async {
+                        if (await CIC.checkConnectivity(context)) {
+                          Provider.of<GetChanges>(context, listen: false)
+                              .updateLoadingIndicatorStatus(flag: true);
+                          await FileOps().shareFile(context,
+                              url: widget.cFile.dLink,
+                              fileName: widget.cFile.fileName);
+                        }
                       },
                       icon: Icon(
                         FontAwesomeIcons.share,
@@ -958,8 +1052,10 @@ class CFile {
   final String path;
   final String parentDocID;
   final double size;
+  final String oldName;
 
   CFile({
+    required this.oldName,
     required this.size,
     required this.path,
     required this.parentDocID,
@@ -978,7 +1074,8 @@ class CFile {
       star: json['star'],
       parentDocID: json['parentDocID'],
       path: json['path'],
-      size: json['size']);
+      size: json['size'],
+      oldName: json['oldName']);
 
   Map<String, dynamic> toJson() => {
         'fileName': this.fileName,
@@ -988,7 +1085,8 @@ class CFile {
         'star': this.star,
         'path': this.path,
         'parentDocID': this.parentDocID,
-        'size': this.size
+        'size': this.size,
+        'oldName': this.oldName
       };
 }
 
@@ -1005,6 +1103,10 @@ class Users {
   String homeUid;
   String recentId;
   String starId;
+  String searchId;
+  int nFiles;
+  int nFolders;
+  double space;
 
   Users(
       {required this.recentId,
@@ -1016,7 +1118,11 @@ class Users {
       required this.uimgString,
       required this.uJoin,
       required this.contactId,
-      required this.homeUid});
+      required this.homeUid,
+      required this.searchId,
+      required this.nFiles,
+      required this.nFolders,
+      required this.space});
 
   Map<String, dynamic> toJson() => {
         'uName': this.uName,
@@ -1028,7 +1134,11 @@ class Users {
         'contactId': this.contactId,
         'homeUid': this.homeUid,
         'starId': this.starId,
-        'recentId': this.recentId
+        'recentId': this.recentId,
+        'searchId': this.searchId,
+        'nFiles': this.nFiles,
+        'nFolders': this.nFolders,
+        "space": this.space
       };
 
   factory Users.fromJson({required Map<String, dynamic> map}) {
@@ -1042,6 +1152,191 @@ class Users {
         contactId: map['contactId'],
         homeUid: map['homeUid'],
         recentId: map['recentId'],
-        starId: map['starId']);
+        starId: map['starId'],
+        searchId: map['searchId'],
+        nFiles: map['nFiles'],
+        nFolders: map['nFolders'],
+        space: map['space']);
   }
+}
+
+class SFile {
+  final String fileName;
+  final String dLink;
+
+  SFile({required this.fileName, required this.dLink});
+
+  factory SFile.fromJson({required Map<String, dynamic> map}) =>
+      SFile(fileName: map['fileName'], dLink: map["dLink"]);
+
+  Map<String, dynamic> toJson() =>
+      {'fileName': this.fileName, 'dLink': this.dLink};
+}
+
+class SFileTile extends StatefulWidget {
+  final SFile sFile;
+  final HandlingFS handlingFS;
+  const SFileTile({Key? key, required this.sFile, required this.handlingFS})
+      : super(key: key);
+
+  @override
+  _SFileTileState createState() => _SFileTileState();
+}
+
+class _SFileTileState extends State<SFileTile> {
+  Map<String, IconData> map = {
+    'txt': FontAwesomeIcons.file,
+    'docx': FontAwesomeIcons.fileWord,
+    'doc': FontAwesomeIcons.fileWord,
+    'csv': FontAwesomeIcons.fileCsv,
+    'xls': FontAwesomeIcons.fileExcel,
+    'zip': FontAwesomeIcons.fileExport,
+    'ppt': FontAwesomeIcons.filePowerpoint,
+    'pdf': FontAwesomeIcons.filePdf,
+    'mp3': FontAwesomeIcons.fileAudio,
+    'mp4': FontAwesomeIcons.fileVideo,
+    'apk': FontAwesomeIcons.android,
+    'jpeg': FontAwesomeIcons.fileImage,
+    'jpg': FontAwesomeIcons.fileImage,
+    'png': FontAwesomeIcons.fileImage,
+    'webp': FontAwesomeIcons.fileImage,
+    'exe': FontAwesomeIcons.windows
+  };
+
+  List<String> imageExtensions = ['jpg', 'jpeg', 'webp', 'png'];
+  @override
+  Widget build(BuildContext context) {
+    return InkResponse(
+      onTap: () async {
+        Provider.of<GetChanges>(context, listen: false)
+            .updateLoadingIndicatorStatus(flag: true);
+
+        await FileOps().openFile(context,
+            url: widget.sFile.dLink, fileName: widget.sFile.fileName);
+      },
+      child: Wrap(
+        children: [
+          Container(
+              margin: EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+              padding: EdgeInsets.only(left: 10, top: 5, bottom: 5),
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(8),
+                // color:Colors.white10
+              ),
+              child: Row(
+                children: [
+                  FutureBuilder<bool>(
+                      future: CIC.checkConnectivityforModals(context),
+                      builder: (BuildContext context, snapshot) {
+                        if (snapshot.hasError) {
+                          return getFileListView();
+                        }
+                        if (snapshot.hasData) {
+                          return snapshot.data == true
+                              ? Stack(
+                                  children: [
+                                    getFileListView(),
+                                    if (snapshot.data == true &&
+                                        imageExtensions.contains(widget
+                                            .sFile.fileName
+                                            .split('.')
+                                            .last)) ...[
+                                      Container(
+                                        height: 50,
+                                        width: 50,
+                                        decoration: BoxDecoration(
+                                          borderRadius:
+                                              BorderRadius.circular(10),
+                                              color:Colors.black
+                                        ),
+                                        child: Stack(
+                                          children: [
+                                            Center(
+                                                child: Image.asset(
+                                                    'assets\\bDrive.png')),
+                                            ClipRRect(
+                                              borderRadius:
+                                                  BorderRadius.circular(10),
+                                              child:
+                                                  FadeInImage.memoryNetwork(
+                                                      height: 50,
+                                                      width: 50,
+                                                      fadeInDuration:
+                                                          Duration(
+                                                              seconds: 2),
+                                                      fit: BoxFit.cover,
+                                                      placeholder:
+                                                          kTransparentImage,
+                                                      image:
+                                                          widget.sFile.dLink),
+                                            )
+                                          ],
+                                        ),
+                                      )
+                                    ]
+                                  ],
+                                )
+                              : getFileListView();
+                        }
+                        return getFileListView();
+                      }),
+                  SizedBox(width: 10),
+                  Expanded(
+                    child: Container(
+                      padding: EdgeInsets.symmetric(horizontal: 10),
+                      child: RichText(
+                        text: TextSpan(
+                            text: Help.trimExtension(
+                                filename: widget.sFile.fileName),
+                            style: TU.teeesmall(context, 60)),
+                        textAlign: TextAlign.left,
+                        softWrap: true,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ),
+                  ),
+                  IconButton(
+                    tooltip: 'share',
+                    onPressed: () async {
+                      if (await CIC.checkConnectivity(context)) {
+                        Provider.of<GetChanges>(context, listen: false)
+                            .updateLoadingIndicatorStatus(flag: true);
+                        await FileOps().shareFile(context,
+                            url: widget.sFile.dLink,
+                            fileName: widget.sFile.fileName);
+                      }
+                    },
+                    icon: Icon(
+                      FontAwesomeIcons.share,
+                      color: Colors.white54,
+                      size: 16,
+                    ),
+                  ),
+                ],
+              )),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 10.0),
+            child: Divider(
+              color: Colors.white70,
+              height: 2,
+            ),
+          )
+        ],
+      ),
+    );
+  }
+
+  getFileListView() => Container(
+        height: 50,
+        width: 50,
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(10),
+          color: Colors.white12,
+        ),
+        child: Icon(
+          map[widget.sFile.fileName.split('.').last] ?? FontAwesomeIcons.file,
+          color: Colors.white70,
+          size: 24,
+        ),
+      );
 }

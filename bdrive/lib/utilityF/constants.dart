@@ -13,6 +13,10 @@ class Constants {
   static String homeUid = 'HOME_UID';
   static String recentId = 'RECENT_ID';
   static String starId = 'STAR_ID';
+  static String searchId = 'SEARCH_ID';
+  static String nFolders = 'N_FOLDERS';
+  static String nFiles = 'N_FILES';
+  static String space = 'SPACE';
 
   static String pStatus = 'PROFILE_STATUS';
 }

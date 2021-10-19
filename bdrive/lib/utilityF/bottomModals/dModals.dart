@@ -6,9 +6,8 @@ import 'package:bdrive/utilityF/firebaseUtility.dart';
 import 'package:bdrive/utilityF/localUtility.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:provider/provider.dart';
-import 'package:share/share.dart';
-import 'package:url_launcher/url_launcher.dart';
 
 class FolderDModals {
   static smbs(
@@ -159,7 +158,7 @@ class FolderDModals {
 
 class FileDModals {
   static smbs(
-          {required context,
+          {required ctx,
           required CFile cFile,
           required HandlingFS handlingFS,
           required Function callback}) =>
@@ -233,7 +232,15 @@ class FileDModals {
                   ),
                   getRow(context, label: 'share', icon: Icons.share_outlined,
                       func: () async {
-                    await Share.share(cFile.dLink);
+                    Future.delayed(Duration(milliseconds: 10), () async {
+                      if (await CIC.checkConnectivity(ctx)) {
+                        Provider.of<GetChanges>(context, listen: false)
+                            .updateLoadingIndicatorStatus(flag: true);
+                        await FileOps().shareFile(ctx,
+                            url: cFile.dLink, fileName: cFile.fileName);
+                      }
+                    });
+                    Navigator.pop(context);
                   }),
                   SizedBox(
                     height: 10,
@@ -241,11 +248,19 @@ class FileDModals {
                   getRow(context,
                       label: 'download',
                       icon: Icons.download_outlined, func: () async {
-                    // if (await canLaunch(cFile.dLink)) {
-                    //   launch(cFile.dLink);
-                    // }
-                    FileOps().dftdDirectory(context,
-                        url: cFile.dLink, fileName: cFile.fileName);
+                    Future.delayed(Duration(milliseconds: 10), () async {
+                      if (await CIC.checkConnectivity(ctx)) {
+                        var status = await Permission.storage.status;
+                        if (!status.isGranted) {
+                          await Permission.storage.request();
+                        } else {
+                          await FileOps().dftdDirectory(
+                              url: cFile.dLink, fileName: cFile.fileName);
+                          callback(msg: 'file downloaded');
+                        }
+                      }
+                    });
+                    Navigator.pop(context);
                   }),
                   SizedBox(
                     height: 10,
@@ -288,8 +303,11 @@ class FileDModals {
                             Provider.of<GetChanges>(context, listen: false)
                                 .pathList
                                 .last[0]);
-                    Future.delayed(Duration(milliseconds: 10), () {
+                    Future.delayed(Duration(milliseconds: 10), () async {
                       callback(msg: 'file deleted');
+                      await handlingFS.updateNFilesFI(n: 1, flag: false);
+                      await handlingFS.manageSpace(
+                          size: cFile.size, flag: false);
                     });
                     Navigator.of(context).pop();
                   }),
@@ -300,7 +318,7 @@ class FileDModals {
               ),
             )));
           },
-          context: context);
+          context: ctx);
 
   static getRow(context,
           {required String label,

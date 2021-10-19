@@ -45,11 +45,12 @@ dependencies:
   flutter_speed_dial: ^4.4.0+1
   connectivity_plus: ^2.0.2
   url_launcher: ^6.0.12
-  share: ^2.0.4
+  share_plus: ^3.0.4
   open_file: ^3.2.1
   dio: ^4.0.0
   path_provider: ^2.0.5
   permission_handler: ^8.2.5
+  transparent_image: ^2.0.0
 
 dev_dependencies:
   flutter_test:

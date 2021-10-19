@@ -215,7 +215,17 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     TF.getTField(context, con: pCon, htext: TS.ppcode),
                   ],
                 ),
-              )
+              ),
+              Consumer<GetChanges>(
+                  builder: (BuildContext context, changes, win) {
+                return changes.loadingIndicator == true
+                    ? Center(
+                        child: CircularProgressIndicator(
+                          color: Colors.red,
+                        ),
+                      )
+                    : Container();
+              })
             ],
           ),
         ),
@@ -223,6 +233,28 @@ class _ProfileScreenState extends State<ProfileScreen> {
           elevation: 10,
           backgroundColor: Colors.grey[900],
           onPressed: () async {
+            final str = await Utility.getImageFromPreferences();
+            if (str.length < 4) {
+              SB.ssb(context, text: 'select an image as your profile pic');
+              return;
+            } else if (pCon.text.trim().length < 8) {
+              SB.ssb(context, text: "enter a valid passcode");
+              return;
+            } else if (eCon.text.trim().isEmpty) {
+              SB.ssb(context, text: "enter a valid email");
+              return;
+            } else if (uNCon.text.trim().length < 3) {
+              SB.ssb(context, text: "enter a valid username");
+              return;
+            } else if (uNCon.text.trim().length < 3) {
+              SB.ssb(context, text: "enter a valid nick-name");
+              return;
+            }
+            if (!await CIC.checkConnectivity(context)) {
+              return;
+            }
+            await Provider.of<GetChanges>(context, listen: false)
+                .updateLoadingIndicatorStatus(flag: true);
             bool check = await handlingFirebaseDB.cue();
             if (!check) {
               Users user = Users(
@@ -235,7 +267,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   contactId: await Utility.getUserContact(),
                   homeUid: handlingFirebaseDB.getHomeCollection().doc().id,
                   recentId: handlingFirebaseDB.getRecentCollection().doc().id,
-                  starId: handlingFirebaseDB.getStarCollection().doc().id);
+                  starId: handlingFirebaseDB.getStarCollection().doc().id,
+                  nFiles: 0,
+                  nFolders: 0,
+                  searchId: handlingFirebaseDB.getHomeCollection().doc().id,
+                  space: 0.0);
               await handlingFirebaseDB.setUserDetails(user: user);
               await Utility.setUserDetails(map: user.toJson());
               await handlingFirebaseDB.setUserHomeFolder(
@@ -246,8 +282,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       folderList: [],
                       fileList: [],
                       star: false));
-              await Utility.setProfileStatus();
-              Phoenix.rebirth(context);
             } else {
               Map<String, dynamic> map = {
                 'uName': nCon.text.trim(),
@@ -257,10 +291,17 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 'uimgString': await Utility.getImageFromPreferences()
               };
 
-              handlingFirebaseDB.updatteSubSetInfo(map: map);
-              await Utility.setProfileStatus();
-              Phoenix.rebirth(context);
+              await handlingFirebaseDB.updatteSubSetInfo(map: map);
+              await Utility.setSubSetInfo(
+                  email: map['uEmail'],
+                  uName: map["uName"],
+                  uNName: map["uNName"],
+                  passcode: map['upasscode']);
             }
+            await Utility.setProfileStatus(true);
+            await Provider.of<GetChanges>(context, listen: false)
+                .updateLoadingIndicatorStatus(flag: false);
+            Phoenix.rebirth(context);
           },
           child: Icon(Icons.arrow_forward_ios, color: Colors.red),
         ),

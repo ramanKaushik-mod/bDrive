@@ -4,9 +4,11 @@ import 'dart:io';
 import 'package:bdrive/contentF/favoriteDoc.dart';
 import 'package:bdrive/contentF/homeDocPage.dart';
 import 'package:bdrive/contentF/recentDoc.dart';
+import 'package:bdrive/contentF/searchPage.dart';
 import 'package:bdrive/models/models.dart';
 import 'package:bdrive/utilityF/firebaseUtility.dart';
 import 'package:bdrive/utilityF/localUtility.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:firebase_storage/firebase_storage.dart';
@@ -29,7 +31,7 @@ class _HomePageState extends State<HomePage> {
   FlutterLocalNotificationsPlugin? localNotification;
   TextEditingController fCon = TextEditingController();
   late HandlingFS handlingFS;
-  String starId = '', recentId = '';
+  String starId = '', recentId = '', searchId = '';
   @override
   void initState() {
     super.initState();
@@ -69,12 +71,17 @@ class _HomePageState extends State<HomePage> {
         .updateReadyDBStatus(status: 1);
     starId = await Utility.getStarDID();
     recentId = await Utility.getRecentDID();
+    searchId = await Utility.getSearchDID();
     if (!await handlingFS.crle(docId: recentId)) {
       await handlingFS.takeCareOfRecentDoc(docId: recentId);
     }
     if (!await handlingFS.csle(docId: starId)) {
       await handlingFS.takeCareOfStarDoc(docId: starId);
     }
+    if (!await handlingFS.csels(docId: searchId)) {
+      await handlingFS.takeCareOfSearchDoc(docId: searchId);
+    }
+    await handlingFS.syncSearchList(context, docId: searchId);
   }
 
   _showNotification(
@@ -110,7 +117,14 @@ class _HomePageState extends State<HomePage> {
             children: [
               Expanded(
                 child: InkResponse(
-                  onTap: () => Navigator.pushNamed(context, '/seap'),
+                  onTap: () {
+                    Future.delayed(Duration(milliseconds: 10), () async {
+                      await handlingFS.syncSearchList(context, docId: searchId);
+                    });
+                    Navigator.of(context).push(MaterialPageRoute(
+                        builder: (context) =>
+                            SearchPage(handlingFS: handlingFS)));
+                  },
                   child: Hero(
                     tag: 'searchbox',
                     child: Card(
@@ -136,14 +150,18 @@ class _HomePageState extends State<HomePage> {
                 ),
               ),
               IconButton(
-                onPressed: () => Navigator.pushNamed(context, '/seap'),
-                icon: Hero(
-                  tag: 'seap',
-                  child: Icon(
-                    Icons.search,
-                    color: Colors.red,
-                    size: 28,
-                  ),
+                onPressed: () {
+                  Future.delayed(Duration(milliseconds: 10), () async {
+                    await handlingFS.syncSearchList(context, docId: searchId);
+                  });
+                  Navigator.of(context).push(MaterialPageRoute(
+                      builder: (context) =>
+                          SearchPage(handlingFS: handlingFS)));
+                },
+                icon: Icon(
+                  Icons.search,
+                  color: Colors.red,
+                  size: 28,
                 ),
               ),
               Padding(
@@ -286,11 +304,23 @@ class _HomePageState extends State<HomePage> {
                   builder: (BuildContext context, value, win) {
                 return value.pathList.isNotEmpty
                     ? value.pathList.last[1] == 'Home'
-                        ? Icon(
-                            Icons.home_filled,
-                            color: Colors.red,
-                            size: 28,
-                          )
+                        ? value.niindex == 2
+                            ? Icon(
+                                Icons.home_filled,
+                                color: Colors.red,
+                                size: 28,
+                              )
+                            : value.niindex == 1
+                                ? Icon(
+                                    Icons.change_history_sharp,
+                                    color: Colors.red,
+                                    size: 28,
+                                  )
+                                : Icon(
+                                    Icons.star_sharp,
+                                    color: Colors.red,
+                                    size: 28,
+                                  )
                         : IU.diconl(
                             icon: Icons.arrow_back_ios_new_outlined,
                             callback: () {
@@ -318,9 +348,9 @@ class _HomePageState extends State<HomePage> {
                     builder: (BuildContext context, value, win) {
                   return value.getLoadingIndicatorStatus() == true
                       ? Tooltip(
-                        message: 'loading file \npress back button to stop',
-                        padding:EdgeInsets.all(3),
-                        child: Wrap(
+                          message: 'loading file \npress back button to stop',
+                          padding: EdgeInsets.all(3),
+                          child: Wrap(
                             runAlignment: WrapAlignment.center,
                             children: [
                               Container(
@@ -337,7 +367,7 @@ class _HomePageState extends State<HomePage> {
                               ),
                             ],
                           ),
-                      )
+                        )
                       : Container();
                 }),
                 Consumer<GetChanges>(
@@ -367,14 +397,13 @@ class _HomePageState extends State<HomePage> {
                       : Container();
                 }),
                 IconButton(
-                  onPressed: () => Navigator.pushNamed(context, '/sep'),
-                  icon: Hero(
-                    tag: 'settingspage',
-                    child: Icon(
-                      Icons.settings,
-                      color: Colors.red,
-                      size: 28,
-                    ),
+                  onPressed: () async {
+                    Navigator.pushNamed(context, '/sep');
+                  },
+                  icon: Icon(
+                    Icons.settings,
+                    color: Colors.red,
+                    size: 28,
                   ),
                 ),
               ],
@@ -395,6 +424,7 @@ class _HomePageState extends State<HomePage> {
                   openCloseDial: changes.dial,
                   children: [
                     SpeedDialChild(
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10),),
                       backgroundColor: Colors.transparent,
                       labelWidget:
                           TU.tSDLabel(context: context, label: 'upload'),
@@ -405,10 +435,11 @@ class _HomePageState extends State<HomePage> {
                               changes.updateDialStatus();
                               return;
                             }
+                            String parentDocID = changes.pathList.last[0];
                             await selectFile();
                             changes.updateDialStatus();
                             try {
-                              await uploadFile();
+                              await uploadFile(parentDocID: parentDocID);
                             } on FirebaseException catch (e) {
                               if (e.code == 'canceled') {
                                 print('[firebase_storage/canceled] is handled');
@@ -419,6 +450,7 @@ class _HomePageState extends State<HomePage> {
                           size: 28),
                     ),
                     SpeedDialChild(
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10),),
                         backgroundColor: Colors.transparent,
                         labelWidget: TU.tSDLabel(
                             context: context, label: 'create folder'),
@@ -475,15 +507,14 @@ class _HomePageState extends State<HomePage> {
     final result = await FilePicker.platform.pickFiles(allowMultiple: false);
 
     if (result == null) {
-      SB.ssb(context, text: 'No File is selected');
+      setState(() => file = null);
       return;
     }
     final path = result.files.single.path;
     setState(() => file = File(path!));
-    SB.ssb(context, text: '${file!.path.split('/').last} is uploading');
   }
 
-  uploadFile() async {
+  uploadFile({required String parentDocID}) async {
     if (file == null) return;
     GetChanges changes = Provider.of<GetChanges>(context, listen: false);
 
@@ -494,12 +525,20 @@ class _HomePageState extends State<HomePage> {
       changes.updateDialStatus();
       return;
     }
+    final fileName = '${file!.path.split('/').last}';
+    final destination = 'files/${await Utility.getUserContact()}/$fileName';
+
+    if (await handlingFS.checkConcurrencyOfFile(destination: destination)) {
+      SB.ssb(context, text: 'file is already uploaded');
+      return;
+    } else {
+      SB.ssb(context, text: '${file!.path.split('/').last} is uploading');
+    }
+
     changes.updateHandleUTaskSema(sema: 1);
 
-    final fileName = '${file!.path.split('/').last}';
-
     String dan = DateTime.now().toString();
-    final destination = 'files/${await Utility.getUserContact()}/$fileName';
+
     UploadTask? uploadTask;
     uploadTask = handlingFS.uploadFile(destination: destination, file: file!);
     changes.updateUploadTask(tsk: uploadTask);
@@ -517,17 +556,19 @@ class _HomePageState extends State<HomePage> {
             dLink: url,
             parentDocID: changes.getPathList().last[0],
             path: changes.getPathList().last[1].toLowerCase(),
-            size: size),
-        parentDocUid: changes.pathList.last[0], func: () {
+            size: size,
+            oldName: fileName),
+        parentDocUid: parentDocID, func: () async {
+      await handlingFS.updateNFilesFI(n: 1, flag: true);
       changes.updateHandleUTaskSema(sema: 0);
       _showNotification(
           text: "$fileName is uploaded",
           title: 'Uploaded file',
           payload: 'upload');
-      SB.ssb(context, text: "$fileName is uploaded");
     }, recentId: recentId);
-    changes.updateUploadTask(tsk: null);
+    await changes.updateUploadTask(tsk: null);
     ss.cancel();
+    setState(() => file = null);
   }
 
   uploadStatus(UploadTask task) => StreamBuilder<TaskSnapshot>(

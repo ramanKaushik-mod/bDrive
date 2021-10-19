@@ -69,8 +69,8 @@ class Utility {
     SystemNavigator.pop();
   }
 
-  static setProfileStatus() =>
-      gsi().then((value) => value.setBool(Constants.pStatus, true));
+  static setProfileStatus(bool flag) =>
+      gsi().then((value) => value.setBool(Constants.pStatus, flag));
 
   static getProfileStatus() =>
       gsi().then((value) => value.getBool(Constants.pStatus) ?? false);
@@ -89,6 +89,10 @@ class Utility {
       value.setString(Constants.homeUid, map['homeUid']);
       value.setString(Constants.recentId, map['recentId']);
       value.setString(Constants.starId, map['starId']);
+      value.setString(Constants.searchId, map['searchId']);
+      value.setInt(Constants.nFiles, map['nFiles']);
+      value.setInt(Constants.nFolders, map['nFolders']);
+      value.setDouble(Constants.space, map['space']);
     });
   }
 
@@ -104,9 +108,25 @@ class Utility {
           uJoin: value.getString(Constants.uJoin) ?? '',
           homeUid: value.getString(Constants.homeUid) ?? '',
           recentId: value.getString(Constants.recentId) ?? '',
-          starId: value.getString(Constants.starId) ?? '');
+          starId: value.getString(Constants.starId) ?? '',
+          nFiles: value.getInt(Constants.nFiles) ?? 0,
+          nFolders: value.getInt(Constants.nFolders) ?? 0,
+          searchId: value.getString(Constants.searchId) ?? '',
+          space: value.getDouble(Constants.space) ?? 0);
     });
   }
+
+  static setSubSetInfo(
+          {required String uName,
+          required String uNName,
+          required String email,
+          required String passcode}) async =>
+      await gsi().then((value) {
+        value.setString(Constants.uEmail, email);
+        value.setString(Constants.upasscode, passcode);
+        value.setString(Constants.userName, uName);
+        value.setString(Constants.uID, uNName);
+      });
 
   static Future<String> getHomeUID() async =>
       await gsi().then((value) => value.getString(Constants.homeUid) ?? '');
@@ -116,6 +136,30 @@ class Utility {
 
   static Future<String> getRecentDID() async =>
       await gsi().then((value) => value.getString(Constants.recentId) ?? '');
+
+  static Future<String> getSearchDID() async =>
+      await gsi().then((value) => value.getString(Constants.searchId) ?? '');
+
+  static Future<int> getNFolders() async =>
+      await gsi().then((value) => value.getInt(Constants.nFolders) ?? 0);
+
+  static setNFolders({required int nf}) async =>
+      await gsi().then((value) => value.setInt(Constants.nFolders, nf));
+
+  static Future<int> getNFiles() async =>
+      await gsi().then((value) => value.getInt(Constants.nFiles) ?? 0);
+
+  static setNFiles({required int nf}) async =>
+      await gsi().then((value) => value.setInt(Constants.nFiles, nf));
+
+  static Future<double> getSpace() async =>
+      await gsi().then((value) => value.getDouble(Constants.space) ?? 0.0);
+
+  static setSpace({required double space}) async =>
+      await gsi().then((value) => value.setDouble(Constants.space, space));
+
+  static getUPasscode() async =>
+      await gsi().then((value) => value.getString(Constants.upasscode));
 }
 
 class SB {
@@ -180,11 +224,19 @@ class SB {
                 IconButton(
                     splashColor: Colors.white,
                     splashRadius: 20,
-                    onPressed: () {
-                      Future.delayed(Duration(milliseconds: 2), () {
+                    onPressed: () async {
+                      if (dialog == 'your passcode') {
+                        String pcode = await Utility.getUPasscode();
+                        if (pcode == controller.text.trim()) {
+                          yesFunc();
+                        } else {
+                          ssb(context, text: 'passcode do not match');
+                        }
+                        Navigator.pop(con);
+                      } else {
                         yesFunc();
-                      });
-                      Navigator.pop(con);
+                        Navigator.pop(con);
+                      }
                     },
                     icon: Icon(
                       Icons.arrow_forward_ios,
@@ -248,7 +300,7 @@ class TU {
   static tuDw() => Container(
         margin: EdgeInsets.symmetric(horizontal: 4),
         height: 20,
-        width: 2,
+        width: 4,
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(10),
           color: Colors.grey,
@@ -451,7 +503,11 @@ class GetChanges extends ChangeNotifier {
       contactId: '',
       homeUid: '',
       recentId: '',
-      starId: '');
+      starId: '',
+      nFiles: 0,
+      nFolders: 0,
+      searchId: '',
+      space: 0);
   Users getUser() => user;
 
   updateUser() async {
@@ -474,6 +530,23 @@ class GetChanges extends ChangeNotifier {
 
   updateLoadingIndicatorStatus({required bool flag}) {
     loadingIndicator = flag;
+    notifyListeners();
+  }
+
+  //**************SEARCH LIST************ */
+  List<SFile> sList = [];
+  List<SFile> getSList() => sList;
+
+  updateSList({required List<SFile> list}) {
+    sList = list;
+    notifyListeners();
+  }
+
+  List<Widget> wList = [];
+  List<Widget> getWList() => wList;
+
+  updateWList({required List<Widget> list}) {
+    wList = list;
     notifyListeners();
   }
 }
@@ -526,8 +599,6 @@ class IU {
           required Function callback,
           required double size}) =>
       IconButton(
-        splashColor: Colors.red,
-        splashRadius: 20,
         icon: Icon(
           icon,
           size: size,
@@ -582,7 +653,7 @@ class TF {
             child: TextFormField(
               controller: con,
               style: TU.tesmall(context, 44),
-              cursorColor: Colors.white,
+              showCursor: false,
               keyboardType: TextInputType.number,
               textAlign: TextAlign.center,
               decoration: InputDecoration(
@@ -611,7 +682,8 @@ class Mapping {
   static List<Widget> mapper(
       {required List<dynamic> list,
       required bool flag,
-      required HandlingFS handlingFS}) {
+      required HandlingFS handlingFS,
+      required String callFrom}) {
     List<Widget> fList = [];
     List<ShortFD> folderList = [];
     list.forEach((element) {
@@ -621,10 +693,10 @@ class Mapping {
         .sort((a, b) => a.fName.toLowerCase().compareTo(b.fName.toLowerCase()));
     folderList.forEach((element) {
       fList.add(FolderTile(
-        folder: element,
-        type: flag,
-        handlingFS: handlingFS,
-      ));
+          folder: element,
+          type: flag,
+          handlingFS: handlingFS,
+          callFrom: callFrom));
     });
     return fList;
   }
@@ -632,7 +704,8 @@ class Mapping {
   static List<Widget> mapFiles(
       {required List<dynamic> list,
       required bool flag,
-      required HandlingFS handlingFS}) {
+      required HandlingFS handlingFS,
+      required String callFrom}) {
     List<Widget> fList = [];
     List<CFile> fileList = [];
     list.forEach((element) {
@@ -645,6 +718,7 @@ class Mapping {
         cFile: element,
         type: flag,
         handlingFS: handlingFS,
+        callFrom: callFrom,
       ));
     });
     return fList;
@@ -663,6 +737,15 @@ class Mapping {
     });
 
     return fList;
+  }
+
+  static List<Widget> mapSFiles(
+      {required List<SFile> list, required HandlingFS handlingFS}) {
+    List<Widget> wlist = [];
+    list.forEach((element) {
+      wlist.add(SFileTile(sFile: element, handlingFS: handlingFS));
+    });
+    return wlist;
   }
 }
 
@@ -711,6 +794,7 @@ class CIC {
       return false;
     }
   }
+
   static StreamSubscription<ConnectivityResult> getSubscription(context,
           {required Function callback}) =>
       Connectivity().onConnectivityChanged.listen((event) {

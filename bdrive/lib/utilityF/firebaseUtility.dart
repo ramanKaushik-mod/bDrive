@@ -11,6 +11,7 @@ import 'package:flutter_phoenix/flutter_phoenix.dart';
 import 'package:open_file/open_file.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:provider/provider.dart';
+import 'package:share_plus/share_plus.dart';
 
 class FirebaseFunctions {
   static verifyNumber(context, String phoneNumber) async {
@@ -31,6 +32,8 @@ class FirebaseFunctions {
                   await Utility.setUserDetails(map: value);
                 }
               });
+              await Provider.of<GetChanges>(context, listen: false)
+                  .updateLoadingIndicatorStatus(flag: false);
               Phoenix.rebirth(context);
             }
           },
@@ -44,9 +47,6 @@ class FirebaseFunctions {
           },
           codeSent: (String verificationId, int? resendToken) async {
             SB.ssb(context, text: 'Code Sent Successfully');
-
-            await Provider.of<GetChanges>(context, listen: false)
-                .updateCodeSentSemaphore(flag: true);
             await Utility.saveUserContact(userCon: phoneNumber);
             await Utility.setVFyId(vid: verificationId);
           },
@@ -78,9 +78,11 @@ class FirebaseFunctions {
             await Utility.setUserDetails(map: value);
           }
         });
-        await Provider.of<GetChanges>(context, listen: false)
-            .updateCodeSentSemaphore(flag: false);
-        await Provider.of<GetChanges>(context, listen: false).turnTimeTo30();
+        GetChanges changes = Provider.of<GetChanges>(context, listen: false);
+
+        await changes.updateCodeSentSemaphore(flag: false);
+        await changes.turnTimeTo30();
+        await changes.updateLoadingIndicatorStatus(flag: false);
         Phoenix.rebirth(context);
       }
     } on FirebaseAuthException catch (e) {
@@ -151,12 +153,20 @@ class HandlingFS {
       .get()
       .then((value) => value.exists ? true : false);
 
+  Future<bool> csels({required String docId}) async => await getHomeCollection()
+      .doc(docId)
+      .get()
+      .then((value) => value.exists ? true : false);
+
   takeCareOfStarDoc({required String docId}) async => await getStarCollection()
       .doc(docId)
       .set({'fileList': [], 'folderList': []});
 
   takeCareOfRecentDoc({required String docId}) async =>
-      await getStarCollection().doc(docId).set({'fileList': []});
+      await getRecentCollection().doc(docId).set({'fileList': []});
+
+  takeCareOfSearchDoc({required String docId}) async =>
+      await getHomeCollection().doc(docId).set({'fileList': []});
 
   //******************Uploading the file ******************** */
 
@@ -179,7 +189,12 @@ class HandlingFS {
     await getHomeCollection().doc(parentDocUid).update({
       'folderList': FieldValue.arrayUnion([sfd])
     });
-    await getHomeCollection().doc(folder.docUid).set(folder.toJson());
+    await getHomeCollection()
+        .doc(folder.docUid)
+        .set(folder.toJson())
+        .then((value) async {
+      await updateNFoldersFo(n: 1, flag: true);
+    });
   }
 
   addFileToFileList(context,
@@ -190,7 +205,10 @@ class HandlingFS {
       await getHomeCollection().doc(parentDocUid).update({
         'fileList': FieldValue.arrayUnion([file.toJson()])
       }).then((value) async {
-        func();
+        await func();
+
+        await manageSpace(size: file.size, flag: true);
+        await syncSearchList(context, docId: await Utility.getSearchDID());
         if (await crle(docId: recentId)) {
           await getRecentCollection().doc(recentId).update({
             'fileList': FieldValue.arrayUnion([file.toJson()])
@@ -200,26 +218,94 @@ class HandlingFS {
             'fileList': [file.toJson()]
           });
         }
+        await getHomeCollection().doc(await Utility.getSearchDID()).update({
+          'fileList': FieldValue.arrayUnion(
+              [SFile.fromJson(map: file.toJson()).toJson()])
+        });
       });
 
+  updateNFilesFI({required int n, required bool flag}) async {
+    await getUserDoc().get().then((value) async {
+      Map<String, dynamic> map = value.data() as Map<String, dynamic>;
+      if (flag) {
+        await getUserDoc().update({'nFiles': map['nFiles'] + n});
+        await Utility.setNFiles(nf: map['nFiles'] + n);
+      } else {
+        await getUserDoc().update({'nFiles': map['nFiles'] - n});
+        await Utility.setNFiles(nf: map['nFiles'] - n);
+      }
+    });
+  }
+
+  updateNFoldersFo({required int n, required bool flag}) async {
+    await getUserDoc().get().then((value) async {
+      Map<String, dynamic> map = value.data() as Map<String, dynamic>;
+      if (flag) {
+        await getUserDoc().update({'nFolders': map['nFolders'] + n});
+        await Utility.setNFolders(nf: map['nFolders'] + n);
+      } else {
+        await getUserDoc().update({'nFolders': map['nFolders'] - n});
+        await Utility.setNFolders(nf: map['nFolders'] - n);
+      }
+    });
+  }
+
   Future<List<String>> getFolderList({required String parentDocID}) async =>
-      await getHomeCollection().doc(parentDocID).get().then((value) {
+      await getHomeCollection().doc(parentDocID).get().then((value) async {
         Map<String, dynamic> map = value.data() as Map<String, dynamic>;
         List<String> docs = [];
-        map['folderList'].forEach((element) {
+        if (map['star'] == true) {
+          await dffStarDoc(starfolder: ShortFD.fromJson(map: map).toJson());
+        }
+        map['folderList'].forEach((element) async {
           docs.add(element['docUid']);
         });
+        if (docs.length > 0) {
+          await updateNFoldersFo(n: docs.length, flag: false);
+        }
         return docs;
       });
 
   Future<List<String>> getFileList({required String parentDocID}) async =>
-      await getHomeCollection().doc(parentDocID).get().then((value) {
+      await getHomeCollection().doc(parentDocID).get().then((value) async {
         Map<String, dynamic> map = value.data() as Map<String, dynamic>;
+        double space = 0.0;
         List<String> docs = [];
+        List<Map<String, dynamic>> sFiles = [];
+        List<String> freshNames = [];
         map['fileList'].forEach((element) {
-          docs.add(element['fileName']);
+          Map<String, dynamic> tempMap = element as Map<String, dynamic>;
+          docs.add(tempMap['oldName']);
+          freshNames.add(tempMap['fileName']);
+          space += tempMap['size'];
+          sFiles.add(SFile.fromJson(map: tempMap).toJson());
         });
+
+        if (docs.length > 0) {
+          await updateNFilesFI(n: docs.length, flag: false);
+          await manageSpace(size: space, flag: false);
+          await dffSd(list: sFiles);
+        }
+        if (freshNames.length > 0) {
+          String recentId = await Utility.getRecentDID();
+          String starId = await Utility.getStarDID();
+          freshNames.forEach((element) async {
+            await deleteFileFromRecentDoc(element: element, recentId: recentId);
+            await deleteFileFromStarDoc(starId: starId, element: element);
+          });
+        }
         return docs;
+      });
+
+  //dffSd -> delete file from Search doc
+  dffSd({required List<Map<String, dynamic>> list}) async =>
+      await getHomeCollection()
+          .doc(await Utility.getSearchDID())
+          .update({'fileList': FieldValue.arrayRemove(list)});
+
+  dffStarDoc({required Map<String, dynamic> starfolder}) async =>
+      await getStarCollection().doc(await Utility.getStarDID()).update({
+        'folderList': FieldValue.arrayRemove([starfolder])
       });
 
   //******************  STREAMS ******************* */
@@ -233,6 +319,9 @@ class HandlingFS {
   Stream<DocumentSnapshot> getStarDocAsStream({required String docId}) =>
       getStarCollection().doc(docId).snapshots();
 
+  Stream<DocumentSnapshot> getSearchDocAsStream({required String docId}) =>
+      getHomeCollection().doc(docId).snapshots();
+
   //***************** DModals ************ */
 
   deleteFolder({required String parentDocID, required ShortFD fd}) async {
@@ -240,6 +329,7 @@ class HandlingFS {
       'folderList': FieldValue.arrayRemove([fd.toJson()])
     });
     parentDocID = fd.docUid;
+    await updateNFoldersFo(n: 1, flag: false);
     await traverseAndDelete(parentDocID: parentDocID);
   }
 
@@ -269,9 +359,49 @@ class HandlingFS {
       await getHomeCollection().doc(parentDocID).update({
         'fileList': FieldValue.arrayRemove([cFile.toJson()])
       }).whenComplete(() async {
+        await getHomeCollection().doc(await Utility.getSearchDID()).update({
+          'fileList': FieldValue.arrayRemove(
+              [SFile.fromJson(map: cFile.toJson()).toJson()])
+        });
+        await deleteFileFromRecentDoc(
+            recentId: await Utility.getRecentDID(), element: cFile.fileName);
+        if (cFile.star == true) {
+          await getStarCollection().doc(await Utility.getStarDID()).update({
+            'fileList': FieldValue.arrayRemove([cFile.toJson()])
+          });
+        }
         await FirebaseStorage.instance
-            .ref('/files/${this.contactID}/${cFile.fileName}')
+            .ref('/files/${this.contactID}/${cFile.oldName}')
             .delete();
+      });
+
+  deleteFileFromRecentDoc(
+          {required String recentId, required String element}) async =>
+      await getRecentCollection().doc(recentId).get().then((value) {
+        Map<String, dynamic> map = value.data() as Map<String, dynamic>;
+        map['fileList'].forEach((file) async {
+          Map<String, dynamic> tempMap = file as Map<String, dynamic>;
+          if (tempMap['fileName'] == element) {
+            await getRecentCollection().doc(recentId).update({
+              'fileList': FieldValue.arrayRemove([tempMap])
+            });
+          }
+        });
+      });
+
+  deleteFileFromStarDoc(
+          {required String starId, required String element}) async =>
+      await getStarCollection().doc(starId).get().then((value) {
+        Map<String, dynamic> map = value.data() as Map<String, dynamic>;
+        map['fileList'].forEach((file) async {
+          Map<String, dynamic> tempMap = file as Map<String, dynamic>;
+          if (tempMap['fileName'] == element) {
+            await getStarCollection().doc(starId).update({
+              'fileList': FieldValue.arrayRemove([tempMap])
+            });
+            return;
+          }
+        });
       });
 
   makeStar(
@@ -369,6 +499,22 @@ class HandlingFS {
             .doc(parentDocID)
             .update({'folderList': map['folderList']});
         await getHomeCollection().doc(sfd.docUid).update({'fName': name});
+      }).then((value) async {
+        await getStarCollection()
+            .doc(await Utility.getStarDID())
+            .get()
+            .then((value) async {
+          Map<String, dynamic> map = value.data() as Map<String, dynamic>;
+          map['folderList'].forEach((element) {
+            Map<String, dynamic> tempMap = element as Map<String, dynamic>;
+            if ("${tempMap['docUid']}" == sfd.docUid) {
+              element['fName'] = name;
+            }
+          });
+          await getStarCollection()
+              .doc(await Utility.getStarDID())
+              .update({'folderList': map['folderList']});
+        });
       });
 
   renameFile(
@@ -377,16 +523,70 @@ class HandlingFS {
           required String name}) async =>
       getHomeCollection().doc(parentDocID).get().then((value) async {
         Map<String, dynamic> map = value.data() as Map<String, dynamic>;
-        map['fileList'].forEach((element) {
+        map['fileList'].forEach((element) async {
           Map<String, dynamic> tempMap = element as Map<String, dynamic>;
           if ("${tempMap['dan']}" == dan) {
             List<String> list = tempMap['fileName'].split('.');
-            element['fileName'] = '$name.${list.last}';
+            String oldName = tempMap['fileName'],
+                newName = '$name.${list.last}';
+            element['fileName'] = newName;
+            await renameInSearchDoc(oldName: oldName, newName: newName);
           }
         });
 
         await getHomeCollection()
             .doc(parentDocID)
+            .update({'fileList': map['fileList']});
+      }).then((value) async {
+        await getRecentCollection()
+            .doc(await Utility.getRecentDID())
+            .get()
+            .then((value) async {
+          Map<String, dynamic> map = value.data() as Map<String, dynamic>;
+          map['fileList'].forEach((element) {
+            Map<String, dynamic> tempMap = element as Map<String, dynamic>;
+            if ("${tempMap['dan']}" == dan) {
+              List<String> list = tempMap['fileName'].split('.');
+              element['fileName'] = '$name.${list.last}';
+            }
+          });
+          await getRecentCollection()
+              .doc(await Utility.getRecentDID())
+              .update({'fileList': map['fileList']});
+        });
+
+        await getStarCollection()
+            .doc(await Utility.getStarDID())
+            .get()
+            .then((value) async {
+          Map<String, dynamic> map = value.data() as Map<String, dynamic>;
+          map['fileList'].forEach((element) {
+            Map<String, dynamic> tempMap = element as Map<String, dynamic>;
+            if ("${tempMap['dan']}" == dan) {
+              List<String> list = tempMap['fileName'].split('.');
+              element['fileName'] = '$name.${list.last}';
+            }
+          });
+          await getStarCollection()
+              .doc(await Utility.getStarDID())
+              .update({'fileList': map['fileList']});
+        });
+      });
+
+  renameInSearchDoc({required String oldName, required String newName}) async =>
+      await getHomeCollection()
+          .doc(await Utility.getSearchDID())
+          .get()
+          .then((value) async {
+        Map<String, dynamic> map = value.data() as Map<String, dynamic>;
+        map['fileList'].forEach((element) {
+          Map<String, dynamic> tempMap = element as Map<String, dynamic>;
+          if ('${tempMap['fileName']}' == oldName) {
+            element['fileName'] = newName;
+          }
+        });
+        await getHomeCollection()
+            .doc(await Utility.getSearchDID())
             .update({'fileList': map['fileList']});
       });
 
@@ -407,6 +607,52 @@ class HandlingFS {
           }
         });
         return map;
+      });
+
+  removeFileFromRecent(
+          {required String recentId, required CFile cFile}) async =>
+      getRecentCollection().doc(recentId).update({
+        'fileList': FieldValue.arrayRemove([cFile.toJson()])
+      });
+
+  checkConcurrencyOfFile({required String destination}) async {
+    final list = await FirebaseStorage.instance
+        .ref('files/${await Utility.getUserContact()}/')
+        .listAll();
+    final list1 = list.items;
+    bool check = false;
+    list1.forEach((element) {
+      if (element.fullPath == destination) {
+        check = true;
+        return;
+      }
+    });
+    return check;
+  }
+
+  manageSpace({required double size, required bool flag}) async {
+    await getUserDoc().get().then((value) async {
+      Map<String, dynamic> map = value.data() as Map<String, dynamic>;
+      if (flag) {
+        await getUserDoc().update({'space': map['space'] + size});
+        await Utility.setSpace(space: map['space'] + size);
+      } else {
+        await getUserDoc().update({'space': map['space'] - size});
+        await Utility.setSpace(space: map['space'] - size);
+      }
+    });
+  }
+
+  syncSearchList(context, {required String docId}) async =>
+      await getHomeCollection().doc(docId).get().then((value) async {
+        Map<String, dynamic> map = value.data() as Map<String, dynamic>;
+        List<SFile> list = [];
+        map['fileList'].forEach((element) {
+          Map<String, dynamic> tempMap = element as Map<String, dynamic>;
+          list.add(SFile.fromJson(map: tempMap));
+        });
+        await Provider.of<GetChanges>(context, listen: false)
+            .updateSList(list: list);
       });
   //*****************
   //
@@ -436,20 +682,23 @@ class FileOps {
   //
 
   openFile(context, {required String url, required String fileName}) async {
-    final file = await dFile(fileName: fileName, url: url);
+    final file = await dFile(context, fileName: fileName, url: url);
     if (file == null) return;
     Provider.of<GetChanges>(context, listen: false)
         .updateLoadingIndicatorStatus(flag: false);
     await OpenFile.open(file.path);
   }
 
-  dFile({required String url, required String fileName}) async {
+  dFile(context, {required String url, required String fileName}) async {
     Directory dir = await getApplicationDocumentsDirectory();
     File file = File('${dir.path}/$fileName');
     if (await file.exists()) {
       return file;
     }
 
+    if (!await CIC.checkConnectivity(context)) {
+      return null;
+    }
     try {
       final response = await Dio().get(url,
           options: Options(
@@ -473,14 +722,11 @@ class FileOps {
   /// ************{download} methods********** */
   /// dftdDirectory => download file to download directory
 
-  dftdDirectory(context,
-      {required String url, required String fileName}) async {
+  dftdDirectory({required String url, required String fileName}) async {
     File file = File('/storage/emulated/0/Download/$fileName');
 
     Directory dir = Directory('/storage/emulated/0/Download/');
-    if (await dir.exists()) {
-      print('::::::::::::: directory exists');
-    }
+    if (await dir.exists()) {}
     try {
       final response = await Dio().get(url,
           options: Options(
@@ -488,15 +734,45 @@ class FileOps {
             followRedirects: false,
             receiveTimeout: 0,
           ));
-      print("response is clear");
       final wtf = file.openSync(mode: FileMode.write);
-      print("file is opened");
       wtf.writeFromSync(response.data);
-      print("file is written");
       await wtf.close();
-      SB.ssb(context, text: '$fileName is downloaded');
     } catch (e) {
       print(e);
+    }
+  }
+
+  /// ************{share} methods********** */
+
+  shareFile(context, {required String url, required String fileName}) async {
+    final file = await dFile(context, fileName: fileName, url: url);
+    if (file == null) return;
+    Provider.of<GetChanges>(context, listen: false)
+        .updateLoadingIndicatorStatus(flag: false);
+    await Share.shareFiles([file.path]);
+  }
+
+  /// ************{making files available offline} methods********** */
+  mAO({required String url, required String fileName}) async {
+    Directory dir = await getApplicationDocumentsDirectory();
+    File file = File('${dir.path}/$fileName');
+    if (await file.exists()) {
+      return;
+    }
+
+    try {
+      final response = await Dio().get(url,
+          options: Options(
+            responseType: ResponseType.bytes,
+            followRedirects: false,
+            receiveTimeout: 0,
+          ));
+
+      final wtf = file.openSync(mode: FileMode.write);
+      wtf.writeFromSync(response.data);
+      await wtf.close();
+    } catch (e) {
+      return null;
     }
   }
 }

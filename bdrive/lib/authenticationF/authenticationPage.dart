@@ -24,6 +24,7 @@ class _AuthenticationPageState extends State<AuthenticationPage> {
       floatingActionButton: FloatingActionButton(
         backgroundColor: Colors.grey[900],
         onPressed: () async {
+          if (!await CIC.checkConnectivity(context)) return;
           GetChanges val = Provider.of<GetChanges>(context, listen: false);
           if (val.getCodeSentSemaphore() == false) {
             var text = nCon.text.trim();
@@ -33,6 +34,7 @@ class _AuthenticationPageState extends State<AuthenticationPage> {
               SB.ssb(context, text: 'Enter a 10 digit number');
             } else {
               SB.sdb(context, () {
+                val.updateCodeSentSemaphore(flag: true);
                 FirebaseFunctions.verifyNumber(context, '$text');
                 timer = Timer.periodic(Duration(seconds: 1), (timer) {
                   Provider.of<GetChanges>(context, listen: false)
@@ -51,6 +53,7 @@ class _AuthenticationPageState extends State<AuthenticationPage> {
             } else if (text.length < 6 || text.length > 6) {
               SB.ssb(context, text: 'Enter the 6 SMS-code');
             } else {
+              val.updateLoadingIndicatorStatus(flag: true);
               FirebaseFunctions.signInUser(context,
                   smsCode: text,
                   phoneNumber: nCon.text.trim(),
@@ -58,7 +61,10 @@ class _AuthenticationPageState extends State<AuthenticationPage> {
             }
           }
         },
-        child: Icon(Icons.arrow_forward_ios, color: Colors.red,),
+        child: Icon(
+          Icons.arrow_forward_ios,
+          color: Colors.red,
+        ),
       ),
       backgroundColor: Colors.black87,
       body: Container(
@@ -115,7 +121,9 @@ class _AuthenticationPageState extends State<AuthenticationPage> {
                         height: 30,
                       ),
                       TF.instl(context, text: TS.svp2, fSize: 52),
-                      Container(height: 50,),
+                      Container(
+                        height: 50,
+                      ),
                       Container(
                         width: TU.getw(context),
                         height: 40,
@@ -123,34 +131,34 @@ class _AuthenticationPageState extends State<AuthenticationPage> {
                           margin: EdgeInsets.only(right: 30),
                           child: Consumer<GetChanges>(
                               builder: (BuildContext context, value, win) {
-                            return value.getCodeSentSemaphore() == true? Wrap(
-                              alignment: WrapAlignment.end,
-                              children: [
-                                TF.inst(context, text: TS.svp3),
-                                Container(
-                                  padding: EdgeInsets.symmetric(horizontal: 20),
-                                  decoration: BoxDecoration(
-                                    
-                                      borderRadius: BorderRadius.circular(20),
-                                      color: Colors.grey[700]),
-                                  child: Consumer<GetChanges>(
-                                    builder: (context, value, w) {
-                                      return value.getCodeSentSemaphore() ==
-                                              true
-                                          ? Text(
-                                              '${value.time}',
-                                              style: TU.tesmall(context, 50),
-                                            )
-                                          : Text(
-                                              '30',
-                                              style: TU.tesmall(context, 50),
-                                            );
-                                    },
-                                  ),
-                                ),
-                                TF.inst(context, text: TS.seconds)
-                              ],
-                            ):Text('');
+                            return value.getCodeSentSemaphore() == true
+                                ? Wrap(
+                                    alignment: WrapAlignment.end,
+                                    children: [
+                                      TF.inst(context, text: TS.svp3),
+                                      Container(
+                                          padding: EdgeInsets.symmetric(
+                                              horizontal: 20),
+                                          decoration: BoxDecoration(
+                                              borderRadius:
+                                                  BorderRadius.circular(20),
+                                              color: Colors.grey[700]),
+                                          child: value.getCodeSentSemaphore() ==
+                                                  true
+                                              ? Text(
+                                                  '${value.time}',
+                                                  style:
+                                                      TU.tesmall(context, 50),
+                                                )
+                                              : Text(
+                                                  '30',
+                                                  style:
+                                                      TU.tesmall(context, 50),
+                                                )),
+                                      TF.inst(context, text: TS.seconds)
+                                    ],
+                                  )
+                                : Text('');
                           }),
                         ),
                       ),
@@ -192,8 +200,8 @@ class _AuthenticationPageState extends State<AuthenticationPage> {
                             return TextFormField(
                               enabled: flag,
                               controller: nCon,
-                              style: TU.tesmall(context, 44),
-                              cursorColor: Colors.white,
+                              style: TU.tesmall(context, 44),  
+                              showCursor:false,                         
                               keyboardType: TextInputType.number,
                               textAlign: TextAlign.center,
                               decoration: InputDecoration(
@@ -225,7 +233,16 @@ class _AuthenticationPageState extends State<AuthenticationPage> {
                   )
                 ],
               ),
-            )
+            ),
+            Consumer<GetChanges>(builder: (BuildContext context, changes, win) {
+              return changes.loadingIndicator == true
+                  ? Center(
+                      child: CircularProgressIndicator(
+                        color: Colors.red,
+                      ),
+                    )
+                  : Container();
+            })
           ],
         ),
       ),

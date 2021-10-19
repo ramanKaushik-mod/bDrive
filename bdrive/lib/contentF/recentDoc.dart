@@ -2,6 +2,7 @@ import 'package:bdrive/utilityF/firebaseUtility.dart';
 import 'package:bdrive/utilityF/localUtility.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:provider/provider.dart';
 
 class RecentDocPage extends StatefulWidget {
@@ -51,17 +52,45 @@ class _RecentDocPageState extends State<RecentDocPage> {
                           : [];
 
                       if (list.isEmpty) {
-                        return Center(
-                          child: Wrap(
-                            children: [
-                              Container(
-                                  child: CircularProgressIndicator(
-                                color: Colors.red,
-                              ))
-                            ],
+                  return Center(
+                      child: Wrap(
+                    direction: Axis.vertical,
+                    crossAxisAlignment: WrapCrossAlignment.center,
+                    children: [
+                      Stack(
+                        children: [
+                          Icon(
+                            Icons.change_history,
+                            color: Colors.red,
+                            size: 90,
                           ),
-                        );
-                      }
+                          Positioned(
+                              bottom: 1,
+                              right: 1,
+                              child: Icon(
+                                FontAwesomeIcons.fileUpload,
+                                color: Colors.white54,
+                                size: 40,
+                              ))
+                        ],
+                      ),
+                      Padding(
+                        padding: EdgeInsets.only(top: 20),
+                        child: Text(
+                          'No recents uploads',
+                          style: TU.tesmall(context, 60),
+                        ),
+                      ),
+                      Padding(
+                        padding: EdgeInsets.only(top: 20),
+                        child: Text(
+                          'your recent uploads will appear here',
+                          style: TU.tesmall(context, 70),
+                        ),
+                      ),
+                    ],
+                  ));
+                }
                       list = list.reversed.toList();
                       return value.getView() == 1
                           ? SingleChildScrollView(

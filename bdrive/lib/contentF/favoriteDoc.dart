@@ -2,6 +2,7 @@ import 'package:bdrive/utilityF/firebaseUtility.dart';
 import 'package:bdrive/utilityF/localUtility.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:provider/provider.dart';
 
 class StarDocPage extends StatefulWidget {
@@ -50,28 +51,58 @@ class _StarDocPageState extends State<StarDocPage> {
                           ? Mapping.mapper(
                               list: map['folderList'],
                               flag: flag,
-                              handlingFS: widget.handlingFS)
+                              handlingFS: widget.handlingFS,
+                              callFrom: 'star')
                           : [];
                       List<Widget> flist = map['fileList'].length > 0
                           ? Mapping.mapFiles(
                               list: map['fileList'],
                               flag: flag,
-                              handlingFS: widget.handlingFS)
+                              handlingFS: widget.handlingFS,
+                              callFrom: 'star')
                           : [];
                       flist.forEach((element) {
                         list.add(element);
                       });
                       if (list.isEmpty) {
                         return Center(
-                          child: Wrap(
-                            children: [
-                              Container(
-                                  child: CircularProgressIndicator(
-                                color: Colors.red,
-                              ))
-                            ],
-                          ),
-                        );
+                            child: Wrap(
+                          direction: Axis.vertical,
+                          crossAxisAlignment: WrapCrossAlignment.center,
+                          children: [
+                            Stack(
+                              children: [
+                                Icon(
+                                  Icons.star_border_outlined,
+                                  color: Colors.red,
+                                  size: 90,
+                                ),
+                                Positioned(
+                                    bottom: 1,
+                                    right: 1,
+                                    child: Icon(
+                                      FontAwesomeIcons.file,
+                                      color: Colors.white54,
+                                      size: 40,
+                                    ))
+                              ],
+                            ),
+                            Padding(
+                              padding: EdgeInsets.only(top: 20),
+                              child: Text(
+                                'No starred files',
+                                style: TU.tesmall(context, 60),
+                              ),
+                            ),
+                            Padding(
+                              padding: EdgeInsets.only(top: 20),
+                              child: Text(
+                                'Add stars to files & folders you want to easily find later',
+                                style: TU.tesmall(context, 70),
+                              ),
+                            ),
+                          ],
+                        ));
                       }
 
                       return value.getView() == 1

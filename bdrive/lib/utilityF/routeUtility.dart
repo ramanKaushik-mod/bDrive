@@ -27,8 +27,6 @@ class RouteGenerator {
         return MaterialPageRoute(builder: (_) => ImageCapture());
       case '/aup':
         return MaterialPageRoute(builder: (_) => AuthenticationPage());
-      case '/seap':
-        return MaterialPageRoute(builder: (_) => SearchPage());
       default:
         return _errorRoute();
     }
