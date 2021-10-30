@@ -109,7 +109,7 @@ class _HomePageState extends State<HomePage> {
           margin: EdgeInsets.symmetric(horizontal: 10),
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(10),
-            color: Colors.white10,
+            color: Colors.white12,
           ),
           padding: EdgeInsets.only(right: 5),
           height: 60,
@@ -130,20 +130,20 @@ class _HomePageState extends State<HomePage> {
                     child: Card(
                       margin: EdgeInsets.only(
                           left: 5, right: 10, top: 5, bottom: 5),
-                      color: Colors.black38,
+                      color: Colors.black87,
                       elevation: 0,
                       shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(10)),
+                          borderRadius: BorderRadius.circular(6)),
                       child: Container(
                           alignment: Alignment.centerLeft,
                           padding: EdgeInsets.only(left: 20, right: 10),
                           height: 50,
                           decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(10),
+                              borderRadius: BorderRadius.circular(6),
                               color: Colors.white24),
                           child: Text(
                             'Search bCLOUD',
-                            style: TU.tesmall(context, 44),
+                            style: TU.tesmall(context, 48),
                           )),
                     ),
                   ),
@@ -413,90 +413,101 @@ class _HomePageState extends State<HomePage> {
         floatingActionButton:
             Consumer<GetChanges>(builder: (BuildContext context, changes, win) {
           return changes.getIsVisible() == false && changes.getNIIndex() == 2
-              ? SpeedDial(
-                  icon: Icons.add,
-                  activeIcon: Icons.close,
-                  iconTheme: IconThemeData(color: Colors.white70, size: 25),
-                  backgroundColor: Colors.grey[900],
-                  overlayColor: Colors.black45,
-                  overlayOpacity: 0.6,
-                  closeManually: true,
-                  openCloseDial: changes.dial,
-                  children: [
-                    SpeedDialChild(
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10),),
-                      backgroundColor: Colors.transparent,
-                      labelWidget:
-                          TU.tSDLabel(context: context, label: 'upload'),
-                      child: IU.ditask(
-                          icon: Icons.upload_outlined,
-                          callback: () async {
-                            if (!await CIC.checkConnectivity(context)) {
-                              changes.updateDialStatus();
-                              return;
-                            }
-                            String parentDocID = changes.pathList.last[0];
-                            await selectFile();
-                            changes.updateDialStatus();
-                            try {
-                              await uploadFile(parentDocID: parentDocID);
-                            } on FirebaseException catch (e) {
-                              if (e.code == 'canceled') {
-                                print('[firebase_storage/canceled] is handled');
-                              }
-                              SB.ssb(context, text: "upload canceled");
-                            }
-                          },
-                          size: 28),
-                    ),
-                    SpeedDialChild(
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10),),
+              ? Container(
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(20),
+                color: Colors.blue[900],
+
+                ),
+                child: SpeedDial(
+                    icon: Icons.add,
+                    buttonSize: 60,
+                    activeIcon: Icons.close,
+                    iconTheme: IconThemeData(color: Colors.white, size: 25),
+                    backgroundColor: Colors.black12,
+                    overlayColor: Colors.black54,
+                    overlayOpacity: 0.6,
+                    elevation:0,
+                    
+                    closeManually: true,
+                    openCloseDial: changes.dial,
+                    
+                    
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20),),
+                    children: [
+                      SpeedDialChild(
                         backgroundColor: Colors.transparent,
-                        labelWidget: TU.tSDLabel(
-                            context: context, label: 'create folder'),
-                        child: IU.ditask(
-                            icon: Icons.create_new_folder_outlined,
+                        labelWidget:
+                            TU.tSDLabel(context: context, label: 'upload'),
+                        child: IU.dstask(
+                            icon: Icons.upload_outlined,
                             callback: () async {
-                              StreamSubscription<ConnectivityResult> ss =
-                                  CIC.getSubscription(context, callback: () {});
                               if (!await CIC.checkConnectivity(context)) {
-                                ss.cancel();
                                 changes.updateDialStatus();
                                 return;
                               }
-                              fCon.text = '';
+                              String parentDocID = changes.pathList.last[0];
+                              await selectFile();
                               changes.updateDialStatus();
-
-                              SB.sdb(context, () async {
-                                var text = fCon.text.trim().toString();
-                                if (text.length == 0) {
-                                  SB.ssb(context,
-                                      text: 'enter a name for folder');
-                                } else {
-                                  SB.ssb(context, text: '$text created');
-
-                                  await handlingFS.addFolderToFolderList(
-                                      folder: Folder(
-                                          docUid: handlingFS
-                                              .getHomeCollection()
-                                              .doc()
-                                              .id,
-                                          fName: fCon.text.trim(),
-                                          createdAt: DateTime.now().toString(),
-                                          folderList: [],
-                                          fileList: [],
-                                          star: false),
-                                      parentDocUid: changes.pathList.last[0]);
+                              try {
+                                await uploadFile(parentDocID: parentDocID);
+                              } on FirebaseException catch (e) {
+                                if (e.code == 'canceled') {
+                                  print('[firebase_storage/canceled] is handled');
                                 }
-
-                                fCon.text = '';
-                              }, () {}, fCon, dialog: 'New folder');
-
-                              ss.cancel();
+                                SB.ssb(context, text: "upload canceled");
+                              }
                             },
-                            size: 28))
-                  ],
-                )
+                            size: 30),
+                      ),
+                      SpeedDialChild(
+                          backgroundColor: Colors.transparent,
+                          labelWidget: TU.tSDLabel(
+                              context: context, label: 'create folder'),
+                          child: IU.dstask(
+                              icon: Icons.create_new_folder_outlined,
+                              callback: () async {
+                                StreamSubscription<ConnectivityResult> ss =
+                                    CIC.getSubscription(context, callback: () {});
+                                if (!await CIC.checkConnectivity(context)) {
+                                  ss.cancel();
+                                  changes.updateDialStatus();
+                                  return;
+                                }
+                                fCon.text = '';
+                                changes.updateDialStatus();
+
+                                SB.sdb(context, () async {
+                                  var text = fCon.text.trim().toString();
+                                  if (text.length == 0) {
+                                    SB.ssb(context,
+                                        text: 'enter a name for folder');
+                                  } else {
+                                    SB.ssb(context, text: '$text created');
+
+                                    await handlingFS.addFolderToFolderList(
+                                        folder: Folder(
+                                            docUid: handlingFS
+                                                .getHomeCollection()
+                                                .doc()
+                                                .id,
+                                            fName: fCon.text.trim(),
+                                            createdAt: DateTime.now().toString(),
+                                            folderList: [],
+                                            fileList: [],
+                                            star: false),
+                                        parentDocUid: changes.pathList.last[0]);
+                                  }
+
+                                  fCon.text = '';
+                                }, () {}, fCon, dialog: 'New folder');
+
+                                ss.cancel();
+                              },
+                              size: 30))
+                    ],
+                  ),
+              )
               : Container();
         }),
       ),

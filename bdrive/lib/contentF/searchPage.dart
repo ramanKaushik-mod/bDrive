@@ -63,6 +63,7 @@ class _SearchPageState extends State<SearchPage> {
                               borderRadius: BorderRadius.circular(10),
                               color: Colors.white24),
                           child: TextFormField(
+                            autofocus: true,
                             controller: con,
                             style: TU.tesmall(context, 44),
                             showCursor: false,
@@ -79,7 +80,7 @@ class _SearchPageState extends State<SearchPage> {
                                 enabledBorder: UnderlineInputBorder(
                                     borderSide: BorderSide.none),
                                 hintText: 'Search bCLOUD',
-                                hintStyle: TU.tesmall(context, 55)),
+                                hintStyle: TU.tesmall(context, 48)),
                             onChanged: (query) {
                               if (query.trim().isNotEmpty) {
                                 searchInList(query: query);
@@ -103,8 +104,14 @@ class _SearchPageState extends State<SearchPage> {
                           child: IU.diconl(
                               icon: Icons.close,
                               callback: () {
-                                gChanges.updateWList(list: []);
-                                con.text = '';
+                                if (con.text.trim().length == 0) {
+                                  gChanges.updateWList(list: []);
+                                  con.text = '';
+                                  Navigator.pop(context);
+                                } else {
+                                  gChanges.updateWList(list: []);
+                                  con.text = '';
+                                }
                               },
                               size: 24)),
                     ],

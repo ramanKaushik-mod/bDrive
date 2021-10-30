@@ -70,12 +70,12 @@ class FirebaseFunctions {
 
       if (FirebaseAuth.instance.currentUser != null) {
         await Utility.saveUserContact(userCon: phoneNumber);
-        await Utility.userSignedIn();
         await HandlingFS(contactID: phoneNumber)
             .getUserDetails()
             .then((value) async {
           if (value.isNotEmpty) {
             await Utility.setUserDetails(map: value);
+            await Utility.userSignedIn();
           }
         });
         GetChanges changes = Provider.of<GetChanges>(context, listen: false);

@@ -80,7 +80,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                               Expanded(
                                   child: Text(
                                 TS.firstTime,
-                                style: TU.teeesmall(context, 38),
+                                style: TU.tblarge(context, 44),
                               )),
                               Stack(
                                 children: [
@@ -97,6 +97,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                               ),
                             ],
                           ),
+                          Container(height: 20,),
                           TF.inst(context, text: TS.inst1),
                           Container(height: 50),
                           TF.inst(context, text: TS.inst2),
@@ -126,24 +127,25 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         Consumer<GetChanges>(
                             builder: (BuildContext context, value, win) {
                           return value.tellImageExist() != true
-                              ? InkWell(
-                                  onTap: () {
-                                    Navigator.pushNamed(context, '/imc');
-                                  },
-                                  child: Stack(
-                                    children: [
-                                      Padding(
-                                        padding: EdgeInsets.only(right: 15),
-                                        child: IU.dicon(
-                                          icon: Icons.person,
-                                          callback: () {},
-                                          size: 30,
-                                          cSize: 30,
-                                        ),
+                              ? Stack(
+                                  children: [
+                                    Padding(
+                                      padding: EdgeInsets.only(right: 15),
+                                      child: IU.dicon(
+                                        icon: Icons.person,
+                                        callback: () {},
+                                        size: 30,
+                                        cSize: 30,
                                       ),
-                                      Positioned(
-                                          bottom: 1,
-                                          right: 0.8,
+                                    ),
+                                    Positioned(
+                                        bottom: 1,
+                                        right: 0.8,
+                                        child: InkResponse(
+                                          onTap: () {
+                                            Navigator.pushNamed(
+                                                context, '/imc');
+                                          },
                                           child: IU.dicon(
                                               icon: Icons.edit,
                                               callback: () {
@@ -151,9 +153,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                                     context, '/imc');
                                               },
                                               size: 16,
-                                              cSize: 16)),
-                                    ],
-                                  ),
+                                              cSize: 16),
+                                        )),
+                                  ],
                                 )
                               : InkResponse(
                                   onTap: () {
@@ -186,7 +188,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                 color: Colors.black26),
                             child: TextFormField(
                               controller: nCon,
-                              style: TU.tesmall(context, 44),
+                              style: TU.tesmall(context, 50),
                               cursorColor: Colors.white,
                               keyboardType: TextInputType.text,
                               decoration: InputDecoration(
@@ -206,11 +208,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     ),
                     TF.getTField(context, con: uNCon, htext: TS.puserName),
                     SizedBox(
-                      height: 25,
+                      height: 20,
                     ),
                     TF.getTField(context, con: eCon, htext: TS.pemailId),
                     SizedBox(
-                      height: 25,
+                      height: 20,
                     ),
                     TF.getTField(context, con: pCon, htext: TS.ppcode),
                   ],

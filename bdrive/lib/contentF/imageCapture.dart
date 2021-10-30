@@ -66,19 +66,25 @@ class _ImageCaptureState extends State<ImageCapture> {
             backgroundColor: Colors.white12,
             elevation: 0,
             actions: [
-              Consumer<GetChanges>(builder: (BuildContext context, changes, win){
-                return changes.tellPickedFileExist() == true?Row(
-                  children :[
               IconButton(
-                splashRadius: 0,
+                tooltip: "crop",
                   onPressed: () {
-                    _cropImage(
-                        file: Provider.of<GetChanges>(context, listen: false)
-                            .getPickedFile());
+                    GetChanges changes =
+                        Provider.of<GetChanges>(context, listen: false);
+                    if (changes.tellPickedFileExist()) {
+                      _cropImage(
+                          file: Provider.of<GetChanges>(context, listen: false)
+                              .getPickedFile());
+                    } else {
+                      SB.ssb(
+                        context,
+                        text: 'no image is selected',
+                      );
+                    }
                   },
-                  icon: IU.dNIcon(icon: Icons.crop, size: 26)),
+                  icon: IU.dCIcon(icon: Icons.crop, size: 24)),
               IconButton(
-                splashRadius: 0,
+                tooltip: "save",
                   onPressed: () async {
                     GetChanges changes =
                         Provider.of<GetChanges>(context, listen: false);
@@ -107,14 +113,24 @@ class _ImageCaptureState extends State<ImageCapture> {
                       );
                     }
                   },
-                  icon: IU.dNIcon(icon: Icons.save, size: 26,)),
+                  icon: IU.dCIcon(
+                    icon: Icons.upload_outlined,
+                    size: 24,
+                  )),
               IconButton(
-                splashRadius: 0,
+                tooltip: "clear",
                   onPressed: () {
-                    _clear();
+                    if (Provider.of<GetChanges>(context, listen: false)
+                        .tellPickedFileExist()) {
+                      _clear();
+                    } else {
+                      SB.ssb(
+                        context,
+                        text: 'no image is selected',
+                      );
+                    }
                   },
-                  icon: IU.dNIcon(icon: Icons.refresh, size: 26))]):Container();
-              }),
+                  icon: IU.dCIcon(icon: Icons.refresh, size: 25))
             ],
           ),
           backgroundColor: Colors.black87,
@@ -132,8 +148,8 @@ class _ImageCaptureState extends State<ImageCapture> {
             color: Colors.black87,
             child: BottomNavigationBar(
               unselectedItemColor: Colors.white70,
-              selectedFontSize: 18,
-              unselectedFontSize: 15,
+              selectedFontSize: 16,
+              unselectedFontSize: 12,
               selectedItemColor: Colors.red,
               backgroundColor: Colors.white12,
               onTap: (index) {
@@ -184,6 +200,9 @@ class _ImageCaptureState extends State<ImageCapture> {
                                 borderRadius: BorderRadius.circular(10),
                                 child: Image.file(
                                   value.pickedFile,
+                                  fit: BoxFit.cover,
+                                  height: TU.geth(context) / 1.5,
+                                  width: TU.getw(context),
                                 ),
                               )),
                         );
@@ -221,10 +240,10 @@ class _ImageCaptureState extends State<ImageCapture> {
           Icon(
             Icons.insert_drive_file,
             color: Colors.grey[700],
-            size: TU.getw(context)/3,
+            size: TU.getw(context) / 3,
           ),
           Padding(
-            padding: EdgeInsets.only(top:16),
+            padding: EdgeInsets.only(top: 16),
             child: Text(
               "Grab your Profile Pic",
               style: TextStyle(color: Colors.grey[500]),
@@ -247,65 +266,3 @@ class _ImageCaptureState extends State<ImageCapture> {
         .updatePickedFileExistsToFalse();
   }
 }
-
-// Container(
-//               padding: const EdgeInsets.all(10),
-//               height: 80,
-//               color: Colors.white12,
-//               child: Consumer<GetChanges>(
-//                 builder: (BuildContext context, value, win) {
-//                   return Row(
-//                     mainAxisAlignment: MainAxisAlignment.spaceAround,
-//                     children: value.tellPickedFileExist() == true
-//                         ? [
-//                             IU.ditask(
-//                                 icon: Icons.camera,
-//                                 callback: () {
-//                                   _pickImage(ImageSource.camera);
-//                                 },
-//                                 size: 28,),
-//                             IU.ditask(
-//                                 icon: Icons.photo_library,
-//                                 callback: () {
-//                                   _pickImage(ImageSource.gallery);
-//                                 },
-//                                 size: 28,),
-//                             IU.ditask(
-//                                 icon: Icons.crop,
-//                                 callback: () {
-//                                   _cropImage(
-//                                       file: Provider.of<GetChanges>(context,
-//                                               listen: false)
-//                                           .getPickedFile());
-//                                 },
-//                                 size: 28,),
-//                             IU.ditask(
-//                                 icon: Icons.save,
-//                                 callback: () async {
-//                                  
-//                                 },
-//                                 size: 28),
-//                             IU.ditask(
-//                                 icon: Icons.refresh,
-//                                 callback: () {
-//                                   _clear();
-//                                 },
-//                                 size: 28),
-//                           ]
-//                         : [
-//                             IU.ditask(
-//                                 icon: Icons.camera,
-//                                 callback: () {
-//                                   _pickImage(ImageSource.camera);
-//                                 },
-//                                 size: 28),
-//                             IU.ditask(
-//                                 icon: Icons.photo_library,
-//                                 callback: () {
-//                                   _pickImage(ImageSource.gallery);
-//                                 },
-//                                 size: 28,),
-//                           ],
-//                   );
-//                 },
-//               ))

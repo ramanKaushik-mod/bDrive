@@ -63,7 +63,9 @@ class Utility {
 
   static Image imageFromBase64String(String base64String) => Image.memory(
         base64Decode(base64String),
-        fit: BoxFit.fill,
+        fit: BoxFit.cover,
+        height: double.maxFinite,
+        width: double.maxFinite,
       );
   static void exitApp(BuildContext context) {
     SystemNavigator.pop();
@@ -167,11 +169,11 @@ class SB {
     ScaffoldMessenger.of(context).showSnackBar(SnackBar(
       content: Text(
         text,
-        style: TextStyle(color: Colors.white),
+        style: TextStyle(color: Colors.white,fontSize: 10),
       ),
       backgroundColor: Colors.grey[900],
       behavior: SnackBarBehavior.fixed,
-      duration: Duration(seconds: 2),
+      duration: Duration(seconds: 1),
     ));
   }
 
@@ -259,14 +261,18 @@ class TU {
       fontSize: geth(context) / factor,
       color: Colors.red,
       fontWeight: FontWeight.w400);
+  static tblarge(context, factor) => GoogleFonts.montserratAlternates(
+      fontSize: geth(context) / factor,
+      color: Colors.blue,
+      fontWeight: FontWeight.w400);
   static tesmall(context, factor) => TextStyle(
       fontSize: geth(context) / factor,
       color: Colors.white70,
       fontWeight: FontWeight.w500);
   static teesmall(context) => TextStyle(
       fontSize: geth(context) / 60,
-      color: Colors.white,
-      fontWeight: FontWeight.w300);
+      color: Colors.white70,
+      fontWeight: FontWeight.w500);
   static teeesmall(context, factor) => GoogleFonts.mulish(
       fontSize: geth(context) / factor,
       color: Colors.white54,
@@ -311,19 +317,14 @@ class TU {
       color: Colors.grey,
       fontWeight: FontWeight.w700);
 
-  static tSDLabel({required context, required String label}) => Card(
-        color: Colors.black,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-        child: Container(
-            margin: EdgeInsets.all(1),
-            padding: EdgeInsets.symmetric(horizontal: 15, vertical: 6),
-            decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(20), color: Colors.white24),
-            child: Text(
-              label,
-              style: TU.teesmall(context),
-            )),
-      );
+  static tSDLabel({required context, required String label}) => Container(
+      padding: EdgeInsets.symmetric(horizontal: 15, vertical: 6),
+      decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(20), color: Colors.blue[900]),
+      child: Text(
+        label,
+        style: TU.teesmall(context),
+      ));
 }
 
 class GetChanges extends ChangeNotifier {
@@ -594,6 +595,19 @@ class IU {
         onPressed: () => callback(),
       );
 
+  static dstask(
+          {required IconData icon,
+          required Function callback,
+          required double size}) =>
+      IconButton(
+        icon: Icon(
+          icon,
+          size: size,
+          color: Colors.blue[900],
+        ),
+        onPressed: () => callback(),
+      );
+
   static ditask(
           {required IconData icon,
           required Function callback,
@@ -602,7 +616,7 @@ class IU {
         icon: Icon(
           icon,
           size: size,
-          color: Colors.white54,
+          color: Colors.white70,
         ),
         onPressed: () => callback(),
       );
@@ -614,6 +628,11 @@ class IU {
           size: size,
         ),
       );
+
+  static dCIcon({required IconData icon, required double size}) => Icon(
+    icon,
+    size: size,
+  );
 }
 
 class TF {
@@ -627,7 +646,7 @@ class TF {
                 borderRadius: BorderRadius.circular(10), color: Colors.black26),
             child: TextFormField(
               controller: con,
-              style: TU.tesmall(context, 44),
+              style: TU.tesmall(context, 55),
               cursorColor: Colors.white,
               keyboardType: TextInputType.text,
               decoration: InputDecoration(
@@ -636,7 +655,7 @@ class TF {
                   enabledBorder:
                       UnderlineInputBorder(borderSide: BorderSide.none),
                   hintText: htext,
-                  hintStyle: TU.tesmall(context, 54)),
+                  hintStyle: TU.tesmall(context, 60)),
             ),
           ),
         )
@@ -670,7 +689,7 @@ class TF {
 
   static inst(context, {required text}) => Text(
         text,
-        style: TU.teeesmall(context, 50),
+        style: TU.teeesmall(context, 56),
       );
   static instl(context, {required text, required double fSize}) => Text(
         text,

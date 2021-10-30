@@ -93,7 +93,7 @@ class _AuthenticationPageState extends State<AuthenticationPage> {
                           Expanded(
                               child: Text(
                             TS.nvp,
-                            style: TU.tlarge(context, 30),
+                            style: TU.tlarge(context, 32),
                           )),
                           Stack(
                             children: [
@@ -112,15 +112,15 @@ class _AuthenticationPageState extends State<AuthenticationPage> {
                           ),
                         ],
                       ),
-                      TF.instl(context, text: TS.nvp1, fSize: 44),
+                      TF.instl(context, text: TS.nvp1, fSize: 54),
                       Container(
                         height: 30,
                       ),
-                      TF.instl(context, text: TS.svp, fSize: 44),
+                      TF.instl(context, text: TS.svp, fSize: 54),
                       Container(
                         height: 30,
                       ),
-                      TF.instl(context, text: TS.svp2, fSize: 52),
+                      TF.instl(context, text: TS.svp2, fSize: 54),
                       Container(
                         height: 50,
                       ),
@@ -148,12 +148,12 @@ class _AuthenticationPageState extends State<AuthenticationPage> {
                                               ? Text(
                                                   '${value.time}',
                                                   style:
-                                                      TU.tesmall(context, 50),
+                                                      TU.tesmall(context, 56),
                                                 )
                                               : Text(
                                                   '30',
                                                   style:
-                                                      TU.tesmall(context, 50),
+                                                      TU.tesmall(context, 56),
                                                 )),
                                       TF.inst(context, text: TS.seconds)
                                     ],
