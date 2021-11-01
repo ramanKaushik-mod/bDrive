@@ -50,16 +50,22 @@ class _ProfileScreenState extends State<ProfileScreen> {
         return Future<bool>.value(true);
       },
       child: Scaffold(
-        backgroundColor: Colors.black87,
+        backgroundColor: Colors.white,
         resizeToAvoidBottomInset: false,
         body: Container(
-          color: Colors.white12,
+          color: Colors.black38,
           child: Stack(
             children: [
               Column(
                 mainAxisAlignment: MainAxisAlignment.end,
                 children: [
-                  Container(
+                  Card(
+                  color: Colors.white,
+                  shadowColor: Colors.blue,
+                  elevation: 0,
+                  shape:RoundedRectangleBorder(borderRadius:BorderRadius.only(
+                          topLeft: Radius.circular(5),
+                          topRight: Radius.circular(5))),
                     child: Container(
                       padding: EdgeInsets.only(
                           top: 10, left: 20, right: 10, bottom: 0),
@@ -67,7 +73,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         borderRadius: BorderRadius.only(
                             topLeft: Radius.circular(5),
                             topRight: Radius.circular(5)),
-                        color: Colors.black,
+                        color: Colors.black38,
                       ),
                       width: TU.getw(context),
                       child: Wrap(
@@ -80,7 +86,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                               Expanded(
                                   child: Text(
                                 TS.firstTime,
-                                style: TU.tblarge(context, 44),
+                                style: TU.tlarge(context, 44),
                               )),
                               Stack(
                                 children: [
@@ -98,9 +104,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
                             ],
                           ),
                           Container(height: 20,),
-                          TF.inst(context, text: TS.inst1),
+                          TF.instl(context, text: TS.inst1, fSize: 54),
                           Container(height: 50),
-                          TF.inst(context, text: TS.inst2),
+                          TF.instl(context, text: TS.inst2, fSize: 54),
                           Container(height: 60),
                           Align(
                             alignment: Alignment.center,
@@ -166,9 +172,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                     padding: EdgeInsets.only(right: 15),
                                     child: CircleAvatar(
                                       radius: 30,
-                                      backgroundColor: Colors.red,
+                                      backgroundColor: Colors.blue[900],
                                       child: CircleAvatar(
-                                        radius: 29.5,
+                                        radius: 29,
                                         backgroundColor: Colors.black,
                                         child: ClipRRect(
                                           borderRadius:
@@ -185,7 +191,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                             padding: EdgeInsets.symmetric(horizontal: 10),
                             decoration: BoxDecoration(
                                 borderRadius: BorderRadius.circular(10),
-                                color: Colors.black26),
+                                color: Colors.white12),
                             child: TextFormField(
                               controller: nCon,
                               style: TU.tesmall(context, 50),
@@ -223,7 +229,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 return changes.loadingIndicator == true
                     ? Center(
                         child: CircularProgressIndicator(
-                          color: Colors.red,
+                          color: Colors.blue[800],
                         ),
                       )
                     : Container();
@@ -231,10 +237,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
             ],
           ),
         ),
-        floatingActionButton: FloatingActionButton(
-          elevation: 10,
-          backgroundColor: Colors.grey[900],
-          onPressed: () async {
+        floatingActionButton: InkResponse(
+          onTap: () async {
             final str = await Utility.getImageFromPreferences();
             if (str.length < 4) {
               SB.ssb(context, text: 'select an image as your profile pic');
@@ -305,7 +309,18 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 .updateLoadingIndicatorStatus(flag: false);
             Phoenix.rebirth(context);
           },
-          child: Icon(Icons.arrow_forward_ios, color: Colors.red),
+          child: Card(
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+          color: Colors.blue[900],
+          shadowColor: Colors.blue,
+          elevation: 10,
+          child: Container(
+            padding: EdgeInsets.symmetric(vertical: 8, horizontal: 22),
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(20),
+              color:Colors.white10
+            ),
+            child: Icon(Icons.arrow_forward_ios, color: Colors.white))),
         ),
       ),
     );

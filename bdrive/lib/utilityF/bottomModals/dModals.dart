@@ -19,9 +19,12 @@ class FolderDModals {
           shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.only(
                   topLeft: Radius.circular(10), topRight: Radius.circular(10))),
-          backgroundColor: Colors.grey[900],
+          backgroundColor: Colors.blue[800],
           builder: (BuildContext context) {
             return Container(
+              decoration: BoxDecoration( borderRadius: BorderRadius.only(
+                  topLeft: Radius.circular(10), topRight: Radius.circular(10)),
+              color: Colors.black54,),
                 child: SingleChildScrollView(
                     child: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 8.0),
@@ -146,7 +149,7 @@ class FolderDModals {
             IU.ditask(icon: icon, callback: () {}, size: 22),
             Expanded(
               child: RichText(
-                text: TextSpan(text: label, style: TU.teeesmall(context, 60)),
+                text: TextSpan(text: label, style: TU.teesmall(context)),
                 overflow: TextOverflow.ellipsis,
                 softWrap: true,
               ),
@@ -166,9 +169,13 @@ class FileDModals {
           shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.only(
                   topLeft: Radius.circular(10), topRight: Radius.circular(10))),
-          backgroundColor: Colors.grey[900],
+          backgroundColor: Colors.blue[800],
           builder: (BuildContext context) {
             return Container(
+              decoration: BoxDecoration( borderRadius: BorderRadius.only(
+                  topLeft: Radius.circular(10), topRight: Radius.circular(10)),
+              color: Colors.black54,
+              ),
                 child: SingleChildScrollView(
                     child: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 8.0),
@@ -331,7 +338,7 @@ class FileDModals {
             IU.ditask(icon: icon, callback: () {}, size: 22),
             Expanded(
               child: RichText(
-                text: TextSpan(text: label, style: TU.teeesmall(context, 60)),
+                text: TextSpan(text: label, style: TU.teesmall(context)),
                 overflow: TextOverflow.ellipsis,
                 softWrap: true,
               ),

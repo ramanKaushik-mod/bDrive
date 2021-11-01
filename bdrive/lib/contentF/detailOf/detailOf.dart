@@ -19,7 +19,7 @@ class _DetailOfFolderState extends State<DetailOfFolder> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.black87,
+      backgroundColor: Colors.white,
       body: FutureBuilder(
           future: widget.handlingFS.getFolderDetails(docID: widget.docID),
           builder: (BuildContext context, snapshot) {
@@ -37,22 +37,22 @@ class _DetailOfFolderState extends State<DetailOfFolder> {
                       (BuildContext context, bool innerBoxIsScrolled) => [
                             SliverAppBar(
               toolbarHeight: 70,
-                              backgroundColor: Colors.white12,
-                              leading: IU.diconl(
+                              backgroundColor: Colors.black38,
+                              leading: IU.dstask(
                                   icon: Icons.arrow_back_ios_new_outlined,
                                   callback: () {
                                     Navigator.pop(context);
                                   },
                                   size: 28),
                               title: Text(
-                                map['fName'],
+                                map['fName'].toString().toLowerCase(),
                                 style: TU.teeesmall(context, 32),
                               ),
                             )
                           ],
                   body: Container(
                     padding: EdgeInsets.all(10),
-                    color: Colors.white10,
+                    color: Colors.black26,
                     child: SingleChildScrollView(
                       child: Column(children: [
                         SizedBox(
@@ -64,14 +64,14 @@ class _DetailOfFolderState extends State<DetailOfFolder> {
                         ),
                         Card(
                           elevation: 0,
-                          color: Colors.white54,
+                          color: Colors.white,
                           shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(20)),
                           child: Container(
                               padding: EdgeInsets.all(10),
                               decoration: BoxDecoration(
                                   borderRadius: BorderRadius.circular(19.8),
-                                  color: Colors.black),
+                                  color: Colors.black38),
                               margin: EdgeInsets.symmetric(
                                   horizontal: 0.5, vertical: 0.7),
                               child: Row(
@@ -142,7 +142,7 @@ class _DetailOfFolderState extends State<DetailOfFolder> {
           Padding(
             padding: const EdgeInsets.all(5.0),
             child: RichText(
-                text: TextSpan(text: label, style: TU.teeesmall(context, 66)),
+                text: TextSpan(text: label, style: TU.teesmall(context)),
                 textAlign: TextAlign.center,
                 softWrap: true,
                 maxLines: 1,
@@ -152,7 +152,7 @@ class _DetailOfFolderState extends State<DetailOfFolder> {
             padding: const EdgeInsets.symmetric(horizontal: 10.0, vertical: 5),
             child: RichText(
                 text: TextSpan(
-                    text: detail.toString(), style: TU.teeesmall(context, 66)),
+                    text: detail.toString(), style: TU.teesmall(context)),
                 textAlign: TextAlign.center,
                 softWrap: true,
                 maxLines: 1,
@@ -188,7 +188,7 @@ class _DetailOfFileState extends State<DetailOfFile> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.black87,
+      backgroundColor: Colors.white,
       body: FutureBuilder(
           future: widget.handlingFS.getFileDetails(
             dan: widget.dan,
@@ -209,22 +209,22 @@ class _DetailOfFileState extends State<DetailOfFile> {
                       (BuildContext context, bool innerBoxIsScrolled) => [
                             SliverAppBar(
               toolbarHeight: 70,
-                              backgroundColor: Colors.white12,
-                              leading: IU.diconl(
+                              backgroundColor: Colors.black38,
+                              leading: IU.dstask(
                                   icon: Icons.arrow_back_ios_new_outlined,
                                   callback: () {
                                     Navigator.pop(context);
                                   },
                                   size: 28),
                               title: Text(
-                                map['fileName'],
+                                map['fileName'].toString().toLowerCase(),
                                 style: TU.teeesmall(context, 32),
                               ),
                             )
                           ],
                   body: Container(
                     padding: EdgeInsets.all(10),
-                    color: Colors.white10,
+                    color: Colors.black26,
                     child: SingleChildScrollView(
                       child: Column(children: [
                         SizedBox(
@@ -236,14 +236,14 @@ class _DetailOfFileState extends State<DetailOfFile> {
                         ),
                         Card(
                           elevation: 0,
-                          color: Colors.white54,
+                          color: Colors.white,
                           shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(20)),
                           child: Container(
                             padding: EdgeInsets.all(10),
                             decoration: BoxDecoration(
                                 borderRadius: BorderRadius.circular(19.8),
-                                color: Colors.black),
+                                color: Colors.black38),
                             margin: EdgeInsets.symmetric(
                                 horizontal: 0.5, vertical: 0.7),
                             child: Row(
@@ -308,7 +308,7 @@ class _DetailOfFileState extends State<DetailOfFile> {
           Padding(
             padding: const EdgeInsets.all(5.0),
             child: RichText(
-                text: TextSpan(text: label, style: TU.teeesmall(context, 66)),
+                text: TextSpan(text: label, style: TU.teesmall(context)),
                 textAlign: TextAlign.center,
                 softWrap: true,
                 maxLines: 1,
@@ -318,7 +318,7 @@ class _DetailOfFileState extends State<DetailOfFile> {
             padding: const EdgeInsets.symmetric(horizontal: 10.0, vertical: 5),
             child: RichText(
                 text: TextSpan(
-                    text: detail.toString(), style: TU.teeesmall(context, 66)),
+                    text: detail.toString(), style: TU.teesmall(context)),
                 textAlign: TextAlign.center,
                 softWrap: true,
                 maxLines: 1,

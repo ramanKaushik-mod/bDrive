@@ -2,7 +2,6 @@ import 'package:bdrive/models/models.dart';
 import 'package:bdrive/utilityF/localUtility.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_phoenix/flutter_phoenix.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:provider/provider.dart';
 
 class SettingsPage extends StatefulWidget {
@@ -28,18 +27,18 @@ class _SettingsPageState extends State<SettingsPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.black87,
+      backgroundColor: Colors.white,
       body: NestedScrollView(
         headerSliverBuilder: (BuildContext context, bool innerBoxIsScrolled) {
           return [
             SliverAppBar(
               toolbarHeight: 70,
-              backgroundColor: Colors.white12,
+              backgroundColor: Colors.black38,
               leadingWidth: 76,
               leading: IconButton(
                 icon: Icon(
                   Icons.arrow_back_ios,
-                  color: Colors.red,
+                  color: Colors.blue[800],
                   size: 28,
                 ),
                 onPressed: () {
@@ -54,7 +53,7 @@ class _SettingsPageState extends State<SettingsPage> {
           ];
         },
         body: Container(
-          color: Colors.white10,
+          color: Colors.black45,
           child: SingleChildScrollView(
             child: Column(
               mainAxisAlignment: MainAxisAlignment.start,
@@ -87,12 +86,12 @@ class _SettingsPageState extends State<SettingsPage> {
       ),
       Card(
         elevation: 0,
-        color: Colors.white54,
+        color: Colors.white,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
         child: Container(
           padding: EdgeInsets.all(4),
           decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(19.8), color: Colors.black),
+              borderRadius: BorderRadius.circular(19.8), color: Colors.black38),
           margin: EdgeInsets.symmetric(horizontal: 0.5, vertical: 0.7),
           child:
               Consumer<GetChanges>(builder: (BuildContext context, value, win) {
@@ -105,10 +104,10 @@ class _SettingsPageState extends State<SettingsPage> {
                   padding: EdgeInsets.only(right: 15),
                   child: CircleAvatar(
                     radius: TU.getw(context) / 9,
-                    backgroundColor: Colors.red,
+                    backgroundColor: Colors.blue,
                     child: CircleAvatar(
                       radius: TU.getw(context) / 9.2,
-                      backgroundColor: Colors.black,
+                      backgroundColor: Colors.black26,
                       child: ClipRRect(
                         borderRadius: BorderRadius.circular(50),
                         child: value.getUserImage(),
@@ -154,7 +153,7 @@ class _SettingsPageState extends State<SettingsPage> {
           Padding(
             padding: const EdgeInsets.all(5.0),
             child: RichText(
-                text: TextSpan(text: text, style: TU.teeesmall(context, 66)),
+                text: TextSpan(text: text, style: TU.teesmall(context)),
                 textAlign: TextAlign.center,
                 softWrap: true,
                 maxLines: 1,
@@ -180,14 +179,14 @@ class _SettingsPageState extends State<SettingsPage> {
           ),
           Card(
             elevation: 0,
-            color: Colors.white54,
+            color: Colors.white,
             shape:
                 RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
             child: Container(
               padding: EdgeInsets.all(4),
               decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(19.8),
-                  color: Colors.black),
+                  color: Colors.black38),
               margin: EdgeInsets.symmetric(horizontal: 0.5, vertical: 0.7),
               child: Consumer<GetChanges>(
                 builder: (BuildContext context, change, win) {
@@ -239,7 +238,7 @@ class _SettingsPageState extends State<SettingsPage> {
                                       Container(
                                         height: 5,
                                         width: (2.3) * ((1024 * 100) / 1024),
-                                        color: Colors.red,
+                                        color: Colors.blue[800],
                                       ),
                                       Container(
                                         height: 5,
@@ -255,7 +254,7 @@ class _SettingsPageState extends State<SettingsPage> {
                                   alignment: Alignment.bottomRight,
                                   child: Text(
                                     '${((user.space * 100) / 1024).toStringAsFixed(2)} %',
-                                    style: TU.teeesmall(context, 55),
+                                    style: TU.teesmall(context),
                                   ),
                                 )
                               ],
@@ -293,7 +292,7 @@ class _SettingsPageState extends State<SettingsPage> {
           Padding(
             padding: const EdgeInsets.all(5.0),
             child: RichText(
-                text: TextSpan(text: label, style: TU.teeesmall(context, 66)),
+                text: TextSpan(text: label, style: TU.teesmall(context)),
                 textAlign: TextAlign.center,
                 softWrap: true,
                 maxLines: 1,
@@ -303,7 +302,7 @@ class _SettingsPageState extends State<SettingsPage> {
             padding: const EdgeInsets.symmetric(horizontal: 10.0, vertical: 5),
             child: RichText(
                 text: TextSpan(
-                    text: info.toString(), style: TU.teeesmall(context, 66)),
+                    text: info.toString(), style: TU.teesmall(context)),
                 textAlign: TextAlign.center,
                 softWrap: true,
                 maxLines: 1,
@@ -322,7 +321,7 @@ class _SettingsPageState extends State<SettingsPage> {
           Padding(
             padding: const EdgeInsets.all(10.0),
             child: RichText(
-                text: TextSpan(text: label, style: TU.teeesmall(context, 66)),
+                text: TextSpan(text: label, style: TU.teesmall(context)),
                 textAlign: TextAlign.center,
                 softWrap: true,
                 maxLines: 1,

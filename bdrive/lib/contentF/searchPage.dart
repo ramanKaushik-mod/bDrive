@@ -34,9 +34,9 @@ class _SearchPageState extends State<SearchPage> {
         return Future.value(true);
       },
       child: Scaffold(
-        backgroundColor: Colors.black87,
+        backgroundColor: Colors.white,
         body: Container(
-          color: Colors.white12,
+          color: Colors.black38,
           child: Column(
             mainAxisAlignment: MainAxisAlignment.start,
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -51,9 +51,8 @@ class _SearchPageState extends State<SearchPage> {
                     child: Hero(
                       tag: 'searchbox',
                       child: Card(
-                        margin: EdgeInsets.only(
-                            left: 0, right: 10, top: 5, bottom: 5),
-                        color: Colors.black26,
+                        margin: EdgeInsets.symmetric(vertical: 8),
+                        color: Colors.white,
                         elevation: 0,
                         shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(10)),
@@ -61,9 +60,8 @@ class _SearchPageState extends State<SearchPage> {
                           padding: EdgeInsets.all(4),
                           decoration: BoxDecoration(
                               borderRadius: BorderRadius.circular(10),
-                              color: Colors.white24),
+                              color: Colors.black45),
                           child: TextFormField(
-                            autofocus: true,
                             controller: con,
                             style: TU.tesmall(context, 44),
                             showCursor: false,
@@ -72,7 +70,7 @@ class _SearchPageState extends State<SearchPage> {
                                 contentPadding: EdgeInsets.only(top: 14),
                                 prefixIcon: Icon(
                                   Icons.search,
-                                  color: Colors.red,
+                                  color: Colors.white,
                                 ),
                                 // contentPadding: EdgeInsets.only(top: 15),
                                 focusedBorder: UnderlineInputBorder(
@@ -93,34 +91,12 @@ class _SearchPageState extends State<SearchPage> {
                       ),
                     ),
                   ),
-                  Wrap(
-                    children: [
-                      Container(
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(10),
-                            color: Colors.white24,
-                          ),
-                          padding: const EdgeInsets.all(3),
-                          child: IU.diconl(
-                              icon: Icons.close,
-                              callback: () {
-                                if (con.text.trim().length == 0) {
-                                  gChanges.updateWList(list: []);
-                                  con.text = '';
-                                  Navigator.pop(context);
-                                } else {
-                                  gChanges.updateWList(list: []);
-                                  con.text = '';
-                                }
-                              },
-                              size: 24)),
-                    ],
-                  ),
+                  
                 ]),
               ),
               SizedBox(height: 10),
               TU.tuD(context),
-              SizedBox(height: 10),
+              SizedBox(height: 14),
               Expanded(
                   child: Container(
                 color: Colors.black38,
@@ -132,6 +108,31 @@ class _SearchPageState extends State<SearchPage> {
               )),
             ],
           ),
+        ),
+        floatingActionButton: Card(
+          color: Colors.blue[800],
+          shape:RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(20),
+          ),
+          child: Container(
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(20),
+                color: Colors.black26,
+              ),
+              padding: const EdgeInsets.all(3),
+              child: IU.diconl(
+                  icon: Icons.close,
+                  callback: () {
+                    if (con.text.trim().length == 0) {
+                      gChanges.updateWList(list: []);
+                      con.text = '';
+                      Navigator.pop(context);
+                    } else {
+                      gChanges.updateWList(list: []);
+                      con.text = '';
+                    }
+                  },
+                  size: 24)),
         ),
       ),
     );

@@ -169,9 +169,9 @@ class SB {
     ScaffoldMessenger.of(context).showSnackBar(SnackBar(
       content: Text(
         text,
-        style: TextStyle(color: Colors.white,fontSize: 10),
+        style: TextStyle(color: Colors.white,fontSize: 13),
       ),
-      backgroundColor: Colors.grey[900],
+      backgroundColor: Colors.black,
       behavior: SnackBarBehavior.fixed,
       duration: Duration(seconds: 1),
     ));
@@ -181,9 +181,10 @@ class SB {
           {required String dialog}) =>
       showDialog(
           context: context,
+          barrierColor: Colors.white12,
           builder: (con) {
             return AlertDialog(
-              backgroundColor: Colors.grey[900],
+              backgroundColor: Colors.blue[700],
               title: controller != null
                   ? Text(dialog, style: TU.tsmall(context))
                   : null,
@@ -259,7 +260,7 @@ class TU {
       TextStyle(fontSize: geth(context) / 48, color: Colors.white);
   static tlarge(context, factor) => GoogleFonts.montserratAlternates(
       fontSize: geth(context) / factor,
-      color: Colors.red,
+      color: Colors.blue[800],
       fontWeight: FontWeight.w400);
   static tblarge(context, factor) => GoogleFonts.montserratAlternates(
       fontSize: geth(context) / factor,
@@ -267,7 +268,7 @@ class TU {
       fontWeight: FontWeight.w400);
   static tesmall(context, factor) => TextStyle(
       fontSize: geth(context) / factor,
-      color: Colors.white70,
+      color: Colors.white,
       fontWeight: FontWeight.w500);
   static teesmall(context) => TextStyle(
       fontSize: geth(context) / 60,
@@ -275,8 +276,8 @@ class TU {
       fontWeight: FontWeight.w500);
   static teeesmall(context, factor) => GoogleFonts.mulish(
       fontSize: geth(context) / factor,
-      color: Colors.white54,
-      fontWeight: FontWeight.w400);
+      color: Colors.grey[800],
+      fontWeight: FontWeight.w600);
   static tesmallw(context) => TextStyle(
       fontSize: geth(context) / 50,
       color: Colors.white,
@@ -291,7 +292,7 @@ class TU {
         margin: EdgeInsets.symmetric(horizontal: 140),
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(10),
-          color: Colors.grey,
+          color: Colors.white,
         ),
       );
 
@@ -300,7 +301,7 @@ class TU {
         height: 1.5,
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(10),
-          color: Colors.grey,
+          color: Colors.white54,
         ),
       );
   static tuDw() => Container(
@@ -309,7 +310,7 @@ class TU {
         width: 4,
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(10),
-          color: Colors.grey,
+          color: Colors.white,
         ),
       );
   static tTitle(BuildContext context) => TextStyle(
@@ -319,6 +320,7 @@ class TU {
 
   static tSDLabel({required context, required String label}) => Container(
       padding: EdgeInsets.symmetric(horizontal: 15, vertical: 6),
+      margin: EdgeInsets.symmetric(horizontal: 12),
       decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(20), color: Colors.blue[900]),
       child: Text(
@@ -562,17 +564,17 @@ class IU {
         padding: const EdgeInsets.all(8.0),
         child: CircleAvatar(
           radius: cSize,
-          backgroundColor: Colors.red,
+          backgroundColor: Colors.blue[900],
           child: CircleAvatar(
             radius: cSize - 1,
-            backgroundColor: Colors.black,
+            backgroundColor: Colors.white70,
             child: Center(
               child: IconButton(
                 splashRadius: 20,
                 icon: Icon(
                   icon,
                   size: size,
-                  color: Colors.grey,
+                  color: Colors.blue[800],
                 ),
                 onPressed: () => callback(),
               ),
@@ -590,7 +592,7 @@ class IU {
         icon: Icon(
           icon,
           size: size,
-          color: Colors.red,
+          color: Colors.white,
         ),
         onPressed: () => callback(),
       );
@@ -603,7 +605,7 @@ class IU {
         icon: Icon(
           icon,
           size: size,
-          color: Colors.blue[900],
+          color: Colors.blue[800],
         ),
         onPressed: () => callback(),
       );
@@ -643,7 +645,7 @@ class TF {
           child: Container(
             padding: EdgeInsets.symmetric(horizontal: 10),
             decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(10), color: Colors.black26),
+                borderRadius: BorderRadius.circular(10), color: Colors.white12),
             child: TextFormField(
               controller: con,
               style: TU.tesmall(context, 55),
@@ -689,7 +691,7 @@ class TF {
 
   static inst(context, {required text}) => Text(
         text,
-        style: TU.teeesmall(context, 56),
+        style: TU.tlarge(context, 56),
       );
   static instl(context, {required text, required double fSize}) => Text(
         text,

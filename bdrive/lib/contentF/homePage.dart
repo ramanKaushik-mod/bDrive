@@ -102,22 +102,59 @@ class _HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     var column = Column(
       children: [
-        SizedBox(
-          height: 24,
-        ),
         Container(
-          margin: EdgeInsets.symmetric(horizontal: 10),
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(10),
-            color: Colors.white12,
-          ),
-          padding: EdgeInsets.only(right: 5),
-          height: 60,
-          child: Row(
+          color: Colors.black,
+          child: Column(
             children: [
-              Expanded(
-                child: InkResponse(
-                  onTap: () {
+          SizedBox(
+            height: 24,
+          ),
+          Container(
+            margin: EdgeInsets.symmetric(horizontal: 10),
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(30),
+              color: Colors.black26,
+            ),
+            padding: EdgeInsets.only(right: 5),
+            height: 60,
+            child: Row(
+              children: [
+                Expanded(
+                  child: InkResponse(
+                    onTap: () {
+                      Future.delayed(Duration(milliseconds: 10), () async {
+                        await handlingFS.syncSearchList(context, docId: searchId);
+                      });
+                      Navigator.of(context).push(MaterialPageRoute(
+                          builder: (context) =>
+                              SearchPage(handlingFS: handlingFS)));
+                    },
+                    child: Hero(
+                      tag: 'searchbox',
+                      child: Card(
+                        margin: EdgeInsets.only(
+                            left: 5, right: 10, top: 5, bottom: 5),
+                        color: Colors.blue[800],
+                        elevation: 0,
+                        shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(30)),
+                        child: Container(
+                            alignment: Alignment.centerLeft,
+                            padding: EdgeInsets.only(left: 20, right: 10),
+                            height: 50,
+                            decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(30),
+                                color: Colors.black26),
+                            child: Text(
+                              'Search bCLOUD',
+                              style: TU.tesmall(context, 48),
+                            )),
+                      ),
+                    ),
+                  ),
+                ),
+                IconButton(
+                  onPressed: () {
                     Future.delayed(Duration(milliseconds: 10), () async {
                       await handlingFS.syncSearchList(context, docId: searchId);
                     });
@@ -125,71 +162,43 @@ class _HomePageState extends State<HomePage> {
                         builder: (context) =>
                             SearchPage(handlingFS: handlingFS)));
                   },
-                  child: Hero(
-                    tag: 'searchbox',
-                    child: Card(
-                      margin: EdgeInsets.only(
-                          left: 5, right: 10, top: 5, bottom: 5),
-                      color: Colors.black87,
-                      elevation: 0,
-                      shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(6)),
-                      child: Container(
-                          alignment: Alignment.centerLeft,
-                          padding: EdgeInsets.only(left: 20, right: 10),
-                          height: 50,
-                          decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(6),
-                              color: Colors.white24),
-                          child: Text(
-                            'Search bCLOUD',
-                            style: TU.tesmall(context, 48),
-                          )),
-                    ),
+                  icon: Icon(
+                    Icons.search,
+                    color: Colors.white,
+                    size: 28,
                   ),
                 ),
-              ),
-              IconButton(
-                onPressed: () {
-                  Future.delayed(Duration(milliseconds: 10), () async {
-                    await handlingFS.syncSearchList(context, docId: searchId);
-                  });
-                  Navigator.of(context).push(MaterialPageRoute(
-                      builder: (context) =>
-                          SearchPage(handlingFS: handlingFS)));
-                },
-                icon: Icon(
-                  Icons.search,
-                  color: Colors.red,
-                  size: 28,
+                Padding(
+                  padding: const EdgeInsets.only(right: 10.0),
+                  child: Consumer<GetChanges>(
+                      builder: (BuildContext builder, value, win) {
+                    return value.getView() == 0
+                        ? IU.diconl(
+                            icon: Icons.list,
+                            callback: () {
+                              Provider.of<GetChanges>(context, listen: false)
+                                  .updateView();
+                            },
+                            size: 28)
+                        : IU.diconl(
+                            icon: Icons.grid_view,
+                            callback: () {
+                              Provider.of<GetChanges>(context, listen: false)
+                                  .updateView();
+                            },
+                            size: 28);
+                  }),
                 ),
-              ),
-              Padding(
-                padding: const EdgeInsets.only(right: 10.0),
-                child: Consumer<GetChanges>(
-                    builder: (BuildContext builder, value, win) {
-                  return value.getView() == 0
-                      ? IU.diconl(
-                          icon: Icons.list,
-                          callback: () {
-                            Provider.of<GetChanges>(context, listen: false)
-                                .updateView();
-                          },
-                          size: 28)
-                      : IU.diconl(
-                          icon: Icons.grid_view,
-                          callback: () {
-                            Provider.of<GetChanges>(context, listen: false)
-                                .updateView();
-                          },
-                          size: 28);
-                }),
-              ),
+              ],
+            ),
+          ),
+          SizedBox(height: 10),
+          TU.tuD(context),
+          SizedBox(height: 10),
+
             ],
           ),
         ),
-        SizedBox(height: 10),
-        TU.tuD(context),
         Consumer<GetChanges>(builder: (BuildContext context, changes, win) {
           int i = changes.getNIIndex();
           if (changes.readyDB == 1) {
@@ -205,7 +214,7 @@ class _HomePageState extends State<HomePage> {
                 docId: starId,
               );
           } else {
-            return Center(child: CircularProgressIndicator(color: Colors.red));
+            return Center(child: CircularProgressIndicator(color: Colors.blue));
           }
         }),
       ],
@@ -233,17 +242,19 @@ class _HomePageState extends State<HomePage> {
       },
       child: Scaffold(
         resizeToAvoidBottomInset: false,
-        backgroundColor: Colors.black87,
+        backgroundColor: Colors.white,
         // drawer: DrawerPage(),
         bottomNavigationBar: Container(
-          color: Colors.black38,
+          color: Colors.black,
           child:
               Consumer<GetChanges>(builder: (BuildContext context, value, win) {
             return BottomNavigationBar(
-                unselectedItemColor: Colors.white70,
-                selectedFontSize: 15,
-                selectedItemColor: Colors.red,
-                backgroundColor: Colors.white12,
+          
+            unselectedItemColor: Colors.white,
+            selectedFontSize: 16,
+            unselectedFontSize: 12,
+            selectedItemColor: Colors.blue[800],
+            backgroundColor: Colors.black,
                 currentIndex: value.getNIIndex(),
                 onTap: (index) {
                   value.updateNIIndex(index);
@@ -253,7 +264,7 @@ class _HomePageState extends State<HomePage> {
                     backgroundColor: Colors.white,
                     label: 'Starred',
                     icon: IU.dNIcon(
-                      icon: value.niindex == 0 ? Icons.star : Icons.star_border,
+                      icon: value.niindex == 0 ? Icons.star_border : Icons.star,
                       size: 28,
                     ),
                   ),
@@ -270,8 +281,8 @@ class _HomePageState extends State<HomePage> {
                       label: 'Files',
                       icon: IU.dNIcon(
                           icon: value.niindex == 2
-                              ? Icons.folder
-                              : Icons.folder_outlined,
+                              ? Icons.folder_outlined
+                              : Icons.folder,
                           size: 28)),
                 ]);
           }),
@@ -295,11 +306,7 @@ class _HomePageState extends State<HomePage> {
           headerSliverBuilder:
               (BuildContext context, bool innerBoxIsScrolled) => [
             SliverAppBar(
-              shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.only(
-                      bottomLeft: Radius.circular(10),
-                      bottomRight: Radius.circular(10))),
-              backgroundColor: Colors.white12,
+              backgroundColor: Colors.black38,
               leading: Consumer<GetChanges>(
                   builder: (BuildContext context, value, win) {
                 return value.pathList.isNotEmpty
@@ -307,21 +314,21 @@ class _HomePageState extends State<HomePage> {
                         ? value.niindex == 2
                             ? Icon(
                                 Icons.home_filled,
-                                color: Colors.red,
+                                color: Colors.blue[800],
                                 size: 28,
                               )
                             : value.niindex == 1
                                 ? Icon(
                                     Icons.change_history_sharp,
-                                    color: Colors.red,
+                                    color: Colors.blue[800],
                                     size: 28,
                                   )
                                 : Icon(
                                     Icons.star_sharp,
-                                    color: Colors.red,
+                                    color: Colors.blue[800],
                                     size: 28,
                                   )
-                        : IU.diconl(
+                        : IU.dstask(
                             icon: Icons.arrow_back_ios_new_outlined,
                             callback: () {
                               value.updatePathListD();
@@ -334,12 +341,12 @@ class _HomePageState extends State<HomePage> {
                   int i = change.niindex;
                   if (i == 2)
                     return Text(change.pathList.length != 0
-                        ? change.pathList.last[1]
-                        : "");
+                        ? change.pathList.last[1].toLowerCase()
+                        : "", style: TU.teeesmall(context, 38),);
                   else if (i == 1)
-                    return Text('Recent');
+                    return Text('Recent'.toLowerCase(), style: TU.teeesmall(context, 38),);
                   else
-                    return Text('Starred');
+                    return Text('Starred'.toLowerCase(), style: TU.teeesmall(context, 38),);
                 },
               ),
               toolbarHeight: 70,
@@ -361,7 +368,7 @@ class _HomePageState extends State<HomePage> {
                                   child: CircularProgressIndicator(
                                     color: Colors.white70,
                                     valueColor:
-                                        AlwaysStoppedAnimation(Colors.red),
+                                        AlwaysStoppedAnimation(Colors.blue[800]),
                                   ),
                                 ),
                               ),
@@ -389,7 +396,7 @@ class _HomePageState extends State<HomePage> {
                               },
                               icon: Icon(
                                 Icons.close,
-                                color: Colors.red,
+                                color: Colors.blue[800],
                                 size: 28,
                               ),
                             )
@@ -402,7 +409,7 @@ class _HomePageState extends State<HomePage> {
                   },
                   icon: Icon(
                     Icons.settings,
-                    color: Colors.red,
+                    color: Colors.blue[800],
                     size: 28,
                   ),
                 ),
@@ -431,15 +438,16 @@ class _HomePageState extends State<HomePage> {
                     
                     closeManually: true,
                     openCloseDial: changes.dial,
-                    
+                    spacing:10 ,
                     
                   shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20),),
                     children: [
                       SpeedDialChild(
-                        backgroundColor: Colors.transparent,
+                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20),),
+                        backgroundColor: Colors.blue[900],
                         labelWidget:
                             TU.tSDLabel(context: context, label: 'upload'),
-                        child: IU.dstask(
+                        child: IU.diconl(
                             icon: Icons.upload_outlined,
                             callback: () async {
                               if (!await CIC.checkConnectivity(context)) {
@@ -458,13 +466,14 @@ class _HomePageState extends State<HomePage> {
                                 SB.ssb(context, text: "upload canceled");
                               }
                             },
-                            size: 30),
+                            size: 25),
                       ),
                       SpeedDialChild(
-                          backgroundColor: Colors.transparent,
+                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20),),
+                        backgroundColor: Colors.blue[900],
                           labelWidget: TU.tSDLabel(
                               context: context, label: 'create folder'),
-                          child: IU.dstask(
+                          child: IU.diconl(
                               icon: Icons.create_new_folder_outlined,
                               callback: () async {
                                 StreamSubscription<ConnectivityResult> ss =
@@ -504,7 +513,7 @@ class _HomePageState extends State<HomePage> {
 
                                 ss.cancel();
                               },
-                              size: 30))
+                              size: 25))
                     ],
                   ),
               )
@@ -609,7 +618,7 @@ class _HomePageState extends State<HomePage> {
                       color: Colors.white70,
                       semanticsLabel: "uploaded",
                       semanticsValue: percentage,
-                      valueColor: AlwaysStoppedAnimation(Colors.red),
+                      valueColor: AlwaysStoppedAnimation(Colors.blue[800]),
                     ),
                   ),
                 ),

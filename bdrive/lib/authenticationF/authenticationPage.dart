@@ -21,9 +21,8 @@ class _AuthenticationPageState extends State<AuthenticationPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       resizeToAvoidBottomInset: false,
-      floatingActionButton: FloatingActionButton(
-        backgroundColor: Colors.grey[900],
-        onPressed: () async {
+      floatingActionButton: InkResponse(
+        onTap: () async {
           if (!await CIC.checkConnectivity(context)) return;
           GetChanges val = Provider.of<GetChanges>(context, listen: false);
           if (val.getCodeSentSemaphore() == false) {
@@ -51,7 +50,7 @@ class _AuthenticationPageState extends State<AuthenticationPage> {
             if (text.isEmpty) {
               SB.ssb(context, text: "You haven't entered the SMS-code yet");
             } else if (text.length < 6 || text.length > 6) {
-              SB.ssb(context, text: 'Enter the 6 SMS-code');
+              SB.ssb(context, text: 'Enter the 6-digit SMS-code');
             } else {
               val.updateLoadingIndicatorStatus(flag: true);
               FirebaseFunctions.signInUser(context,
@@ -61,74 +60,93 @@ class _AuthenticationPageState extends State<AuthenticationPage> {
             }
           }
         },
-        child: Icon(
-          Icons.arrow_forward_ios,
-          color: Colors.red,
+        child: Card(
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+          color: Colors.blue[900],
+          shadowColor: Colors.blue,
+          elevation: 10,
+          child: Container(
+            padding: EdgeInsets.symmetric(vertical: 8, horizontal: 22),
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(20),
+              color:Colors.white10
+            ),
+            child: Icon(
+              Icons.arrow_forward_ios,
+              color: Colors.white
+            ),
+          ),
         ),
       ),
-      backgroundColor: Colors.black87,
+      backgroundColor: Colors.white,
       body: Container(
-        color: Colors.white12,
+        color: Colors.black38,
         child: Stack(
           children: [
             Column(
               mainAxisAlignment: MainAxisAlignment.end,
               children: [
-                Container(
-                  padding:
-                      EdgeInsets.only(top: 10, left: 20, right: 10, bottom: 0),
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.only(
-                        topLeft: Radius.circular(5),
-                        topRight: Radius.circular(5)),
-                    color: Colors.black,
-                  ),
-                  width: TU.getw(context),
-                  child: Wrap(
-                    runAlignment: WrapAlignment.end,
-                    children: [
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.end,
-                        children: [
-                          Expanded(
-                              child: Text(
-                            TS.nvp,
-                            style: TU.tlarge(context, 32),
-                          )),
-                          Stack(
-                            children: [
-                              Image.asset(
-                                'assets\\bDrive.png',
-                                height: TU.getw(context) / 2.5,
-                                width: TU.getw(context) / 2.5,
-                              ),
-                              Image.asset(
-                                'assets\\bDrive.png',
-                                height: TU.getw(context) / 4.2,
-                                width: TU.getw(context) / 4.2,
-                                color: Colors.white60,
-                              ),
-                            ],
-                          ),
-                        ],
-                      ),
-                      TF.instl(context, text: TS.nvp1, fSize: 54),
-                      Container(
-                        height: 30,
-                      ),
-                      TF.instl(context, text: TS.svp, fSize: 54),
-                      Container(
-                        height: 30,
-                      ),
-                      TF.instl(context, text: TS.svp2, fSize: 54),
-                      Container(
-                        height: 50,
-                      ),
-                      Container(
-                        width: TU.getw(context),
-                        height: 40,
-                        child: Container(
-                          margin: EdgeInsets.only(right: 30),
+                Card(
+                  color: Colors.white,
+                  shadowColor: Colors.blue,
+                  elevation: 0,
+                  shape:RoundedRectangleBorder(borderRadius:BorderRadius.only(
+                          topLeft: Radius.circular(5),
+                          topRight: Radius.circular(5))),
+                  child: Container(
+                    padding:
+                        EdgeInsets.only(top: 10, left: 20, right: 10, bottom: 0),
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.only(
+                          topLeft: Radius.circular(5),
+                          topRight: Radius.circular(5)),
+                      color: Colors.black38,
+                    ),
+                    width: TU.getw(context),
+                    child: Wrap(
+                      runAlignment: WrapAlignment.end,
+                      children: [
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.end,
+                          children: [
+                            Expanded(
+                                child: Text(
+                              TS.nvp,
+                              style: TU.tlarge(context, 32),
+                            )),
+                            Stack(
+                              children: [
+                                Image.asset(
+                                  'assets\\bDrive.png',
+                                  height: TU.getw(context) / 2.5,
+                                  width: TU.getw(context) / 2.5,
+                                ),
+                                Image.asset(
+                                  'assets\\bDrive.png',
+                                  height: TU.getw(context) / 4.2,
+                                  width: TU.getw(context) / 4.2,
+                                  color: Colors.white60,
+                                ),
+                              ],
+                            ),
+                          ],
+                        ),
+                        TF.instl(context, text: TS.nvp1, fSize: 54),
+                        Container(
+                          height: 30,
+                        ),
+                        TF.instl(context, text: TS.svp, fSize: 54),
+                        Container(
+                          height: 30,
+                        ),
+                        TF.instl(context, text: TS.svp2, fSize: 54),
+                        Container(
+                          height: 50,
+                        ),
+                        Container(
+                          width: TU.getw(context),
+                          height: 40,
+                          margin: EdgeInsets.only(right: 20),
                           child: Consumer<GetChanges>(
                               builder: (BuildContext context, value, win) {
                             return value.getCodeSentSemaphore() == true
@@ -142,7 +160,7 @@ class _AuthenticationPageState extends State<AuthenticationPage> {
                                           decoration: BoxDecoration(
                                               borderRadius:
                                                   BorderRadius.circular(20),
-                                              color: Colors.grey[700]),
+                                              color: Colors.black87),
                                           child: value.getCodeSentSemaphore() ==
                                                   true
                                               ? Text(
@@ -161,16 +179,16 @@ class _AuthenticationPageState extends State<AuthenticationPage> {
                                 : Text('');
                           }),
                         ),
-                      ),
-                      Container(height: 40),
-                      Align(
-                        alignment: Alignment.center,
-                        child: TF.inst(context, text: TS.inst3),
-                      ),
-                      Container(
-                        height: 30,
-                      )
-                    ],
+                        Container(height: 40),
+                        Align(
+                          alignment: Alignment.center,
+                          child: TF.inst(context, text: TS.inst3),
+                        ),
+                        Container(
+                          height: 30,
+                        )
+                      ],
+                    ),
                   ),
                 )
               ],
@@ -205,6 +223,7 @@ class _AuthenticationPageState extends State<AuthenticationPage> {
                               keyboardType: TextInputType.number,
                               textAlign: TextAlign.center,
                               decoration: InputDecoration(
+                                
                                   focusedBorder: UnderlineInputBorder(
                                       borderSide: BorderSide.none),
                                   enabledBorder: UnderlineInputBorder(
@@ -238,7 +257,7 @@ class _AuthenticationPageState extends State<AuthenticationPage> {
               return changes.loadingIndicator == true
                   ? Center(
                       child: CircularProgressIndicator(
-                        color: Colors.red,
+                        color: Colors.blue[800],
                       ),
                     )
                   : Container();

@@ -63,7 +63,7 @@ class _ImageCaptureState extends State<ImageCapture> {
         },
         child: Scaffold(
           appBar: AppBar(
-            backgroundColor: Colors.white12,
+            backgroundColor: Colors.black38,
             elevation: 0,
             actions: [
               IconButton(
@@ -133,9 +133,9 @@ class _ImageCaptureState extends State<ImageCapture> {
                   icon: IU.dCIcon(icon: Icons.refresh, size: 25))
             ],
           ),
-          backgroundColor: Colors.black87,
+          backgroundColor: Colors.white,
           body: Container(
-            color: Colors.white10,
+            color: Colors.black26,
             child: Consumer<GetChanges>(
               builder: (BuildContext context, value, win) {
                 return value.tellPickedFileExist() == false
@@ -144,36 +144,33 @@ class _ImageCaptureState extends State<ImageCapture> {
               },
             ),
           ),
-          bottomNavigationBar: Container(
-            color: Colors.black87,
-            child: BottomNavigationBar(
-              unselectedItemColor: Colors.white70,
-              selectedFontSize: 16,
-              unselectedFontSize: 12,
-              selectedItemColor: Colors.red,
-              backgroundColor: Colors.white12,
-              onTap: (index) {
-                setState(() {
-                  i = index;
-                });
-                if (i == 0) {
-                  _pickImage(ImageSource.camera);
-                } else if (i == 1) {
-                  _pickImage(ImageSource.gallery);
-                }
-              },
-              currentIndex: i,
-              items: [
-                BottomNavigationBarItem(
-                    backgroundColor: Colors.white,
-                    label: 'camera',
-                    icon: IU.dNIcon(icon: Icons.camera_outlined, size: 29)),
-                BottomNavigationBarItem(
-                    backgroundColor: Colors.white,
-                    label: 'photos',
-                    icon: IU.dNIcon(icon: Icons.photo_outlined, size: 28)),
-              ],
-            ),
+          bottomNavigationBar: BottomNavigationBar(
+            unselectedItemColor: Colors.white,
+            selectedFontSize: 16,
+            unselectedFontSize: 12,
+            selectedItemColor: Colors.blue[800],
+            backgroundColor: Colors.black,
+            onTap: (index) {
+              setState(() {
+                i = index;
+              });
+              if (i == 0) {
+                _pickImage(ImageSource.camera);
+              } else if (i == 1) {
+                _pickImage(ImageSource.gallery);
+              }
+            },
+            currentIndex: i,
+            items: [
+              BottomNavigationBarItem(
+                  backgroundColor: Colors.white,
+                  label: 'camera',
+                  icon: IU.dNIcon(icon: Icons.camera_outlined, size: 29)),
+              BottomNavigationBarItem(
+                  backgroundColor: Colors.white,
+                  label: 'photos',
+                  icon: IU.dNIcon(icon: Icons.photo_outlined, size: 28)),
+            ],
           ),
         ));
   }
@@ -239,21 +236,21 @@ class _ImageCaptureState extends State<ImageCapture> {
         children: [
           Icon(
             Icons.insert_drive_file,
-            color: Colors.grey[700],
+            color: Colors.black26,
             size: TU.getw(context) / 3,
           ),
           Padding(
             padding: EdgeInsets.only(top: 16),
             child: Text(
               "Grab your Profile Pic",
-              style: TextStyle(color: Colors.grey[500]),
+              style: TU.teesmall(context),
             ),
           ),
           Padding(
             padding: EdgeInsets.all(16),
             child: Text(
               "and adjust accordingly",
-              style: TextStyle(color: Colors.grey[500]),
+              style: TextStyle(color: Colors.grey[700]),
             ),
           )
         ],

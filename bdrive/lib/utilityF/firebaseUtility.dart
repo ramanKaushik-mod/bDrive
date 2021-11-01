@@ -76,6 +76,8 @@ class FirebaseFunctions {
           if (value.isNotEmpty) {
             await Utility.setUserDetails(map: value);
             await Utility.userSignedIn();
+          } else {
+            await Utility.userSignedIn();
           }
         });
         GetChanges changes = Provider.of<GetChanges>(context, listen: false);

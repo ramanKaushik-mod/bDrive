@@ -31,14 +31,14 @@ class _HomeDocPageState extends State<HomeDocPage> {
                 if (snapShot.hasError) {
                   return Center(
                     child: CircularProgressIndicator(
-                      color: Colors.white,
+                      color: Colors.blue,
                     ),
                   );
                 }
                 if (!snapShot.hasData) {
                   return Center(
                     child: CircularProgressIndicator(
-                      color: Colors.white,
+                      color: Colors.blue,
                     ),
                   );
                 }
@@ -72,7 +72,7 @@ class _HomeDocPageState extends State<HomeDocPage> {
                         children: [
                           Icon(
                             FontAwesomeIcons.folder,
-                            color: Colors.red,
+                            color: Colors.blue[800],
                             size: 80,
                           ),
                           Positioned(

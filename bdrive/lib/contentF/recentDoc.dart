@@ -20,8 +20,8 @@ class _RecentDocPageState extends State<RecentDocPage> {
   Widget build(BuildContext context) {
     return Expanded(
       child: Container(
+      color: Colors.black38,
           padding: EdgeInsets.all(10),
-          color: Colors.black38,
           child: Consumer<GetChanges>(
             builder: (BuildContext context, value, win) {
               bool flag = value.view == 1 ? true : false;
@@ -36,7 +36,7 @@ class _RecentDocPageState extends State<RecentDocPage> {
                         children: [
                           Container(
                               child: CircularProgressIndicator(
-                            color: Colors.red,
+                            color: Colors.blue,
                           ))
                         ],
                       ));
@@ -61,7 +61,7 @@ class _RecentDocPageState extends State<RecentDocPage> {
                         children: [
                           Icon(
                             Icons.change_history,
-                            color: Colors.red,
+                            color: Colors.blue[800],
                             size: 90,
                           ),
                           Positioned(
@@ -113,7 +113,7 @@ class _RecentDocPageState extends State<RecentDocPage> {
                       children: [
                         Container(
                             child: CircularProgressIndicator(
-                          color: Colors.red,
+                          color: Colors.blue,
                         ))
                       ],
                     ));
