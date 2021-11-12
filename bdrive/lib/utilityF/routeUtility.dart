@@ -3,7 +3,6 @@ import 'package:bdrive/contentF/homePage.dart';
 import 'package:bdrive/contentF/imageCapture.dart';
 import 'package:bdrive/contentF/logoPage.dart';
 import 'package:bdrive/contentF/profileScreen.dart';
-import 'package:bdrive/contentF/searchPage.dart';
 import 'package:bdrive/contentF/settingsPage.dart';
 import 'package:flutter/material.dart';
 

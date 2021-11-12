@@ -1,3 +1,4 @@
+import 'package:bdrive/utilityF/constants.dart';
 import 'package:bdrive/utilityF/firebaseUtility.dart';
 import 'package:bdrive/utilityF/localUtility.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -19,11 +20,19 @@ class StarDocPage extends StatefulWidget {
 }
 
 class _StarDocPageState extends State<StarDocPage> {
+  CU cu = CU();
+
+  @override
+  void initState() {
+    super.initState();
+    updateDirectory();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Expanded(
       child: Container(
-      color: Colors.black38,
+          color: Colors.white10,
           padding: EdgeInsets.all(10),
           child: Consumer<GetChanges>(
             builder: (BuildContext context, value, win) {
@@ -74,7 +83,7 @@ class _StarDocPageState extends State<StarDocPage> {
                               children: [
                                 Icon(
                                   Icons.star_border_outlined,
-                                  color: Colors.blue[800],
+                                  color: cu.cwhite,
                                   size: 90,
                                 ),
                                 Positioned(
@@ -128,7 +137,7 @@ class _StarDocPageState extends State<StarDocPage> {
                       children: [
                         Container(
                             child: CircularProgressIndicator(
-                          color: Colors.blue,
+                          color: cu.w,
                         ))
                       ],
                     ));
@@ -136,5 +145,12 @@ class _StarDocPageState extends State<StarDocPage> {
             },
           )),
     );
+  }
+
+  void updateDirectory() async{
+    GetChanges changes = await Provider.of<GetChanges>(context, listen: false);
+    while (changes.pathList.length != 1) {
+      changes.updatePathListD();
+    }
   }
 }

@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:io';
+import 'package:bdrive/utilityF/constants.dart';
 import 'package:bdrive/utilityF/firebaseUtility.dart';
 import 'package:bdrive/utilityF/localUtility.dart';
 import 'package:flutter/material.dart';
@@ -13,6 +14,7 @@ class ImageCapture extends StatefulWidget {
 }
 
 class _ImageCaptureState extends State<ImageCapture> {
+  CU cu = CU();
   late HandlingFS handlingFirebaseDB;
   int i = 0;
   @override
@@ -63,11 +65,17 @@ class _ImageCaptureState extends State<ImageCapture> {
         },
         child: Scaffold(
           appBar: AppBar(
-            backgroundColor: Colors.black38,
+            backgroundColor: cu.bnbc,
+            leading: IU.iwc(
+                            icon: Icons.arrow_back_ios_new_outlined,
+                            callback: () {
+                              Navigator.pop(context);
+                            },
+                            size: 24),
             elevation: 0,
             actions: [
               IconButton(
-                tooltip: "crop",
+                  tooltip: "crop",
                   onPressed: () {
                     GetChanges changes =
                         Provider.of<GetChanges>(context, listen: false);
@@ -82,9 +90,10 @@ class _ImageCaptureState extends State<ImageCapture> {
                       );
                     }
                   },
-                  icon: IU.dCIcon(icon: Icons.crop, size: 24)),
+                  icon: IU.dBIcon(icon: Icons.crop, size: 22)),
               IconButton(
-                tooltip: "save",
+                color: cu.orange,
+                  tooltip: "save",
                   onPressed: () async {
                     GetChanges changes =
                         Provider.of<GetChanges>(context, listen: false);
@@ -113,12 +122,12 @@ class _ImageCaptureState extends State<ImageCapture> {
                       );
                     }
                   },
-                  icon: IU.dCIcon(
+                  icon: IU.dBIcon(
                     icon: Icons.upload_outlined,
                     size: 24,
                   )),
               IconButton(
-                tooltip: "clear",
+                  tooltip: "clear",
                   onPressed: () {
                     if (Provider.of<GetChanges>(context, listen: false)
                         .tellPickedFileExist()) {
@@ -130,12 +139,13 @@ class _ImageCaptureState extends State<ImageCapture> {
                       );
                     }
                   },
-                  icon: IU.dCIcon(icon: Icons.refresh, size: 25))
+                  icon: IU.dBIcon(icon: Icons.refresh, size: 25)),
+                  SizedBox(width:10),
             ],
           ),
-          backgroundColor: Colors.white,
+          backgroundColor: Colors.black,
           body: Container(
-            color: Colors.black26,
+            color: Colors.white10,
             child: Consumer<GetChanges>(
               builder: (BuildContext context, value, win) {
                 return value.tellPickedFileExist() == false
@@ -145,11 +155,11 @@ class _ImageCaptureState extends State<ImageCapture> {
             ),
           ),
           bottomNavigationBar: BottomNavigationBar(
-            unselectedItemColor: Colors.white,
+            unselectedItemColor: cu.twhite,
             selectedFontSize: 16,
             unselectedFontSize: 12,
-            selectedItemColor: Colors.blue[800],
-            backgroundColor: Colors.black,
+            selectedItemColor: cu.w,
+            backgroundColor: cu.bnbc,
             onTap: (index) {
               setState(() {
                 i = index;
@@ -165,10 +175,12 @@ class _ImageCaptureState extends State<ImageCapture> {
               BottomNavigationBarItem(
                   backgroundColor: Colors.white,
                   label: 'camera',
-                  icon: IU.dNIcon(icon: Icons.camera_outlined, size: 29)),
+                  activeIcon: BU.btDialogDUI(icon: Icons.camera_outlined, size: 30),
+                  icon: IU.dNIcon(icon: Icons.camera_outlined, size: 28)),
               BottomNavigationBarItem(
                   backgroundColor: Colors.white,
                   label: 'photos',
+                  activeIcon: BU.btDialogDUI(icon: Icons.photo_outlined, size: 30),
                   icon: IU.dNIcon(icon: Icons.photo_outlined, size: 28)),
             ],
           ),
@@ -236,7 +248,7 @@ class _ImageCaptureState extends State<ImageCapture> {
         children: [
           Icon(
             Icons.insert_drive_file,
-            color: Colors.black26,
+            color: Colors.white10,
             size: TU.getw(context) / 3,
           ),
           Padding(

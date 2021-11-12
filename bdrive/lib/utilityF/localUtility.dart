@@ -165,15 +165,30 @@ class Utility {
 }
 
 class SB {
+  static CU cu = CU();
   static ssb(context, {required String text}) {
     ScaffoldMessenger.of(context).showSnackBar(SnackBar(
       content: Text(
         text,
-        style: TextStyle(color: Colors.white,fontSize: 13),
+        style: TextStyle(
+            foreground: Paint()..shader = TU.linearGradient, fontSize: 14),
       ),
-      backgroundColor: Colors.black,
+      backgroundColor: cu.cwhite,
       behavior: SnackBarBehavior.fixed,
-      duration: Duration(seconds: 1),
+      duration: Duration(milliseconds: 1500),
+    ));
+  }
+
+  static ssb2(context, {required String text}) {
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+      content: Text(
+        text,
+        style: TextStyle(
+            foreground: Paint()..shader = TU.linearGradient, fontSize: 14),
+      ),
+      backgroundColor: cu.b,
+      behavior: SnackBarBehavior.fixed,
+      duration: Duration(milliseconds: 1500),
     ));
   }
 
@@ -181,12 +196,11 @@ class SB {
           {required String dialog}) =>
       showDialog(
           context: context,
-          barrierColor: Colors.white12,
           builder: (con) {
             return AlertDialog(
-              backgroundColor: Colors.blue[700],
+              backgroundColor: Colors.grey[900],
               title: controller != null
-                  ? Text(dialog, style: TU.tsmall(context))
+                  ? Text(dialog, style: TU.teeesmall(context, 50))
                   : null,
               shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(20)),
@@ -194,8 +208,10 @@ class SB {
                 children: [
                   if (controller == null) ...[
                     Container(
+                      padding:
+                          EdgeInsets.symmetric(vertical: 10, horizontal: 2),
                       child: Center(
-                        child: Text(dialog, style: TU.tsmall(con)),
+                        child: Text(dialog, style: TU.teeesmall(con, 50)),
                       ),
                     ),
                   ],
@@ -203,7 +219,7 @@ class SB {
                     TextFormField(
                       controller: controller,
                       textAlign: TextAlign.left,
-                      style: TU.tsmall(context),
+                      style: TU.teeesmall(context, 48),
                       cursorColor: Colors.white,
                       cursorWidth: 2,
                       keyboardType: TextInputType.text,
@@ -215,25 +231,25 @@ class SB {
                   ]
                 ],
               ),
+              actionsAlignment: MainAxisAlignment.center,
               actions: [
-                IconButton(
-                    splashColor: Colors.white,
-                    splashRadius: 20,
-                    onPressed: () {
+                InkResponse(
+                    onTap: () {
                       noFunc();
                       Navigator.pop(con);
                     },
-                    icon: Icon(Icons.close_rounded, color: Colors.white)),
-                IconButton(
-                    splashColor: Colors.white,
-                    splashRadius: 20,
-                    onPressed: () async {
+                    child:
+                        BU.btDialogDUIB(icon: Icons.close_rounded, size: 20)),
+                InkResponse(
+                    onTap: () async {
                       if (dialog == 'your passcode') {
                         String pcode = await Utility.getUPasscode();
                         if (pcode == controller.text.trim()) {
                           yesFunc();
+                        } else if( controller.text.trim().length == 0){
+                          ssb(context, text: 'passcode is necessary');
                         } else {
-                          ssb(context, text: 'passcode do not match');
+                           ssb(context, text: 'passcode do not match');
                         }
                         Navigator.pop(con);
                       } else {
@@ -241,68 +257,59 @@ class SB {
                         Navigator.pop(con);
                       }
                     },
-                    icon: Icon(
-                      Icons.arrow_forward_ios,
-                      color: Colors.white,
-                    ))
+                    child: BU.btDialogDUIB(
+                        icon: Icons.arrow_forward_ios, size: 20))
               ],
             );
           });
 }
 
 class TU {
+  static CU cu = CU();
   //text utitlity
+  static Shader linearGradient = LinearGradient(
+    colors: <Color>[Color(0xffDA44bb), Color(0xff8921aa)],
+  ).createShader(Rect.fromLTWH(0.0, 0.0, 200.0, 70.0));
 
   static geth(context) => MediaQuery.of(context).size.height;
   static getw(context) => MediaQuery.of(context).size.width;
 
-  static tsmall(context) =>
-      TextStyle(fontSize: geth(context) / 48, color: Colors.white);
   static tlarge(context, factor) => GoogleFonts.montserratAlternates(
       fontSize: geth(context) / factor,
       color: Colors.blue[800],
       fontWeight: FontWeight.w400);
-  static tblarge(context, factor) => GoogleFonts.montserratAlternates(
+  static tesmall(context, factor) => GoogleFonts.mulish(
       fontSize: geth(context) / factor,
-      color: Colors.blue,
-      fontWeight: FontWeight.w400);
-  static tesmall(context, factor) => TextStyle(
-      fontSize: geth(context) / factor,
-      color: Colors.white,
-      fontWeight: FontWeight.w500);
-  static teesmall(context) => TextStyle(
-      fontSize: geth(context) / 60,
       color: Colors.white70,
       fontWeight: FontWeight.w500);
+  static teesmall(context) => TextStyle(
+        fontSize: geth(context) / 60,
+        fontWeight: FontWeight.w500,
+      );
   static teeesmall(context, factor) => GoogleFonts.mulish(
       fontSize: geth(context) / factor,
-      color: Colors.grey[800],
-      fontWeight: FontWeight.w600);
-  static tesmallw(context) => TextStyle(
-      fontSize: geth(context) / 50,
-      color: Colors.white,
-      fontWeight: FontWeight.w500);
-  static telarge(context) => TextStyle(
-      fontSize: geth(context) / 36,
-      color: Colors.blue[900],
-      fontWeight: FontWeight.w600);
+      fontWeight: FontWeight.w600,
+      foreground: Paint()..shader = linearGradient);
+
+  static cAppText(context, factor) => GoogleFonts.mulish(
+      fontSize: geth(context) / factor,
+      fontWeight: FontWeight.w600,
+      color: cu.twhite);
 
   static tuD(context) => Container(
         height: 2,
         margin: EdgeInsets.symmetric(horizontal: 140),
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(10),
-          color: Colors.white,
+          color: cu.c2white,
         ),
       );
 
   static tuDFBM(context, factor) => Container(
         width: getw(context) / factor,
-        height: 1.5,
+        height: 4,
         decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(10),
-          color: Colors.white54,
-        ),
+            borderRadius: BorderRadius.circular(10), color: cu.c2white),
       );
   static tuDw() => Container(
         margin: EdgeInsets.symmetric(horizontal: 4),
@@ -310,7 +317,7 @@ class TU {
         width: 4,
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(10),
-          color: Colors.white,
+          color: cu.twhite,
         ),
       );
   static tTitle(BuildContext context) => TextStyle(
@@ -319,14 +326,28 @@ class TU {
       fontWeight: FontWeight.w700);
 
   static tSDLabel({required context, required String label}) => Container(
-      padding: EdgeInsets.symmetric(horizontal: 15, vertical: 6),
-      margin: EdgeInsets.symmetric(horizontal: 12),
-      decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(20), color: Colors.blue[900]),
-      child: Text(
-        label,
-        style: TU.teesmall(context),
-      ));
+        margin: EdgeInsets.symmetric(horizontal: 10),
+        decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(20), color: cu.accent),
+        child: Container(
+            padding: EdgeInsets.symmetric(horizontal: 15, vertical: 6),
+            decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(20), color: cu.cwhite),
+            child: TU.cat(context, text: label, factor: 60)),
+      );
+
+  static cat(context, {required text, required factor}) => RichText(
+      text: TextSpan(
+          text: text,
+          style: GoogleFonts.mulish(
+            color: cu.twhite,
+            fontSize: geth(context) / factor,
+            fontWeight: FontWeight.w600,
+          )),
+      textAlign: TextAlign.start,
+      softWrap: true,
+      maxLines: 1,
+      overflow: TextOverflow.ellipsis);
 }
 
 class GetChanges extends ChangeNotifier {
@@ -397,16 +418,6 @@ class GetChanges extends ChangeNotifier {
   bool getCodeSentSemaphore() => codeSentSemaphore;
   updateCodeSentSemaphore({required bool flag}) {
     codeSentSemaphore = flag;
-    notifyListeners();
-  }
-
-  //*******************HomePage******************** */
-
-  Color selectColor = Colors.black;
-  Color getSelectColor() => selectColor;
-
-  updateSelectColor() {
-    selectColor = Colors.black12;
     notifyListeners();
   }
 
@@ -555,6 +566,7 @@ class GetChanges extends ChangeNotifier {
 }
 
 class IU {
+  static CU cu = CU();
   static dicon(
           {required IconData icon,
           required Function callback,
@@ -564,17 +576,16 @@ class IU {
         padding: const EdgeInsets.all(8.0),
         child: CircleAvatar(
           radius: cSize,
-          backgroundColor: Colors.blue[900],
+          backgroundColor: Colors.white10,
           child: CircleAvatar(
-            radius: cSize - 1,
-            backgroundColor: Colors.white70,
+            radius: cSize - 2,
+            backgroundColor: Colors.black,
             child: Center(
               child: IconButton(
                 splashRadius: 20,
-                icon: Icon(
-                  icon,
+                icon: dFIcon(
+                  icon: icon,
                   size: size,
-                  color: Colors.blue[800],
                 ),
                 onPressed: () => callback(),
               ),
@@ -588,12 +599,9 @@ class IU {
           required Function callback,
           required double size}) =>
       IconButton(
+        color: Colors.white,
         splashRadius: 20,
-        icon: Icon(
-          icon,
-          size: size,
-          color: Colors.white,
-        ),
+        icon: IU.dBIcon(icon: icon, size: size),
         onPressed: () => callback(),
       );
 
@@ -615,6 +623,7 @@ class IU {
           required Function callback,
           required double size}) =>
       IconButton(
+        splashRadius: 20,
         icon: Icon(
           icon,
           size: size,
@@ -632,12 +641,127 @@ class IU {
       );
 
   static dCIcon({required IconData icon, required double size}) => Icon(
-    icon,
-    size: size,
-  );
+        icon,
+        size: size,
+      );
+
+  static dGIcon({required IconData icon, required double size}) => ShaderMask(
+      shaderCallback: (Rect bounds) {
+        return RadialGradient(
+          center: Alignment.topLeft,
+          radius: 0.7,
+          colors: <Color>[
+            Colors.blue,
+            Colors.deepPurple,
+            Colors.deepPurpleAccent,
+            Colors.red
+          ],
+          tileMode: TileMode.mirror,
+        ).createShader(bounds);
+      },
+      child: Icon(
+        icon,
+        size: size,
+      ));
+
+  static dBIcon({required IconData icon, required double size}) => ShaderMask(
+      shaderCallback: (Rect bounds) {
+        return RadialGradient(
+          center: Alignment.topLeft,
+          radius: 0.9,
+          colors: <Color>[
+            Colors.orange,
+            Colors.purple,
+            Colors.purple,
+            Colors.red
+          ],
+          tileMode: TileMode.mirror,
+        ).createShader(bounds);
+      },
+      child: Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: Icon(
+          icon,
+          size: size,
+        ),
+      ));
+
+  static dFIcon({required IconData icon, required double size}) => ShaderMask(
+      shaderCallback: (Rect bounds) {
+        return RadialGradient(
+          center: Alignment.topLeft,
+          radius: 0.9,
+          colors: <Color>[
+            Colors.orange,
+            Colors.purple,
+            Colors.purple,
+            Colors.red
+          ],
+          tileMode: TileMode.mirror,
+        ).createShader(Rect.fromLTWH(0.0, 0.0, 200.0, 100.0));
+      },
+      child: Icon(
+        icon,
+        size: size,
+      ));
+
+  static dFAIcon({required IconData icon, required double size}) => ShaderMask(
+      shaderCallback: (Rect bounds) {
+        return RadialGradient(
+          center: Alignment.topLeft,
+          radius: 0.9,
+          colors: <Color>[
+            Colors.orange,
+            Colors.purple,
+            Colors.purple,
+            Colors.red
+          ],
+          tileMode: TileMode.mirror,
+        ).createShader(bounds);
+      },
+      child: Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: Icon(
+          icon,
+          size: size,
+        ),
+      ));
+
+  static iwoc({required IconData icon, required double size}) => Icon(
+        icon,
+        size: size,
+        color: cu.twhite,
+      );
+  static iwc(
+          {required IconData icon,
+          required Function callback,
+          required double size}) =>
+      IconButton(
+        splashRadius:20,
+        icon: Icon(
+          icon,
+          size: size,
+          color: cu.twhite,
+        ),
+        onPressed: () {
+          callback();
+        },
+      );
+
+  static iwcow(
+          {required IconData icon,
+          required Function callback,
+          required double size}) =>
+      IconButton(
+        icon: Icon(icon, size: size, color: cu.twhite),
+        onPressed: () {
+          callback();
+        },
+      );
 }
 
 class TF {
+  static CU cu = CU();
   static getTField(context,
           {required TextEditingController con, required String htext}) =>
       Row(children: [
@@ -645,7 +769,7 @@ class TF {
           child: Container(
             padding: EdgeInsets.symmetric(horizontal: 10),
             decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(10), color: Colors.white12),
+                borderRadius: BorderRadius.circular(10), color: Colors.white10),
             child: TextFormField(
               controller: con,
               style: TU.tesmall(context, 55),
@@ -670,7 +794,7 @@ class TF {
           child: Container(
             padding: EdgeInsets.symmetric(horizontal: 10),
             decoration: BoxDecoration(
-                color: Colors.white12, borderRadius: BorderRadius.circular(10)),
+                color: Colors.white10, borderRadius: BorderRadius.circular(10)),
             child: TextFormField(
               controller: con,
               style: TU.tesmall(context, 44),
@@ -822,9 +946,54 @@ class CIC {
         if (event == ConnectivityResult.none) {
           GetChanges changes = Provider.of<GetChanges>(context, listen: false);
           changes.updateDialStatus();
-          SB.ssb(context, text: 'no internet connection found');
+          SB.ssb2(context, text: 'no internet connection found');
         } else {
           callback();
         }
       });
+}
+
+class BU {
+  static CU cu = CU();
+  static btDialogDUIB({required IconData icon, required double size}) =>
+      Container(
+        margin: EdgeInsets.only(bottom: 4),
+        decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(20),
+            gradient:
+                RadialGradient(colors: [Color(0xffDA44bb), Color(0xff8921aa)])),
+        child: Card(
+          margin: EdgeInsets.all(1),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(20),
+          ),
+          color: cu.b,
+          child: Container(
+            padding: EdgeInsets.symmetric(vertical: 3, horizontal: 16),
+            decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(20), color: cu.cwhite),
+            child: ShaderMask(
+                shaderCallback: (Rect bounds) {
+                  return LinearGradient(colors: [Colors.red, Colors.purple])
+                      .createShader(bounds);
+                },
+                child: CircleAvatar(
+                    radius: 10,
+                    backgroundColor: cu.t,
+                    child: Icon(icon, size: size))),
+          ),
+        ),
+      );
+
+  static btDialogDUI({required IconData icon, required double size}) => Card(
+        color: cu.accent,
+        margin: EdgeInsets.only(bottom: 4),
+        elevation: 0,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        child: Container(
+            padding: EdgeInsets.symmetric(vertical: 3, horizontal: 16),
+            decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(20), color: cu.cwhite),
+            child: Icon(icon, size: size, color: Colors.white70)),
+      );
 }

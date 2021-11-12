@@ -17,15 +17,14 @@ class _LogoPageState extends State<LogoPage> {
     Timer(Duration(seconds: 3), () async {
       bool b = await Utility.getUserSignedInStatus();
       bool bb = await Utility.getProfileStatus();
-      if (b) {  
+      if (b) {
         if (bb) {
-          Navigator.pushNamed(context, '/hp');
+          Navigator.pushReplacementNamed(context, '/hp');
         } else {
-          
-          Navigator.pushNamed(context, '/pp');
+          Navigator.pushReplacementNamed(context, '/pp');
         }
       } else {
-        Navigator.pushNamed(context, '/aup');
+        Navigator.pushReplacementNamed(context, '/aup');
       }
     });
   }
@@ -33,9 +32,9 @@ class _LogoPageState extends State<LogoPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: Colors.black,
       body: Container(
-        color: Colors.black38,
+        color: Colors.white10,
         child: Column(
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: [
@@ -65,7 +64,7 @@ class _LogoPageState extends State<LogoPage> {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 CircularProgressIndicator(
-                  color: Colors.blue,
+                  color: Colors.white,
                 )
               ],
             )

@@ -1,4 +1,5 @@
 import 'package:bdrive/utilityF/bottomModals/dModals.dart';
+import 'package:bdrive/utilityF/constants.dart';
 import 'package:bdrive/utilityF/firebaseUtility.dart';
 import 'package:bdrive/utilityF/localUtility.dart';
 import 'package:flutter/foundation.dart';
@@ -25,6 +26,7 @@ class FolderTile extends StatefulWidget {
 }
 
 class _FolderTileState extends State<FolderTile> {
+  CU cu = CU();
   @override
   Widget build(BuildContext context) {
     return widget.type == true
@@ -46,22 +48,20 @@ class _FolderTileState extends State<FolderTile> {
                     handlingFS: widget.handlingFS,
                     callback: ({required String msg}) {
                       if (msg.length > 0) {
-                        SB.ssb(context, text: msg);
+                        SB.ssb2(context, text: msg);
                       }
                     });
               }
             },
-            child: Card(
-              color: Colors.blue[800],
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(8),
-              ),
+            child: Container(
+              margin: EdgeInsets.all(5),
+              decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(8), color: cu.be),
               child: Container(
                   padding:
-                      EdgeInsets.only(left: 20, top: 10, bottom: 10, right: 10),
+                      EdgeInsets.only(left: 10, top: 10, bottom: 10, right: 10),
                   decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(8),
-                      color: Colors.black38),
+                      borderRadius: BorderRadius.circular(8), color: cu.cwhite),
                   child: Row(
                     children: [
                       Container(
@@ -69,20 +69,22 @@ class _FolderTileState extends State<FolderTile> {
                         width: 50,
                         decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(10),
-                          color: Colors.black26,
+                          // color: Colors.black26,
                         ),
-                        child: Icon(
-                          Icons.folder,
-                          color: Colors.white70,
-                          size: 28,
-                        ),
+                        child: CircleAvatar(
+                            backgroundColor: Colors.transparent,
+                            child: IU.dBIcon(
+                                icon: Icons.folder_outlined, size: 28)),
+                      ),
+                      SizedBox(
+                        width: 10,
                       ),
                       Expanded(
                         child: Container(
-                          padding: EdgeInsets.symmetric(horizontal: 10),
+                          padding: EdgeInsets.only(right: 10),
                           child: RichText(
                             text: TextSpan(
-                                text: widget.folder.fName,
+                                text: widget.folder.fName.toLowerCase(),
                                 style: TU.teesmall(context)),
                             textAlign: TextAlign.left,
                             softWrap: true,
@@ -92,35 +94,26 @@ class _FolderTileState extends State<FolderTile> {
                       ),
                       if (widget.folder.star == true) ...[
                         Container(
-                          padding: const EdgeInsets.only(right: 10),
-                          child: Icon(
-                            Icons.star,
-                            color: Colors.white70,
-                            size: 20,
-                          ),
-                        )
+                            child: IU.diconl(
+                                icon: Icons.star_outline_outlined,
+                                callback: () {},
+                                size: 20))
                       ],
                       if (widget.callFrom != 'star') ...[
-                        IconButton(
-                          splashRadius: 20,
-                          splashColor: Colors.red,
-                          onPressed: () {
-                            FolderDModals.smbs(
-                                context: context,
-                                shortFD: widget.folder,
-                                handlingFS: widget.handlingFS,
-                                callback: ({required String msg}) {
-                                  if (msg.length > 0) {
-                                    SB.ssb(context, text: msg);
-                                  }
-                                });
-                          },
-                          icon: Icon(
-                            FontAwesomeIcons.ellipsisV,
-                            color: Colors.white54,
-                            size: 16,
-                          ),
-                        ),
+                        IU.diconl(
+                            icon: Icons.query_stats_outlined,
+                            callback: () {
+                              FolderDModals.smbs(
+                                  context: context,
+                                  shortFD: widget.folder,
+                                  handlingFS: widget.handlingFS,
+                                  callback: ({required String msg}) {
+                                    if (msg.length > 0) {
+                                      SB.ssb(context, text: msg);
+                                    }
+                                  });
+                            },
+                            size: 16)
                       ]
                     ],
                   )),
@@ -151,27 +144,33 @@ class _FolderTileState extends State<FolderTile> {
             },
             child: Consumer<GetChanges>(
                 builder: (BuildContext context, value, win) {
-              return Card(
-                color: Colors.blue[800],
-                elevation: 0,
-                shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(8)),
+              return Container(
+                margin: EdgeInsets.symmetric(horizontal: 5, vertical: 5),
+                decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(8),
+                    color: cu.be,
+                  ),
                 child: Container(
                   alignment: Alignment.center,
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(8),
-                    color: Colors.black38,
+                    color: cu.cwhite,
                   ),
+                  clipBehavior:Clip.antiAlias,
                   child: Stack(
                     children: [
                       Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           Center(
-                            child: Icon(
-                              Icons.folder_outlined,
-                              color: Colors.white70,
-                              size: TU.geth(context) / 12,
+                            child: CircleAvatar(
+                              radius: 40,
+                              backgroundColor: Colors.transparent,
+                              child: Center(
+                                child: IU.dBIcon(
+                                    icon: Icons.folder_outlined,
+                                    size: TU.getw(context) / 5.6),
+                              ),
                             ),
                           ),
                         ],
@@ -181,47 +180,38 @@ class _FolderTileState extends State<FolderTile> {
                           top: 1,
                           right: 1,
                           child: Padding(
-                            padding: const EdgeInsets.all(8.0),
-                            child: CircleAvatar(
-                              backgroundColor: Colors.black38,
-                              child: Icon(
-                                Icons.star,
-                                color: Colors.white70,
-                                size: 20,
-                              ),
-                            ),
+                            padding: const EdgeInsets.all(4.0),
+                            child: IU.diconl(
+                                icon: Icons.star_outline_outlined,
+                                callback: () {},
+                                size: 20),
                           ),
                         )
                       ],
                       Column(
-                        mainAxisAlignment: MainAxisAlignment.end,
-                        children:[
-                          
-                          Container(
-                decoration: BoxDecoration(
-              borderRadius: BorderRadius.only(bottomLeft: Radius.circular(8), bottomRight: Radius.circular(8)),
-              color: Colors.black38,
-            ),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                Container(
-                      padding: EdgeInsets.symmetric(horizontal: 2, vertical: 10),
-                                  
-                                  child: RichText(
-                                      text: TextSpan(
-                                          text: widget.folder.fName,
-                                          style: TU.teesmall(context)),
-                                      textAlign: TextAlign.center,
-                                      softWrap: true,
-                                      maxLines: 1,
-                                      overflow: TextOverflow.ellipsis),
-                                ),
-                              ],
+                          mainAxisAlignment: MainAxisAlignment.end,
+                          children: [
+                            Container(
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.only(
+                                    bottomLeft: Radius.circular(8),
+                                    bottomRight: Radius.circular(8)),
+                                color: Colors.black38,
+                              ),
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Container(
+                                      padding: EdgeInsets.symmetric(
+                                          horizontal: 2, vertical: 10),
+                                      child: TU.cat(context,
+                                          text:
+                                              widget.folder.fName.toLowerCase(),
+                                          factor: 60)),
+                                ],
+                              ),
                             ),
-                          ),
-                        ]
-                      )
+                          ])
                     ],
                   ),
                 ),
@@ -249,6 +239,7 @@ class FileTile extends StatefulWidget {
 }
 
 class _FileTileState extends State<FileTile> {
+  CU cu = CU();
   Map<String, IconData> map = {
     'txt': FontAwesomeIcons.file,
     'docx': FontAwesomeIcons.fileWord,
@@ -280,7 +271,7 @@ class _FileTileState extends State<FileTile> {
                     cFile: widget.cFile,
                     handlingFS: widget.handlingFS,
                     callback: ({required String msg}) {
-                      SB.ssb(context, text: msg);
+                      SB.ssb2(context, text: msg);
                     });
               }
             },
@@ -294,15 +285,14 @@ class _FileTileState extends State<FileTile> {
             child: Wrap(
               children: [
                 Card(
-                  color: Colors.blue[900],
+                  color: cu.accent,
                   shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(8)),
                   child: Container(
-                      padding: EdgeInsets.only(
-                          left: 20, top: 10, bottom: 10, right: 10),
+                      padding: EdgeInsets.all(10),
                       decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(8),
-                          color: Colors.black26),
+                        borderRadius: BorderRadius.circular(8),
+                      ),
                       child: Row(
                         children: [
                           FutureBuilder<bool>(
@@ -366,59 +356,38 @@ class _FileTileState extends State<FileTile> {
                           SizedBox(width: 10),
                           Expanded(
                             child: Container(
-                              padding: EdgeInsets.symmetric(horizontal: 10),
-                              child: RichText(
-                                text: TextSpan(
-                                    text: Help.trimExtension(
-                                        filename: widget.cFile.fileName),
-                                    style: TU.teesmall(context)),
-                                textAlign: TextAlign.left,
-                                softWrap: true,
-                                overflow: TextOverflow.ellipsis,
-                              ),
-                            ),
+                                alignment: Alignment.centerLeft,
+                                padding: EdgeInsets.only(right: 10),
+                                child: TU.cat(context,
+                                    text: widget.cFile.fileName
+                                        .trim()
+                                        .toLowerCase(),
+                                    factor: 60)),
                           ),
                           if (widget.cFile.star == true) ...[
                             Container(
-                              padding: const EdgeInsets.only(right: 10),
-                              child: Icon(
-                                Icons.star,
-                                color: Colors.white70,
-                                size: 20,
-                              ),
-                            )
+                                child: IU.diconl(
+                                    icon: Icons.star_outline_outlined,
+                                    callback: () {},
+                                    size: 20))
                           ],
                           if (widget.callFrom != 'star') ...[
-                            IconButton(
-                              splashRadius: 20,
-                              splashColor: Colors.red,
-                              onPressed: () {
-                                FileDModals.smbs(
-                                    ctx: context,
-                                    cFile: widget.cFile,
-                                    handlingFS: widget.handlingFS,
-                                    callback: ({required String msg}) {
-                                      SB.ssb(context, text: msg);
-                                    });
-                              },
-                              icon: Icon(
-                                FontAwesomeIcons.ellipsisV,
-                                color: Colors.white54,
-                                size: 16,
-                              ),
-                            ),
+                            IU.diconl(
+                                icon: Icons.query_stats_outlined,
+                                callback: () {
+                                  FileDModals.smbs(
+                                      ctx: context,
+                                      cFile: widget.cFile,
+                                      handlingFS: widget.handlingFS,
+                                      callback: ({required String msg}) {
+                                        SB.ssb(context, text: msg);
+                                      });
+                                },
+                                size: 16),
                           ],
                         ],
                       )),
                 ),
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 0.0),
-                  child: Divider(
-                    color: Colors.black,
-                    height: 2,
-                    thickness: 3,
-                  ),
-                )
               ],
             ),
           )
@@ -442,30 +411,22 @@ class _FileTileState extends State<FileTile> {
             },
             child: Consumer<GetChanges>(
                 builder: (BuildContext context, value, win) {
-              return Card(
-                color: Colors.blue[800],
-                elevation: 0,
-                shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(10)),
-                child: Container(
-                  alignment: Alignment.center,
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(10),
-                    color: Colors.black38,
-                  ),
-                  child: FutureBuilder<bool>(
-                      future: CIC.checkConnectivityforModals(context),
-                      builder: (context, snapshot) {
-                        if (snapshot.hasData) {
-                          if (snapshot.data == true) {
-                            return getStack(0);
-                          } else {
-                            return getStack(1);
-                          }
+              return Container(
+                margin: EdgeInsets.all(5),
+                decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(10), color: cu.accent),
+                child: FutureBuilder<bool>(
+                    future: CIC.checkConnectivityforModals(context),
+                    builder: (context, snapshot) {
+                      if (snapshot.hasData) {
+                        if (snapshot.data == true) {
+                          return getStack(0);
+                        } else {
+                          return getStack(1);
                         }
-                        return getStack(1);
-                      }),
-                ),
+                      }
+                      return getStack(1);
+                    }),
               );
             }),
           );
@@ -478,11 +439,12 @@ class _FileTileState extends State<FileTile> {
           borderRadius: BorderRadius.circular(10),
           color: Colors.black26,
         ),
-        child: Icon(
-          map[widget.cFile.fileName.split('.').last] ?? FontAwesomeIcons.file,
-          color: Colors.white70,
-          size: 24,
-        ),
+        child: CircleAvatar(
+            backgroundColor: Colors.transparent,
+            child: IU.dFAIcon(
+                icon: map[widget.cFile.fileName.split('.').last] ??
+                    FontAwesomeIcons.file,
+                size: 24)),
       );
 
   getStack(int i) => Stack(
@@ -493,7 +455,7 @@ class _FileTileState extends State<FileTile> {
               ? Container(
                   decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(10),
-                      color: Colors.black38),
+                      color: Colors.black45),
                   child: Stack(
                     children: [
                       Center(child: Image.asset('assets\\bDrive.png')),
@@ -515,11 +477,15 @@ class _FileTileState extends State<FileTile> {
                       ? EdgeInsets.only(right: 10)
                       : EdgeInsets.all(0),
                   child: Center(
-                    child: Icon(
-                      map[widget.cFile.fileName.split('.').last] ??
-                          FontAwesomeIcons.file,
-                      color: Colors.white70,
-                      size: TU.geth(context) / 14,
+                    child: CircleAvatar(
+                      radius: 40,
+                      backgroundColor: Colors.transparent,
+                      child: Center(
+                        child: IU.dFAIcon(
+                            icon: map[widget.cFile.fileName.split('.').last] ??
+                                FontAwesomeIcons.file,
+                            size: TU.getw(context) / 7),
+                      ),
                     ),
                   ),
                 ),
@@ -534,45 +500,39 @@ class _FileTileState extends State<FileTile> {
             children: [
               Container(
                 decoration: BoxDecoration(
-              borderRadius: BorderRadius.only(bottomLeft: Radius.circular(10), bottomRight: Radius.circular(10)),
-              color: Colors.black38,
-            ),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Container(
-                      padding: EdgeInsets.symmetric(horizontal: 2, vertical: 10),
-                      width: 100,
-                      child: RichText(
-                          text: TextSpan(
-                              text: widget.cFile.fileName,
-                              style: TU.teesmall(context)),
-                          textAlign: TextAlign.center,
-                          softWrap: true,
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis),
-                    ),
-                  ],
+                    borderRadius: BorderRadius.only(
+                        bottomLeft: Radius.circular(10),
+                        bottomRight: Radius.circular(10)),
+                    color: cu.cwhite),
+                child: Container(
+                  decoration: BoxDecoration(
+                      borderRadius: BorderRadius.only(
+                          bottomLeft: Radius.circular(10),
+                          bottomRight: Radius.circular(10)),
+                      color: cu.cblack),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Container(
+                          padding:
+                              EdgeInsets.symmetric(horizontal: 2, vertical: 10),
+                          width: 100,
+                          child: TU.cat(context,
+                              text: widget.cFile.fileName.toLowerCase(),
+                              factor: 60)),
+                    ],
+                  ),
                 ),
               ),
             ],
           ),
           if (widget.cFile.star == true) ...[
             Positioned(
-                          top: 1,
-                          right: 1,
-                          child: Padding(
-                            padding: const EdgeInsets.all(8.0),
-                            child: CircleAvatar(
-                              backgroundColor: Colors.black38,
-                              child: Icon(
-                                Icons.star,
-                                color: Colors.white70,
-                                size: 20,
-                              ),
-                            ),
-                          ),
-                        )
+              top: 1,
+              right: 1,
+              child: IU.diconl(
+                  icon: Icons.star_outline_outlined, callback: () {}, size: 20),
+            )
           ]
         ],
       );
@@ -594,6 +554,7 @@ class RecentDocTile extends StatefulWidget {
 }
 
 class _RecentDocTileState extends State<RecentDocTile> {
+  CU cu = CU();
   Map<String, IconData> map = {
     'txt': FontAwesomeIcons.file,
     'docx': FontAwesomeIcons.fileWord,
@@ -627,121 +588,100 @@ class _RecentDocTileState extends State<RecentDocTile> {
             },
             child: Wrap(
               children: [
-                Card(
-                  color: Colors.blue[800],
-                  child: Container(
-                      padding: EdgeInsets.only(
-                          left: 20, top: 10, bottom: 10, right: 10),
-                      decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(8),
-                          color: Colors.black26),
-                      child: Row(
-                        children: [
-                          FutureBuilder<bool>(
-                              future: CIC.checkConnectivityforModals(context),
-                              builder: (context, snapshot) {
-                                if (snapshot.hasError) {
-                                  return getFileListView();
-                                }
-                                if (snapshot.hasData) {
-                                  if (snapshot.data == true) {
-                                    return Stack(
-                                      children: [
-                                        (imageExtensions.contains(widget
-                                                .cFile.fileName
-                                                .split('.')
-                                                .last))
-                                            ? Container(
-                                                height: 50,
-                                                width: 50,
-                                                decoration: BoxDecoration(
+                Container(
+                    margin: EdgeInsets.all(2),
+                    padding: EdgeInsets.only(
+                        left: 20, top: 10, bottom: 10, right: 10),
+                    decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(10), color: cu.b),
+                    child: Row(
+                      children: [
+                        FutureBuilder<bool>(
+                            future: CIC.checkConnectivityforModals(context),
+                            builder: (context, snapshot) {
+                              if (snapshot.hasError) {
+                                return getFileListView();
+                              }
+                              if (snapshot.hasData) {
+                                if (snapshot.data == true) {
+                                  return Stack(
+                                    children: [
+                                      (imageExtensions.contains(widget
+                                              .cFile.fileName
+                                              .split('.')
+                                              .last))
+                                          ? Container(
+                                              height: 50,
+                                              width: 50,
+                                              decoration: BoxDecoration(
+                                                  borderRadius:
+                                                      BorderRadius.circular(10),
+                                                  color: Colors.black38),
+                                              child: Stack(
+                                                children: [
+                                                  Center(
+                                                      child: Image.asset(
+                                                          'assets\\bDrive.png')),
+                                                  ClipRRect(
                                                     borderRadius:
                                                         BorderRadius.circular(
                                                             10),
-                                                    color: Colors.black38),
-                                                child: Stack(
-                                                  children: [
-                                                    Center(
-                                                        child: Image.asset(
-                                                            'assets\\bDrive.png')),
-                                                    ClipRRect(
-                                                      borderRadius:
-                                                          BorderRadius.circular(
-                                                              10),
-                                                      child: FadeInImage
-                                                          .memoryNetwork(
-                                                              height: 50,
-                                                              width: 50,
-                                                              fadeInDuration:
-                                                                  Duration(
-                                                                      seconds:
-                                                                          1),
-                                                              fit: BoxFit.cover,
-                                                              placeholder:
-                                                                  kTransparentImage,
-                                                              image: widget
-                                                                  .cFile.dLink),
-                                                    )
-                                                  ],
-                                                ),
-                                              )
-                                            : getFileListView(),
-                                      ],
-                                    );
-                                  } else {
-                                    return getFileListView();
-                                  }
+                                                    child: FadeInImage
+                                                        .memoryNetwork(
+                                                            height: 50,
+                                                            width: 50,
+                                                            fadeInDuration:
+                                                                Duration(
+                                                                    seconds: 1),
+                                                            fit: BoxFit.cover,
+                                                            placeholder:
+                                                                kTransparentImage,
+                                                            image: widget
+                                                                .cFile.dLink),
+                                                  )
+                                                ],
+                                              ),
+                                            )
+                                          : getFileListView(),
+                                    ],
+                                  );
                                 } else {
-                                  return CircularProgressIndicator();
+                                  return getFileListView();
                                 }
-                              }),
-                          SizedBox(width: 10),
-                          Expanded(
-                            child: Container(
-                              padding: EdgeInsets.symmetric(horizontal: 10),
-                              child: RichText(
-                                text: TextSpan(
-                                    text: Help.trimExtension(
-                                        filename: widget.cFile.fileName),
-                                    style: TU.teesmall(context)),
-                                textAlign: TextAlign.left,
-                                softWrap: true,
-                                overflow: TextOverflow.ellipsis,
-                              ),
-                            ),
-                          ),
-                          IconButton(
-                            splashRadius: 20,
-                            onPressed: () async {
-                              if (await CIC
-                                  .checkConnectivityforModals(context)) {
-                                await FileOps().mAO(
-                                    url: widget.cFile.dLink,
-                                    fileName: widget.cFile.fileName);
+                              } else {
+                                return CircularProgressIndicator();
                               }
-                            },
-                            icon: Icon(
-                              FontAwesomeIcons.getPocket,
-                              color: Colors.white60,
-                              size: 16,
-                            ),
-                          ),
-                          IconButton(
-                            splashRadius: 20,
-                            onPressed: () async {
+                            }),
+                        SizedBox(width: 10),
+                        Expanded(
+                          child: Container(
+                              alignment: Alignment.centerLeft,
+                              padding: EdgeInsets.only(right: 10),
+                              child: TU.cat(context,
+                                  text: widget.cFile.fileName.toLowerCase(),
+                                  factor: 60)),
+                        ),
+                        IU.diconl(
+                          callback: () async {
+                            if (await CIC.checkConnectivityforModals(context)) {
+                              await FileOps().mAO(
+                                  url: widget.cFile.dLink,
+                                  fileName: widget.cFile.fileName);
+                            }
+                          },
+                          icon: FontAwesomeIcons.getPocket,
+                          size: 16,
+                        ),
+                        IU.diconl(
+                            callback: () async {
                               await widget.handlingFS.removeFileFromRecent(
                                   recentId: await Utility.getRecentDID(),
                                   cFile: widget.cFile);
                             },
-                            icon: Icon(
-                              FontAwesomeIcons.ghost,
-                              color: Colors.white60,
-                              size: 16,
-                            ),
-                          ),
-                          IconButton(
-                            splashRadius: 20,
-                            onPressed: () async {
+                            icon: FontAwesomeIcons.ghost,
+                            size: 16),
+                        IU.diconl(
+                            callback: () async {
                               if (await CIC.checkConnectivity(context)) {
                                 Provider.of<GetChanges>(context, listen: false)
                                     .updateLoadingIndicatorStatus(flag: true);
@@ -750,23 +690,10 @@ class _RecentDocTileState extends State<RecentDocTile> {
                                     fileName: widget.cFile.fileName);
                               }
                             },
-                            icon: Icon(
-                              FontAwesomeIcons.share,
-                              color: Colors.white60,
-                              size: 16,
-                            ),
-                          ),
-                        ],
-                      )),
-                ),
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 0.0),
-                  child: Divider(
-                    color: Colors.black,
-                    height: 2,
-                    thickness: 3,
-                  ),
-                )
+                            icon: FontAwesomeIcons.share,
+                            size: 16),
+                      ],
+                    )),
               ],
             ),
           )
@@ -777,12 +704,10 @@ class _RecentDocTileState extends State<RecentDocTile> {
               await FileOps().openFile(context,
                   url: widget.cFile.dLink, fileName: widget.cFile.fileName);
             },
-            child: Card(
-                elevation: 0,
-                color: Colors.blue[800],
-                shadowColor: Colors.blue[800],
-                shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(20)),
+            child: Container(
+                margin: EdgeInsets.all(5),
+                decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(20), color: cu.accent),
                 child: FutureBuilder<bool>(
                     future: CIC.checkConnectivityforModals(context),
                     builder: (BuildContext context, snapshot) {
@@ -801,15 +726,15 @@ class _RecentDocTileState extends State<RecentDocTile> {
   getFileListView() => Container(
         height: 50,
         width: 50,
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(10),
-          color: Colors.black26,
-        ),
-        child: Icon(
-          map[widget.cFile.fileName.split('.').last] ?? FontAwesomeIcons.file,
-          color: Colors.white70,
-          size: 24,
-        ),
+        decoration:
+            BoxDecoration(borderRadius: BorderRadius.circular(10), color: cu.b),
+        child: CircleAvatar(
+            backgroundColor: cu.b,
+            child: IU.dBIcon(
+              icon: map[widget.cFile.fileName.split('.').last] ??
+                  FontAwesomeIcons.file,
+              size: 24,
+            )),
       );
 
   getStack(int i) => Stack(
@@ -821,7 +746,7 @@ class _RecentDocTileState extends State<RecentDocTile> {
                   height: 150,
                   decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(20),
-                      color: Colors.black38),
+                      color: Colors.white10),
                   child: Stack(
                     children: [
                       Center(child: Image.asset('assets\\bDrive.png')),
@@ -841,14 +766,17 @@ class _RecentDocTileState extends State<RecentDocTile> {
               : Container(
                   decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(20),
-                      color: Colors.black26),
+                      color: Colors.white10),
                   height: 150,
                   child: Center(
-                    child: Icon(
-                        map[widget.cFile.fileName.split('.').last] ??
-                            FontAwesomeIcons.file,
-                        color: Colors.white70,
-                        size: TU.getw(context) / 5),
+                    child: CircleAvatar(
+                      backgroundColor: cu.t,
+                      radius: 60,
+                      child: IU.dBIcon(
+                          icon: map[widget.cFile.fileName.split('.').last] ??
+                              FontAwesomeIcons.file,
+                          size: TU.getw(context) / 6.4),
+                    ),
                   ),
                 ),
           Container(
@@ -869,37 +797,27 @@ class _RecentDocTileState extends State<RecentDocTile> {
                     Tooltip(
                       message: 'file location',
                       child: Padding(
-                        padding: const EdgeInsets.only(left: 20),
-                        child: Icon(
-                          FontAwesomeIcons.folder,
-                          color: Colors.white70,
-                          size: 16,
-                        ),
-                      ),
+                          padding: const EdgeInsets.only(left: 10),
+                          child: CircleAvatar(
+                            backgroundColor: cu.t,
+                            child: IU.dBIcon(
+                              icon: FontAwesomeIcons.folder,
+                              size: 16,
+                            ),
+                          )),
                     ),
                     Expanded(
                       child: Container(
-                        padding: EdgeInsets.all(10),
-                        alignment: Alignment.centerLeft,
-                        child: RichText(
-                          text: TextSpan(
-                              text: widget.cFile.path,
-                              style: TU.teesmall(context)),
-                          overflow: TextOverflow.ellipsis,
-                          softWrap: true,
-                        ),
-                      ),
+                          padding: EdgeInsets.all(10),
+                          alignment: Alignment.centerLeft,
+                          child: TU.cat(context,
+                              text: widget.cFile.path, factor: 60)),
                     ),
                     Padding(
-                      padding: const EdgeInsets.all(10.0),
-                      child: RichText(
-                        text: TextSpan(
+                        padding: const EdgeInsets.all(10.0),
+                        child: TU.cat(context,
                             text: widget.cFile.uploadTime.split(' ')[0],
-                            style: TU.teesmall(context)),
-                        overflow: TextOverflow.ellipsis,
-                        softWrap: true,
-                      ),
-                    ),
+                            factor: 60)),
                   ],
                 ),
                 Container(
@@ -908,6 +826,7 @@ class _RecentDocTileState extends State<RecentDocTile> {
                     children: [
                       IconButton(
                         tooltip: 'make available offline',
+                        color: Colors.red,
                         onPressed: () async {
                           if (await CIC.checkConnectivityforModals(context)) {
                             await FileOps().mAO(
@@ -915,22 +834,21 @@ class _RecentDocTileState extends State<RecentDocTile> {
                                 fileName: widget.cFile.fileName);
                           }
                         },
-                        icon: Icon(
-                          FontAwesomeIcons.getPocket,
-                          color: Colors.white70,
+                        icon: IU.dBIcon(
+                          icon: FontAwesomeIcons.getPocket,
                           size: 16,
                         ),
                       ),
                       IconButton(
                         tooltip: 'remove from recent',
+                        color: Colors.orange,
                         onPressed: () async {
                           await widget.handlingFS.removeFileFromRecent(
                               recentId: await Utility.getRecentDID(),
                               cFile: widget.cFile);
                         },
-                        icon: Icon(
-                          FontAwesomeIcons.ghost,
-                          color: Colors.white70,
+                        icon: IU.dBIcon(
+                          icon: FontAwesomeIcons.ghost,
                           size: 16,
                         ),
                       ),
@@ -942,19 +860,15 @@ class _RecentDocTileState extends State<RecentDocTile> {
                   children: [
                     Expanded(
                       child: Container(
-                        padding: EdgeInsets.only(left: 20),
-                        alignment: Alignment.centerRight,
-                        child: RichText(
-                          text: TextSpan(
-                              text: widget.cFile.fileName,
-                              style: TU.teesmall(context)),
-                          overflow: TextOverflow.ellipsis,
-                          softWrap: true,
-                        ),
-                      ),
+                          padding: EdgeInsets.only(left: 20),
+                          alignment: Alignment.centerRight,
+                          child: TU.cat(context,
+                              text: widget.cFile.fileName.toLowerCase(),
+                              factor: 60)),
                     ),
                     IconButton(
                       tooltip: 'share',
+                      color: Colors.yellow,
                       onPressed: () async {
                         if (await CIC.checkConnectivity(context)) {
                           Provider.of<GetChanges>(context, listen: false)
@@ -964,11 +878,7 @@ class _RecentDocTileState extends State<RecentDocTile> {
                               fileName: widget.cFile.fileName);
                         }
                       },
-                      icon: Icon(
-                        FontAwesomeIcons.share,
-                        color: Colors.white70,
-                        size: 16,
-                      ),
+                      icon: IU.dBIcon(icon: FontAwesomeIcons.share, size: 16),
                     ),
                   ],
                 )
@@ -1182,6 +1092,7 @@ class SFileTile extends StatefulWidget {
 }
 
 class _SFileTileState extends State<SFileTile> {
+  CU cu = CU();
   Map<String, IconData> map = {
     'txt': FontAwesomeIcons.file,
     'docx': FontAwesomeIcons.fileWord,
@@ -1215,122 +1126,116 @@ class _SFileTileState extends State<SFileTile> {
       child: Wrap(
         children: [
           Container(
-              margin: EdgeInsets.symmetric(horizontal: 10, vertical: 8),
-              padding: EdgeInsets.only(left: 10, top: 5, bottom: 5),
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(8),
-                // color:Colors.white10
-              ),
-              child: Row(
-                children: [
-                  FutureBuilder<bool>(
-                      future: CIC.checkConnectivityforModals(context),
-                      builder: (BuildContext context, snapshot) {
-                        if (snapshot.hasError) {
-                          return getFileListView();
-                        }
-                        if (snapshot.hasData) {
-                          return snapshot.data == true
-                              ? Stack(
-                                  children: [
-                                    getFileListView(),
-                                    if (snapshot.data == true &&
-                                        imageExtensions.contains(widget
-                                            .sFile.fileName
-                                            .split('.')
-                                            .last)) ...[
-                                      Container(
-                                        height: 50,
-                                        width: 50,
-                                        decoration: BoxDecoration(
-                                            borderRadius:
-                                                BorderRadius.circular(10),
-                                            color: Colors.black),
-                                        child: Stack(
-                                          children: [
-                                            Center(
-                                                child: Image.asset(
-                                                    'assets\\bDrive.png')),
-                                            ClipRRect(
+            margin: EdgeInsets.symmetric(vertical: 5, horizontal: 10),
+            decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(8), color: Colors.white10),
+            child: Container(
+                padding: EdgeInsets.all(10),
+                decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(8),
+                    color: Colors.black45),
+                child: Row(
+                  children: [
+                    FutureBuilder<bool>(
+                        future: CIC.checkConnectivityforModals(context),
+                        builder: (BuildContext context, snapshot) {
+                          if (snapshot.hasError) {
+                            return getFileListView();
+                          }
+                          if (snapshot.hasData) {
+                            return snapshot.data == true
+                                ? Stack(
+                                    children: [
+                                      getFileListView(),
+                                      if (snapshot.data == true &&
+                                          imageExtensions.contains(widget
+                                              .sFile.fileName
+                                              .split('.')
+                                              .last)) ...[
+                                        Container(
+                                          height: 50,
+                                          width: 50,
+                                          decoration: BoxDecoration(
                                               borderRadius:
                                                   BorderRadius.circular(10),
-                                              child: FadeInImage.memoryNetwork(
-                                                  height: 50,
-                                                  width: 50,
-                                                  fadeInDuration:
-                                                      Duration(seconds: 2),
-                                                  fit: BoxFit.cover,
-                                                  placeholder:
-                                                      kTransparentImage,
-                                                  image: widget.sFile.dLink),
-                                            )
-                                          ],
-                                        ),
-                                      )
-                                    ]
-                                  ],
-                                )
-                              : getFileListView();
+                                              color: Colors.black),
+                                          child: Stack(
+                                            children: [
+                                              Center(
+                                                  child: Image.asset(
+                                                      'assets\\bDrive.png')),
+                                              ClipRRect(
+                                                borderRadius:
+                                                    BorderRadius.circular(10),
+                                                child:
+                                                    FadeInImage.memoryNetwork(
+                                                        height: 50,
+                                                        width: 50,
+                                                        fadeInDuration:
+                                                            Duration(
+                                                                seconds: 2),
+                                                        fit: BoxFit.cover,
+                                                        placeholder:
+                                                            kTransparentImage,
+                                                        image:
+                                                            widget.sFile.dLink),
+                                              )
+                                            ],
+                                          ),
+                                        )
+                                      ]
+                                    ],
+                                  )
+                                : getFileListView();
+                          }
+                          return getFileListView();
+                        }),
+                    SizedBox(width: 10),
+                    Expanded(
+                      child: Container(
+                          alignment: Alignment.centerLeft,
+                          padding: EdgeInsets.only(right: 10),
+                          child: TU.cat(context,
+                              text: widget.sFile.fileName.toLowerCase(),
+                              factor: 60)),
+                    ),
+                    IconButton(
+                      tooltip: 'share',
+                      color: cu.orange,
+                      onPressed: () async {
+                        if (await CIC.checkConnectivity(context)) {
+                          Provider.of<GetChanges>(context, listen: false)
+                              .updateLoadingIndicatorStatus(flag: true);
+                          await FileOps().shareFile(context,
+                              url: widget.sFile.dLink,
+                              fileName: widget.sFile.fileName);
                         }
-                        return getFileListView();
-                      }),
-                  SizedBox(width: 10),
-                  Expanded(
-                    child: Container(
-                      padding: EdgeInsets.symmetric(horizontal: 10),
-                      child: RichText(
-                        text: TextSpan(
-                            text: Help.trimExtension(
-                                filename: widget.sFile.fileName),
-                            style: TU.teesmall(context)),
-                        textAlign: TextAlign.left,
-                        softWrap: true,
-                        overflow: TextOverflow.ellipsis,
+                      },
+                      icon: IU.dBIcon(
+                        icon: FontAwesomeIcons.share,
+                        size: 16,
                       ),
                     ),
-                  ),
-                  IconButton(
-                    tooltip: 'share',
-                    onPressed: () async {
-                      if (await CIC.checkConnectivity(context)) {
-                        Provider.of<GetChanges>(context, listen: false)
-                            .updateLoadingIndicatorStatus(flag: true);
-                        await FileOps().shareFile(context,
-                            url: widget.sFile.dLink,
-                            fileName: widget.sFile.fileName);
-                      }
-                    },
-                    icon: Icon(
-                      FontAwesomeIcons.share,
-                      color: Colors.white54,
-                      size: 16,
-                    ),
-                  ),
-                ],
-              )),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 10.0),
-            child: Divider(
-              color: Colors.white70,
-              height: 2,
-            ),
-          )
+                  ],
+                )),
+          ),
         ],
       ),
     );
   }
 
   getFileListView() => Container(
-        height: 50,
-        width: 50,
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(10),
-          color: Colors.white12,
-        ),
-        child: Icon(
-          map[widget.sFile.fileName.split('.').last] ?? FontAwesomeIcons.file,
-          color: Colors.white70,
+      height: 50,
+      width: 50,
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(10),
+      ),
+      child: CircleAvatar(
+        backgroundColor: cu.t,
+        child: IU.dBIcon(
+          icon: map[widget.sFile.fileName.split('.').last] ??
+              FontAwesomeIcons.file,
           size: 24,
         ),
-      );
+      ));
 }

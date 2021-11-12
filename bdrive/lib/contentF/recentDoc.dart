@@ -1,3 +1,4 @@
+import 'package:bdrive/utilityF/constants.dart';
 import 'package:bdrive/utilityF/firebaseUtility.dart';
 import 'package:bdrive/utilityF/localUtility.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -16,11 +17,12 @@ class RecentDocPage extends StatefulWidget {
 }
 
 class _RecentDocPageState extends State<RecentDocPage> {
+  CU cu = CU();
   @override
   Widget build(BuildContext context) {
     return Expanded(
       child: Container(
-      color: Colors.black38,
+      color: Colors.white10,
           padding: EdgeInsets.all(10),
           child: Consumer<GetChanges>(
             builder: (BuildContext context, value, win) {
@@ -36,7 +38,7 @@ class _RecentDocPageState extends State<RecentDocPage> {
                         children: [
                           Container(
                               child: CircularProgressIndicator(
-                            color: Colors.blue,
+                            color: cu.w,
                           ))
                         ],
                       ));
@@ -61,7 +63,7 @@ class _RecentDocPageState extends State<RecentDocPage> {
                         children: [
                           Icon(
                             Icons.change_history,
-                            color: Colors.blue[800],
+                            color: cu.cwhite,
                             size: 90,
                           ),
                           Positioned(
@@ -113,7 +115,7 @@ class _RecentDocPageState extends State<RecentDocPage> {
                       children: [
                         Container(
                             child: CircularProgressIndicator(
-                          color: Colors.blue,
+                          color: cu.w,
                         ))
                       ],
                     ));

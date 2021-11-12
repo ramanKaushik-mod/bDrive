@@ -6,6 +6,7 @@ import 'package:bdrive/contentF/homeDocPage.dart';
 import 'package:bdrive/contentF/recentDoc.dart';
 import 'package:bdrive/contentF/searchPage.dart';
 import 'package:bdrive/models/models.dart';
+import 'package:bdrive/utilityF/constants.dart';
 import 'package:bdrive/utilityF/firebaseUtility.dart';
 import 'package:bdrive/utilityF/localUtility.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -17,6 +18,7 @@ import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter_speed_dial/flutter_speed_dial.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:provider/provider.dart';
 
 class HomePage extends StatefulWidget {
@@ -27,6 +29,7 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
+  CU cu = CU();
   File? file;
   FlutterLocalNotificationsPlugin? localNotification;
   TextEditingController fCon = TextEditingController();
@@ -82,6 +85,11 @@ class _HomePageState extends State<HomePage> {
       await handlingFS.takeCareOfSearchDoc(docId: searchId);
     }
     await handlingFS.syncSearchList(context, docId: searchId);
+
+    var status = await Permission.storage.status;
+    if (!status.isGranted) {
+      await Permission.storage.request();
+    }
   }
 
   _showNotification(
@@ -103,99 +111,107 @@ class _HomePageState extends State<HomePage> {
     var column = Column(
       children: [
         Container(
-          color: Colors.black,
+          color: cu.cwhite,
           child: Column(
             children: [
-          SizedBox(
-            height: 24,
-          ),
-          Container(
-            margin: EdgeInsets.symmetric(horizontal: 10),
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(30),
-              color: Colors.black26,
-            ),
-            padding: EdgeInsets.only(right: 5),
-            height: 60,
-            child: Row(
-              children: [
-                Expanded(
-                  child: InkResponse(
-                    onTap: () {
-                      Future.delayed(Duration(milliseconds: 10), () async {
-                        await handlingFS.syncSearchList(context, docId: searchId);
-                      });
-                      Navigator.of(context).push(MaterialPageRoute(
-                          builder: (context) =>
-                              SearchPage(handlingFS: handlingFS)));
-                    },
-                    child: Hero(
-                      tag: 'searchbox',
-                      child: Card(
-                        margin: EdgeInsets.only(
-                            left: 5, right: 10, top: 5, bottom: 5),
-                        color: Colors.blue[800],
-                        elevation: 0,
-                        shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(30)),
-                        child: Container(
-                            alignment: Alignment.centerLeft,
-                            padding: EdgeInsets.only(left: 20, right: 10),
-                            height: 50,
-                            decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(30),
-                                color: Colors.black26),
-                            child: Text(
-                              'Search bCLOUD',
-                              style: TU.tesmall(context, 48),
-                            )),
+              SizedBox(
+                height: 30,
+              ),
+              Card(
+                margin: EdgeInsets.symmetric(horizontal: 10),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(30),
+                ),
+                elevation: 0,
+                color: cu.c2white,
+                child: Container(
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(30),
+                    color: cu.cblack,
+                  ),
+                  padding: EdgeInsets.only(right: 5),
+                  height: 60,
+                  child: Row(
+                    children: [
+                      Expanded(
+                        child: InkResponse(
+                          onTap: () {
+                            Future.delayed(Duration(milliseconds: 10),
+                                () async {
+                              await handlingFS.syncSearchList(context,
+                                  docId: searchId);
+                            });
+                            Navigator.of(context).push(MaterialPageRoute(
+                                builder: (context) =>
+                                    SearchPage(handlingFS: handlingFS)));
+                          },
+                          child: Hero(
+                            tag: 'searchbox',
+                            child: Card(
+                              elevation: 0,
+                              margin: EdgeInsets.only(
+                                  left: 5, right: 10, top: 5, bottom: 5),
+                              color: cu.b,
+                              shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(30)),
+                              child: Container(
+                                  alignment: Alignment.centerLeft,
+                                  padding: EdgeInsets.only(left: 20, right: 10),
+                                  height: 50,
+                                  decoration: BoxDecoration(
+                                      borderRadius: BorderRadius.circular(30),
+                                      color: cu.cwhite),
+                                  child: Text(
+                                    'Search bCLOUD',
+                                    style: TU.cAppText(context, 48),
+                                  )),
+                            ),
+                          ),
+                        ),
                       ),
-                    ),
+                      IU.iwcow(
+                        callback: () {
+                          Future.delayed(Duration(milliseconds: 10), () async {
+                            await handlingFS.syncSearchList(context,
+                                docId: searchId);
+                          });
+                          Navigator.of(context).push(MaterialPageRoute(
+                              builder: (context) =>
+                                  SearchPage(handlingFS: handlingFS)));
+                        },
+                        icon: Icons.search_outlined,
+                        size: 24,
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.only(right: 10.0),
+                        child: Consumer<GetChanges>(
+                            builder: (BuildContext builder, value, win) {
+                          return value.getView() != 0
+                              ? IU.iwcow(
+                                  icon: Icons.grid_view,
+                                  callback: () {
+                                    Provider.of<GetChanges>(context,
+                                            listen: false)
+                                        .updateView();
+                                  },
+                                  size: 24)
+                              : IU.iwcow(
+                                  icon: Icons.list,
+                                  callback: () {
+                                    Provider.of<GetChanges>(context,
+                                            listen: false)
+                                        .updateView();
+                                  },
+                                  size: 24);
+                        }),
+                      ),
+                    ],
                   ),
                 ),
-                IconButton(
-                  onPressed: () {
-                    Future.delayed(Duration(milliseconds: 10), () async {
-                      await handlingFS.syncSearchList(context, docId: searchId);
-                    });
-                    Navigator.of(context).push(MaterialPageRoute(
-                        builder: (context) =>
-                            SearchPage(handlingFS: handlingFS)));
-                  },
-                  icon: Icon(
-                    Icons.search,
-                    color: Colors.white,
-                    size: 28,
-                  ),
-                ),
-                Padding(
-                  padding: const EdgeInsets.only(right: 10.0),
-                  child: Consumer<GetChanges>(
-                      builder: (BuildContext builder, value, win) {
-                    return value.getView() == 0
-                        ? IU.diconl(
-                            icon: Icons.list,
-                            callback: () {
-                              Provider.of<GetChanges>(context, listen: false)
-                                  .updateView();
-                            },
-                            size: 28)
-                        : IU.diconl(
-                            icon: Icons.grid_view,
-                            callback: () {
-                              Provider.of<GetChanges>(context, listen: false)
-                                  .updateView();
-                            },
-                            size: 28);
-                  }),
-                ),
-              ],
-            ),
-          ),
-          SizedBox(height: 10),
-          TU.tuD(context),
-          SizedBox(height: 10),
-
+              ),
+              SizedBox(height: 10),
+              TU.tuD(context),
+              SizedBox(height: 10),
             ],
           ),
         ),
@@ -242,19 +258,16 @@ class _HomePageState extends State<HomePage> {
       },
       child: Scaffold(
         resizeToAvoidBottomInset: false,
-        backgroundColor: Colors.white,
-        // drawer: DrawerPage(),
+        backgroundColor: cu.ac,
         bottomNavigationBar: Container(
-          color: Colors.black,
           child:
               Consumer<GetChanges>(builder: (BuildContext context, value, win) {
             return BottomNavigationBar(
-          
-            unselectedItemColor: Colors.white,
-            selectedFontSize: 16,
-            unselectedFontSize: 12,
-            selectedItemColor: Colors.blue[800],
-            backgroundColor: Colors.black,
+                unselectedItemColor: cu.twhite,
+                selectedFontSize: 16,
+                unselectedFontSize: 12,
+                selectedItemColor: cu.w,
+                backgroundColor: cu.bnbc,
                 currentIndex: value.getNIIndex(),
                 onTap: (index) {
                   value.updateNIIndex(index);
@@ -263,27 +276,24 @@ class _HomePageState extends State<HomePage> {
                   BottomNavigationBarItem(
                     backgroundColor: Colors.white,
                     label: 'Starred',
-                    icon: IU.dNIcon(
-                      icon: value.niindex == 0 ? Icons.star_border : Icons.star,
-                      size: 28,
-                    ),
+                    icon: value.niindex == 0
+                        ? BU.btDialogDUI(icon: Icons.star_border, size: 30)
+                        : IU.iwoc(icon: Icons.star_border, size: 28),
                   ),
                   BottomNavigationBarItem(
-                      backgroundColor: Colors.white,
-                      label: 'Recent',
-                      icon: IU.dNIcon(
-                          icon: value.niindex == 1
-                              ? Icons.change_history
-                              : Icons.change_history,
-                          size: 28)),
+                    backgroundColor: Colors.white,
+                    label: 'Recent',
+                    icon: value.niindex == 1
+                        ? BU.btDialogDUI(icon: Icons.change_history, size: 30)
+                        : IU.iwoc(icon: Icons.change_history, size: 28),
+                  ),
                   BottomNavigationBarItem(
-                      backgroundColor: Colors.white,
-                      label: 'Files',
-                      icon: IU.dNIcon(
-                          icon: value.niindex == 2
-                              ? Icons.folder_outlined
-                              : Icons.folder,
-                          size: 28)),
+                    backgroundColor: Colors.white,
+                    label: 'Files',
+                    icon: value.niindex == 2
+                        ? BU.btDialogDUI(icon: Icons.folder_outlined, size: 30)
+                        : IU.iwoc(icon: Icons.folder_outlined, size: 28),
+                  ),
                 ]);
           }),
         ),
@@ -306,50 +316,52 @@ class _HomePageState extends State<HomePage> {
           headerSliverBuilder:
               (BuildContext context, bool innerBoxIsScrolled) => [
             SliverAppBar(
-              backgroundColor: Colors.black38,
+              floating: true,
+              toolbarHeight: 40,
+              snap: true,
+              backgroundColor: cu.cwhite,
               leading: Consumer<GetChanges>(
                   builder: (BuildContext context, value, win) {
                 return value.pathList.isNotEmpty
                     ? value.pathList.last[1] == 'Home'
                         ? value.niindex == 2
-                            ? Icon(
-                                Icons.home_filled,
-                                color: Colors.blue[800],
-                                size: 28,
-                              )
+                            ? IU.iwoc(icon: Icons.home_filled, size: 24)
                             : value.niindex == 1
-                                ? Icon(
-                                    Icons.change_history_sharp,
-                                    color: Colors.blue[800],
-                                    size: 28,
-                                  )
-                                : Icon(
-                                    Icons.star_sharp,
-                                    color: Colors.blue[800],
-                                    size: 28,
-                                  )
-                        : IU.dstask(
+                                ? IU.iwoc(
+                                    icon: Icons.change_history_sharp, size: 24)
+                                : IU.iwoc(
+                                    icon: Icons.star_outline_outlined, size: 24)
+                        : IU.iwc(
                             icon: Icons.arrow_back_ios_new_outlined,
                             callback: () {
                               value.updatePathListD();
                             },
-                            size: 28)
+                            size: 24)
                     : Container();
               }),
               title: Consumer<GetChanges>(
                 builder: (BuildContext context, change, win) {
                   int i = change.niindex;
                   if (i == 2)
-                    return Text(change.pathList.length != 0
-                        ? change.pathList.last[1].toLowerCase()
-                        : "", style: TU.teeesmall(context, 38),);
+                    return Text(
+                      change.pathList.length != 0
+                          ? change.pathList.last[1].toUpperCase()
+                          : "",
+                      style: TU.cAppText(context, 38),
+                    );
                   else if (i == 1)
-                    return Text('Recent'.toLowerCase(), style: TU.teeesmall(context, 38),);
+                    return Text(
+                      'Recent'.toUpperCase(),
+                      style: TU.cAppText(context, 38),
+                    );
                   else
-                    return Text('Starred'.toLowerCase(), style: TU.teeesmall(context, 38),);
+                    return Text(
+                      'Starred'.toUpperCase(),
+                      style: TU.cAppText(context, 38),
+                    );
                 },
               ),
-              toolbarHeight: 70,
+              // toolbarHeight: 70,
               actions: [
                 Consumer<GetChanges>(
                     builder: (BuildContext context, value, win) {
@@ -367,8 +379,8 @@ class _HomePageState extends State<HomePage> {
                                   scale: 0.8,
                                   child: CircularProgressIndicator(
                                     color: Colors.white70,
-                                    valueColor:
-                                        AlwaysStoppedAnimation(Colors.blue[800]),
+                                    valueColor: AlwaysStoppedAnimation(
+                                        Colors.blue[800]),
                                   ),
                                 ),
                               ),
@@ -403,16 +415,12 @@ class _HomePageState extends State<HomePage> {
                           : Container()
                       : Container();
                 }),
-                IconButton(
-                  onPressed: () async {
-                    Navigator.pushNamed(context, '/sep');
-                  },
-                  icon: Icon(
-                    Icons.settings,
-                    color: Colors.blue[800],
-                    size: 28,
-                  ),
-                ),
+                IU.iwc(
+                    callback: () async {
+                      Navigator.pushNamed(context, '/sep');
+                    },
+                    icon: Icons.settings,
+                    size: 24),
               ],
             )
           ],
@@ -420,103 +428,99 @@ class _HomePageState extends State<HomePage> {
         floatingActionButton:
             Consumer<GetChanges>(builder: (BuildContext context, changes, win) {
           return changes.getIsVisible() == false && changes.getNIIndex() == 2
-              ? Container(
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(20),
-                color: Colors.blue[900],
-
-                ),
-                child: SpeedDial(
-                    icon: Icons.add,
-                    buttonSize: 60,
-                    activeIcon: Icons.close,
-                    iconTheme: IconThemeData(color: Colors.white, size: 25),
-                    backgroundColor: Colors.black12,
-                    overlayColor: Colors.black54,
-                    overlayOpacity: 0.6,
-                    elevation:0,
-                    
-                    closeManually: true,
-                    openCloseDial: changes.dial,
-                    spacing:10 ,
-                    
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20),),
-                    children: [
-                      SpeedDialChild(
-                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20),),
-                        backgroundColor: Colors.blue[900],
-                        labelWidget:
-                            TU.tSDLabel(context: context, label: 'upload'),
-                        child: IU.diconl(
-                            icon: Icons.upload_outlined,
+              ? SpeedDial(
+                  icon: Icons.add,
+                  buttonSize: 58,
+                  activeIcon: Icons.close,
+                  iconTheme: IconThemeData(color: Colors.white, size: 25),
+                  backgroundColor: cu.cwhite,
+                  overlayColor: Colors.black54,
+                  overlayOpacity: 0.6,
+                  elevation: 0,
+                  closeManually: true,
+                  openCloseDial: changes.dial,
+                  spacing: 10,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(20),
+                  ),
+                  children: [
+                    SpeedDialChild(
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(20),
+                      ),
+                      backgroundColor: cu.cwhite,
+                      labelWidget:
+                          TU.tSDLabel(context: context, label: 'upload'),
+                      child: IU.iwc(
+                          icon: Icons.upload_outlined,
+                          callback: () async {
+                            if (!await CIC.checkConnectivity(context)) {
+                              changes.updateDialStatus();
+                              return;
+                            }
+                            String parentDocID = changes.pathList.last[0];
+                            await selectFile();
+                            changes.updateDialStatus();
+                            try {
+                              await uploadFile(parentDocID: parentDocID);
+                            } on FirebaseException catch (e) {
+                              if (e.code == 'canceled') {
+                                SB.ssb2(context, text: "upload canceled");
+                              }
+                            }
+                          },
+                          size: 25),
+                    ),
+                    SpeedDialChild(
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(20),
+                        ),
+                        backgroundColor: cu.cwhite,
+                        labelWidget: TU.tSDLabel(
+                            context: context, label: 'create folder'),
+                        child: IU.iwc(
+                            icon: Icons.create_new_folder_outlined,
                             callback: () async {
+                              StreamSubscription<ConnectivityResult> ss =
+                                  CIC.getSubscription(context, callback: () {});
                               if (!await CIC.checkConnectivity(context)) {
+                                ss.cancel();
                                 changes.updateDialStatus();
                                 return;
                               }
-                              String parentDocID = changes.pathList.last[0];
-                              await selectFile();
+                              fCon.text = '';
                               changes.updateDialStatus();
-                              try {
-                                await uploadFile(parentDocID: parentDocID);
-                              } on FirebaseException catch (e) {
-                                if (e.code == 'canceled') {
-                                  print('[firebase_storage/canceled] is handled');
+
+                              SB.sdb(context, () async {
+                                var text = fCon.text.trim().toString();
+                                if (text.length == 0) {
+                                  SB.ssb2(context,
+                                      text: 'enter a name for folder');
+                                } else {
+                                  SB.ssb2(context, text: '$text created');
+
+                                  await handlingFS.addFolderToFolderList(
+                                      folder: Folder(
+                                          docUid: handlingFS
+                                              .getHomeCollection()
+                                              .doc()
+                                              .id,
+                                          fName: fCon.text.trim(),
+                                          createdAt: DateTime.now().toString(),
+                                          folderList: [],
+                                          fileList: [],
+                                          star: false),
+                                      parentDocUid: changes.pathList.last[0]);
                                 }
-                                SB.ssb(context, text: "upload canceled");
-                              }
-                            },
-                            size: 25),
-                      ),
-                      SpeedDialChild(
-                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20),),
-                        backgroundColor: Colors.blue[900],
-                          labelWidget: TU.tSDLabel(
-                              context: context, label: 'create folder'),
-                          child: IU.diconl(
-                              icon: Icons.create_new_folder_outlined,
-                              callback: () async {
-                                StreamSubscription<ConnectivityResult> ss =
-                                    CIC.getSubscription(context, callback: () {});
-                                if (!await CIC.checkConnectivity(context)) {
-                                  ss.cancel();
-                                  changes.updateDialStatus();
-                                  return;
-                                }
+
                                 fCon.text = '';
-                                changes.updateDialStatus();
+                              }, () {}, fCon, dialog: 'New folder');
 
-                                SB.sdb(context, () async {
-                                  var text = fCon.text.trim().toString();
-                                  if (text.length == 0) {
-                                    SB.ssb(context,
-                                        text: 'enter a name for folder');
-                                  } else {
-                                    SB.ssb(context, text: '$text created');
-
-                                    await handlingFS.addFolderToFolderList(
-                                        folder: Folder(
-                                            docUid: handlingFS
-                                                .getHomeCollection()
-                                                .doc()
-                                                .id,
-                                            fName: fCon.text.trim(),
-                                            createdAt: DateTime.now().toString(),
-                                            folderList: [],
-                                            fileList: [],
-                                            star: false),
-                                        parentDocUid: changes.pathList.last[0]);
-                                  }
-
-                                  fCon.text = '';
-                                }, () {}, fCon, dialog: 'New folder');
-
-                                ss.cancel();
-                              },
-                              size: 25))
-                    ],
-                  ),
-              )
+                              ss.cancel();
+                            },
+                            size: 25))
+                  ],
+                )
               : Container();
         }),
       ),
@@ -524,14 +528,22 @@ class _HomePageState extends State<HomePage> {
   }
 
   selectFile() async {
-    final result = await FilePicker.platform.pickFiles(allowMultiple: false);
+    try {
+      final result = await FilePicker.platform.pickFiles(allowMultiple: false);
 
-    if (result == null) {
-      setState(() => file = null);
-      return;
+      if (result == null) {
+        setState(() => file = null);
+        return;
+      }
+      final path = result.files.single.path;
+      setState(() => file = File(path!));
+    } on PlatformException catch (e) {
+      if (e.code == "read_external_storage_denied") {
+        SB.ssb2(context, text: 'Allow us to read external storage');
+      } else {
+        SB.ssb2(context, text: "Something went wrong");
+      }
     }
-    final path = result.files.single.path;
-    setState(() => file = File(path!));
   }
 
   uploadFile({required String parentDocID}) async {
@@ -549,10 +561,10 @@ class _HomePageState extends State<HomePage> {
     final destination = 'files/${await Utility.getUserContact()}/$fileName';
 
     if (await handlingFS.checkConcurrencyOfFile(destination: destination)) {
-      SB.ssb(context, text: 'file is already uploaded');
+      SB.ssb2(context, text: 'file is already uploaded');
       return;
     } else {
-      SB.ssb(context, text: '${file!.path.split('/').last} is uploading');
+      SB.ssb2(context, text: '${file!.path.split('/').last} is uploading');
     }
 
     changes.updateHandleUTaskSema(sema: 1);
@@ -566,6 +578,8 @@ class _HomePageState extends State<HomePage> {
 
     final snapshot = await changes.getUploadTask();
     double size = snapshot!.totalBytes / 1000000;
+    size = num.parse(size.toStringAsFixed(2)).toDouble();
+    size = size < 0 ? size * -1 : size;
     final url = await snapshot.ref.getDownloadURL();
     handlingFS.addFileToFileList(context,
         file: CFile(

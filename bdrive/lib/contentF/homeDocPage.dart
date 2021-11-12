@@ -1,3 +1,4 @@
+import 'package:bdrive/utilityF/constants.dart';
 import 'package:bdrive/utilityF/firebaseUtility.dart';
 import 'package:bdrive/utilityF/localUtility.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -14,12 +15,13 @@ class HomeDocPage extends StatefulWidget {
 }
 
 class _HomeDocPageState extends State<HomeDocPage> {
+  CU cu = CU();
   @override
   Widget build(BuildContext context) {
     return Expanded(
         child: Container(
       padding: EdgeInsets.all(10),
-      color: Colors.black38,
+      color: Colors.white10,
       child: Consumer<GetChanges>(
         builder: (BuildContext context, value, win) {
           bool flag = value.view == 1 ? true : false;
@@ -31,14 +33,14 @@ class _HomeDocPageState extends State<HomeDocPage> {
                 if (snapShot.hasError) {
                   return Center(
                     child: CircularProgressIndicator(
-                      color: Colors.blue,
+                      color: cu.w,
                     ),
                   );
                 }
                 if (!snapShot.hasData) {
                   return Center(
                     child: CircularProgressIndicator(
-                      color: Colors.blue,
+                      color: cu.w,
                     ),
                   );
                 }
@@ -72,7 +74,7 @@ class _HomeDocPageState extends State<HomeDocPage> {
                         children: [
                           Icon(
                             FontAwesomeIcons.folder,
-                            color: Colors.blue[800],
+                            color: cu.cwhite,
                             size: 80,
                           ),
                           Positioned(

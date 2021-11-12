@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:bdrive/contentF/detailOf/detailOf.dart';
 import 'package:bdrive/models/models.dart';
+import 'package:bdrive/utilityF/constants.dart';
 import 'package:bdrive/utilityF/firebaseUtility.dart';
 import 'package:bdrive/utilityF/localUtility.dart';
 import 'package:flutter/material.dart';
@@ -10,6 +11,7 @@ import 'package:permission_handler/permission_handler.dart';
 import 'package:provider/provider.dart';
 
 class FolderDModals {
+  static CU cu = CU();
   static smbs(
           {required context,
           required ShortFD shortFD,
@@ -19,122 +21,126 @@ class FolderDModals {
           shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.only(
                   topLeft: Radius.circular(10), topRight: Radius.circular(10))),
-          backgroundColor: Colors.blue[800],
+          backgroundColor: cu.accent,
           builder: (BuildContext context) {
             return Container(
-              decoration: BoxDecoration( borderRadius: BorderRadius.only(
-                  topLeft: Radius.circular(10), topRight: Radius.circular(10)),
-              color: Colors.black54,),
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.only(
+                      topLeft: Radius.circular(10),
+                      topRight: Radius.circular(10)),
+                  color: cu.cwhite,
+                ),
                 child: SingleChildScrollView(
                     child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 8.0),
-              child: Column(
-                children: [
-                  SizedBox(
-                    height: 10,
+                  padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                  child: Column(
+                    children: [
+                      SizedBox(
+                        height: 10,
+                      ),
+                      getRow(context,
+                          label: shortFD.fName.toUpperCase(),
+                          icon: Icons.folder_outlined, func: () async {
+                        await Provider.of<GetChanges>(context, listen: false)
+                            .updatePathListA(
+                                list: [shortFD.docUid, shortFD.fName]);
+                        Navigator.pop(context);
+                      }),
+                      SizedBox(
+                        height: 10,
+                      ),
+                      TU.tuDFBM(context, 1.1),
+                      SizedBox(
+                        height: 10,
+                      ),
+                      getRow(context,
+                          label: 'Details & Activity'.toLowerCase(),
+                          icon: Icons.error_outline, func: () {
+                        Future.delayed(Duration(milliseconds: 10), () {
+                          Navigator.of(context).push(MaterialPageRoute(
+                              builder: (context) => DetailOfFolder(
+                                    docID: shortFD.docUid,
+                                    handlingFS: handlingFS,
+                                  )));
+                        });
+                        Navigator.pop(context);
+                      }),
+                      SizedBox(
+                        height: 10,
+                      ),
+                      getRow(context,
+                          label: !shortFD.star
+                              ? 'Add to Starred'.toLowerCase()
+                              : 'Remove from starred'.toLowerCase(),
+                          icon: !shortFD.star ? Icons.star_outline : Icons.star,
+                          func: () async {
+                        handlingFS.makeStar(
+                            flag: !shortFD.star,
+                            parentDocId:
+                                Provider.of<GetChanges>(context, listen: false)
+                                    .pathList
+                                    .last[0],
+                            sfd: shortFD,
+                            starId: await Utility.getStarDID());
+                        callback(
+                            msg: shortFD.star == false
+                                ? 'added to starred'
+                                : 'removed from starred');
+                        Navigator.pop(context);
+                      }),
+                      SizedBox(
+                        height: 10,
+                      ),
+                      getRow(context,
+                          label: 'Rename'.toLowerCase(),
+                          icon: Icons.drive_file_rename_outline, func: () {
+                        Timer(Duration(milliseconds: 10), () {
+                          String parentDocID =
+                              Provider.of<GetChanges>(context, listen: false)
+                                  .pathList
+                                  .last[0];
+                          TextEditingController controller =
+                              TextEditingController();
+                          SB.sdb(context, () {
+                            if (controller.text.trim().length > 0) {
+                              handlingFS.renameFolder(
+                                  parentDocID: parentDocID,
+                                  sfd: shortFD,
+                                  name: controller.text.trim());
+                            } else {
+                              callback(msg: 'not a valid name');
+                            }
+                          }, () {}, controller, dialog: 'Rename');
+                        });
+                        Navigator.pop(context);
+                      }),
+                      SizedBox(
+                        height: 10,
+                      ),
+                      TU.tuDFBM(context, 1.1),
+                      SizedBox(
+                        height: 10,
+                      ),
+                      getRow(context,
+                          label: 'Remove'.toLowerCase(),
+                          icon: Icons.delete_outline_outlined, func: () {
+                        handlingFS.deleteFolder(
+                            parentDocID:
+                                Provider.of<GetChanges>(context, listen: false)
+                                    .pathList
+                                    .last[0],
+                            fd: shortFD);
+                        Future.delayed(Duration(milliseconds: 10), () {
+                          callback(msg: 'folder deleted');
+                        });
+                        Navigator.of(context).pop();
+                      }),
+                      SizedBox(
+                        height: 20,
+                      )
+                    ],
                   ),
-                  getRow(context,
-                      label: shortFD.fName.toUpperCase(),
-                      icon: Icons.folder_outlined, func: () async {
-                    await Provider.of<GetChanges>(context, listen: false)
-                        .updatePathListA(list: [shortFD.docUid, shortFD.fName]);
-                    Navigator.pop(context);
-                  }),
-                  SizedBox(
-                    height: 10,
-                  ),
-                  TU.tuDFBM(context, 1.1),
-                  SizedBox(
-                    height: 10,
-                  ),
-                  getRow(context,
-                      label: 'Details & Activity'.toLowerCase(),
-                      icon: Icons.error_outline, func: () {
-                    Future.delayed(Duration(milliseconds: 10), () {
-                      Navigator.of(context).push(MaterialPageRoute(
-                          builder: (context) => DetailOfFolder(
-                                docID: shortFD.docUid,
-                                handlingFS: handlingFS,
-                              )));
-                    });
-                    Navigator.pop(context);
-                  }),
-                  SizedBox(
-                    height: 10,
-                  ),
-                  getRow(context,
-                      label: !shortFD.star
-                          ? 'Add to Starred'.toLowerCase()
-                          : 'Remove from starred'.toLowerCase(),
-                      icon: !shortFD.star ? Icons.star_outline : Icons.star,
-                      func: () async {
-                    handlingFS.makeStar(
-                        flag: !shortFD.star,
-                        parentDocId:
-                            Provider.of<GetChanges>(context, listen: false)
-                                .pathList
-                                .last[0],
-                        sfd: shortFD,
-                        starId: await Utility.getStarDID());
-                    callback(
-                        msg: shortFD.star == false
-                            ? 'added to starred'
-                            : 'removed from starred');
-                    Navigator.pop(context);
-                  }),
-                  SizedBox(
-                    height: 10,
-                  ),
-                  getRow(context,
-                      label: 'Rename'.toLowerCase(),
-                      icon: Icons.drive_file_rename_outline, func: () {
-                    Timer(Duration(milliseconds: 10), () {
-                      String parentDocID =
-                          Provider.of<GetChanges>(context, listen: false)
-                              .pathList
-                              .last[0];
-                      TextEditingController controller =
-                          TextEditingController();
-                      SB.sdb(context, () {
-                        if (controller.text.trim().length > 0) {
-                          handlingFS.renameFolder(
-                              parentDocID: parentDocID,
-                              sfd: shortFD,
-                              name: controller.text.trim());
-                        } else {
-                          callback(msg: 'not a valid name');
-                        }
-                      }, () {}, controller, dialog: 'Rename');
-                    });
-                    Navigator.pop(context);
-                  }),
-                  SizedBox(
-                    height: 10,
-                  ),
-                  TU.tuDFBM(context, 1.1),
-                  SizedBox(
-                    height: 10,
-                  ),
-                  getRow(context,
-                      label: 'Remove'.toLowerCase(),
-                      icon: Icons.delete_outline_outlined, func: () {
-                    handlingFS.deleteFolder(
-                        parentDocID:
-                            Provider.of<GetChanges>(context, listen: false)
-                                .pathList
-                                .last[0],
-                        fd: shortFD);
-                    Future.delayed(Duration(milliseconds: 10), () {
-                      callback(msg: 'folder deleted');
-                    });
-                    Navigator.of(context).pop();
-                  }),
-                  SizedBox(
-                    height: 20,
-                  )
-                ],
-              ),
-            )));
+                )));
           },
           context: context);
 
@@ -146,12 +152,14 @@ class FolderDModals {
         onTap: () => func(),
         child: Row(
           children: [
-            IU.ditask(icon: icon, callback: () {}, size: 22),
+            CircleAvatar(
+              backgroundColor:cu.t,
+              child:IU.iwoc(icon: icon ,size: 22),
+            ),
             Expanded(
-              child: RichText(
-                text: TextSpan(text: label, style: TU.teesmall(context)),
-                overflow: TextOverflow.ellipsis,
-                softWrap: true,
+              child: Container(
+                alignment:Alignment.centerLeft,
+                  child: TU.cat(context, text: "\t\t$label", factor: 60),
               ),
             )
           ],
@@ -160,6 +168,7 @@ class FolderDModals {
 }
 
 class FileDModals {
+  static CU cu = CU();
   static smbs(
           {required ctx,
           required CFile cFile,
@@ -169,161 +178,167 @@ class FileDModals {
           shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.only(
                   topLeft: Radius.circular(10), topRight: Radius.circular(10))),
-          backgroundColor: Colors.blue[800],
+          backgroundColor: cu.accent,
           builder: (BuildContext context) {
             return Container(
-              decoration: BoxDecoration( borderRadius: BorderRadius.only(
-                  topLeft: Radius.circular(10), topRight: Radius.circular(10)),
-              color: Colors.black54,
-              ),
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.only(
+                      topLeft: Radius.circular(10),
+                      topRight: Radius.circular(10)),
+                  color: cu.cwhite,
+                ),
                 child: SingleChildScrollView(
                     child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 8.0),
-              child: Column(
-                children: [
-                  SizedBox(
-                    height: 10,
-                  ),
-                  getRow(context,
-                      label: cFile.fileName.toUpperCase(),
-                      icon: FontAwesomeIcons.file,
-                      func: () {}),
-                  SizedBox(
-                    height: 10,
-                  ),
-                  TU.tuDFBM(context, 1.1),
-                  SizedBox(
-                    height: 10,
-                  ),
-                  getRow(context,
-                      label: 'details & activity', icon: Icons.error, func: () {
-                    Future.delayed(Duration(milliseconds: 10), () {
-                      Navigator.of(context).push(MaterialPageRoute(
-                          builder: (context) => DetailOfFile(
-                                parentDocID: Provider.of<GetChanges>(context,
-                                        listen: false)
+                  padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                  child: Column(
+                    children: [
+                      SizedBox(
+                        height: 10,
+                      ),
+                      getRow(context,
+                          label: cFile.fileName.toUpperCase(),
+                          icon: FontAwesomeIcons.file,
+                          func: () {}),
+                      SizedBox(
+                        height: 10,
+                      ),
+                      TU.tuDFBM(context, 1.1),
+                      SizedBox(
+                        height: 10,
+                      ),
+                      getRow(context,
+                          label: 'details & activity',
+                          icon: Icons.error, func: () {
+                        Future.delayed(Duration(milliseconds: 10), () {
+                          Navigator.of(context).push(MaterialPageRoute(
+                              builder: (context) => DetailOfFile(
+                                    parentDocID: Provider.of<GetChanges>(
+                                            context,
+                                            listen: false)
+                                        .pathList
+                                        .last[0],
+                                    handlingFS: handlingFS,
+                                    dan: cFile.dan,
+                                  )));
+                        });
+                        Navigator.pop(context);
+                      }),
+                      SizedBox(
+                        height: 10,
+                      ),
+                      getRow(context,
+                          label: cFile.star == false
+                              ? 'add to star'
+                              : 'remove from star',
+                          icon: cFile.star == false
+                              ? Icons.star_border
+                              : Icons.star, func: () async {
+                        handlingFS.makeStarAFile(
+                            flag: !cFile.star,
+                            parentDocID:
+                                Provider.of<GetChanges>(context, listen: false)
                                     .pathList
                                     .last[0],
-                                handlingFS: handlingFS,
-                                dan: cFile.dan,
-                              )));
-                    });
-                    Navigator.pop(context);
-                  }),
-                  SizedBox(
-                    height: 10,
-                  ),
-                  getRow(context,
-                      label: cFile.star == false
-                          ? 'add to star'
-                          : 'remove from star',
-                      icon: cFile.star == false
-                          ? Icons.star_border
-                          : Icons.star, func: () async {
-                    handlingFS.makeStarAFile(
-                        flag: !cFile.star,
-                        parentDocID:
+                            starId: await Utility.getStarDID(),
+                            cFile: cFile);
+                        callback(
+                            msg: cFile.star == false
+                                ? 'added to starred'
+                                : 'removed from starred');
+                        Navigator.pop(context);
+                      }),
+                      SizedBox(
+                        height: 10,
+                      ),
+                      getRow(context,
+                          label: 'share',
+                          icon: Icons.share_outlined, func: () async {
+                        Future.delayed(Duration(milliseconds: 10), () async {
+                          if (await CIC.checkConnectivity(ctx)) {
                             Provider.of<GetChanges>(context, listen: false)
-                                .pathList
-                                .last[0],
-                        starId: await Utility.getStarDID(),
-                        cFile: cFile);
-                    callback(
-                        msg: cFile.star == false
-                            ? 'added to starred'
-                            : 'removed from starred');
-                    Navigator.pop(context);
-                  }),
-                  SizedBox(
-                    height: 10,
+                                .updateLoadingIndicatorStatus(flag: true);
+                            await FileOps().shareFile(ctx,
+                                url: cFile.dLink, fileName: cFile.fileName);
+                          }
+                        });
+                        Navigator.pop(context);
+                      }),
+                      SizedBox(
+                        height: 10,
+                      ),
+                      getRow(context,
+                          label: 'download',
+                          icon: Icons.download_outlined, func: () async {
+                        Future.delayed(Duration(milliseconds: 10), () async {
+                          if (await CIC.checkConnectivity(ctx)) {
+                            var status = await Permission.storage.status;
+                            if (!status.isGranted) {
+                              await Permission.storage.request();
+                            } else {
+                              await FileOps().dftdDirectory(
+                                  url: cFile.dLink, fileName: cFile.fileName);
+                              callback(msg: 'file downloaded');
+                            }
+                          }
+                        });
+                        Navigator.pop(context);
+                      }),
+                      SizedBox(
+                        height: 10,
+                      ),
+                      getRow(context,
+                          label: 'rename',
+                          icon: Icons.drive_file_rename_outline, func: () {
+                        Timer(Duration(milliseconds: 10), () {
+                          String parentDocID =
+                              Provider.of<GetChanges>(context, listen: false)
+                                  .pathList
+                                  .last[0];
+                          TextEditingController controller =
+                              TextEditingController();
+                          SB.sdb(context, () {
+                            if (controller.text.trim().length > 0) {
+                              handlingFS.renameFile(
+                                  parentDocID: parentDocID,
+                                  name: controller.text.trim(),
+                                  dan: cFile.dan);
+                            } else {
+                              callback(msg: 'not a valid name');
+                            }
+                          }, () {}, controller, dialog: 'Rename');
+                        });
+                        Navigator.pop(context);
+                      }),
+                      SizedBox(
+                        height: 10,
+                      ),
+                      TU.tuDFBM(context, 1.1),
+                      SizedBox(
+                        height: 10,
+                      ),
+                      getRow(context,
+                          label: 'remove',
+                          icon: Icons.delete_outline, func: () {
+                        handlingFS.deleteFiles(
+                            cFile: cFile,
+                            parentDocID:
+                                Provider.of<GetChanges>(context, listen: false)
+                                    .pathList
+                                    .last[0]);
+                        Future.delayed(Duration(milliseconds: 10), () async {
+                          callback(msg: 'file deleted');
+                          await handlingFS.updateNFilesFI(n: 1, flag: false);
+                          await handlingFS.manageSpace(
+                              size: cFile.size, flag: false);
+                        });
+                        Navigator.of(context).pop();
+                      }),
+                      SizedBox(
+                        height: 20,
+                      )
+                    ],
                   ),
-                  getRow(context, label: 'share', icon: Icons.share_outlined,
-                      func: () async {
-                    Future.delayed(Duration(milliseconds: 10), () async {
-                      if (await CIC.checkConnectivity(ctx)) {
-                        Provider.of<GetChanges>(context, listen: false)
-                            .updateLoadingIndicatorStatus(flag: true);
-                        await FileOps().shareFile(ctx,
-                            url: cFile.dLink, fileName: cFile.fileName);
-                      }
-                    });
-                    Navigator.pop(context);
-                  }),
-                  SizedBox(
-                    height: 10,
-                  ),
-                  getRow(context,
-                      label: 'download',
-                      icon: Icons.download_outlined, func: () async {
-                    Future.delayed(Duration(milliseconds: 10), () async {
-                      if (await CIC.checkConnectivity(ctx)) {
-                        var status = await Permission.storage.status;
-                        if (!status.isGranted) {
-                          await Permission.storage.request();
-                        } else {
-                          await FileOps().dftdDirectory(
-                              url: cFile.dLink, fileName: cFile.fileName);
-                          callback(msg: 'file downloaded');
-                        }
-                      }
-                    });
-                    Navigator.pop(context);
-                  }),
-                  SizedBox(
-                    height: 10,
-                  ),
-                  getRow(context,
-                      label: 'rename',
-                      icon: Icons.drive_file_rename_outline, func: () {
-                    Timer(Duration(milliseconds: 10), () {
-                      String parentDocID =
-                          Provider.of<GetChanges>(context, listen: false)
-                              .pathList
-                              .last[0];
-                      TextEditingController controller =
-                          TextEditingController();
-                      SB.sdb(context, () {
-                        if (controller.text.trim().length > 0) {
-                          handlingFS.renameFile(
-                              parentDocID: parentDocID,
-                              name: controller.text.trim(),
-                              dan: cFile.dan);
-                        } else {
-                          callback(msg: 'not a valid name');
-                        }
-                      }, () {}, controller, dialog: 'Rename');
-                    });
-                    Navigator.pop(context);
-                  }),
-                  SizedBox(
-                    height: 10,
-                  ),
-                  TU.tuDFBM(context, 1.1),
-                  SizedBox(
-                    height: 10,
-                  ),
-                  getRow(context, label: 'remove', icon: Icons.delete_outline,
-                      func: () {
-                    handlingFS.deleteFiles(
-                        cFile: cFile,
-                        parentDocID:
-                            Provider.of<GetChanges>(context, listen: false)
-                                .pathList
-                                .last[0]);
-                    Future.delayed(Duration(milliseconds: 10), () async {
-                      callback(msg: 'file deleted');
-                      await handlingFS.updateNFilesFI(n: 1, flag: false);
-                      await handlingFS.manageSpace(
-                          size: cFile.size, flag: false);
-                    });
-                    Navigator.of(context).pop();
-                  }),
-                  SizedBox(
-                    height: 20,
-                  )
-                ],
-              ),
-            )));
+                )));
           },
           context: ctx);
 
@@ -335,13 +350,14 @@ class FileDModals {
         onTap: () => func(),
         child: Row(
           children: [
-            IU.ditask(icon: icon, callback: () {}, size: 22),
+            CircleAvatar(
+              backgroundColor: cu.t,
+              child: IU.iwoc(icon: icon, size: 22),
+            ),
             Expanded(
-              child: RichText(
-                text: TextSpan(text: label, style: TU.teesmall(context)),
-                overflow: TextOverflow.ellipsis,
-                softWrap: true,
-              ),
+              child: Container(
+                  alignment: Alignment.centerLeft,
+                  child: TU.cat(context, text: "\t\t$label", factor: 60)),
             )
           ],
         ),

@@ -1,3 +1,5 @@
+import 'package:flutter/material.dart';
+
 class Constants {
   static String signedIn = 'SIGNED_IN';
   static String onBoardVisited = 'ONBOARD_VISITED';
@@ -47,4 +49,38 @@ class TS {
   //*******Authentication Page**** */
   static String numHint = 'Enter your Number';
   static String smsCodeHint = 'SMS Code';
+}
+
+// class CU {
+
+// }
+
+class CU extends StatefulWidget {
+  final Color accent = Colors.black;
+  final Color offwhite = Color(0xFFF2F2F2);
+  final Color orange = Colors.orange;
+  final Color ac = Colors.black38;
+  final Color tfc = Colors.black87;
+  final Color cwhite = Colors.white10;
+  final Color c2white = Colors.white24;
+
+  final Color bnbc = Colors.white12;
+  final Color cblack = Colors.black38;
+  final Color c4black = Colors.black45;
+  final Color twhite = Colors.white70;
+  final Color w = Colors.white;
+  final Color be = Colors.black87;
+  final Color b = Colors.black;
+  final Color t = Colors.transparent;
+  CU({Key? key}) : super(key: key);
+
+  @override
+  _CUState createState() => _CUState();
+}
+
+class _CUState extends State<CU> {
+  @override
+  Widget build(BuildContext context) {
+    return Container();
+  }
 }

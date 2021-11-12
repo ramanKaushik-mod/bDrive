@@ -1,3 +1,4 @@
+import 'package:bdrive/utilityF/constants.dart';
 import 'package:bdrive/utilityF/firebaseUtility.dart';
 import 'package:bdrive/utilityF/localUtility.dart';
 import 'package:flutter/material.dart';
@@ -12,6 +13,7 @@ class SearchPage extends StatefulWidget {
 }
 
 class _SearchPageState extends State<SearchPage> {
+  static CU cu = CU();
   TextEditingController con = TextEditingController();
   late GetChanges gChanges;
   @override
@@ -34,9 +36,9 @@ class _SearchPageState extends State<SearchPage> {
         return Future.value(true);
       },
       child: Scaffold(
-        backgroundColor: Colors.white,
+        backgroundColor: cu.accent,
         body: Container(
-          color: Colors.black38,
+          color: cu.cwhite,
           child: Column(
             mainAxisAlignment: MainAxisAlignment.start,
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -52,40 +54,41 @@ class _SearchPageState extends State<SearchPage> {
                       tag: 'searchbox',
                       child: Card(
                         margin: EdgeInsets.symmetric(vertical: 8),
-                        color: Colors.white,
+                        color: cu.cwhite,
                         elevation: 0,
                         shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(10)),
                         child: Container(
-                          padding: EdgeInsets.all(4),
-                          decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(10),
-                              color: Colors.black45),
-                          child: TextFormField(
-                            controller: con,
-                            style: TU.tesmall(context, 44),
-                            showCursor: false,
-                            keyboardType: TextInputType.text,
-                            decoration: InputDecoration(
-                                contentPadding: EdgeInsets.only(top: 14),
-                                prefixIcon: Icon(
-                                  Icons.search,
-                                  color: Colors.white,
-                                ),
-                                // contentPadding: EdgeInsets.only(top: 15),
-                                focusedBorder: UnderlineInputBorder(
-                                    borderSide: BorderSide.none),
-                                enabledBorder: UnderlineInputBorder(
-                                    borderSide: BorderSide.none),
-                                hintText: 'Search bCLOUD',
-                                hintStyle: TU.tesmall(context, 48)),
-                            onChanged: (query) {
-                              if (query.trim().isNotEmpty) {
-                                searchInList(query: query);
-                              } else {
-                                gChanges.updateWList(list: []);
-                              }
-                            },
+                            decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(10),
+                                color: cu.cblack),
+                          child: Container(
+                            padding: EdgeInsets.all(4),
+                            decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(10),
+                                color: cu.cwhite),
+                            child: TextFormField(
+                              controller: con,
+                              style: TU.tesmall(context, 44),
+                              showCursor: false,
+                              keyboardType: TextInputType.text,
+                              decoration: InputDecoration(
+                                  contentPadding: EdgeInsets.only(top: 14),
+                                  prefixIcon: IU.iwoc(icon: Icons.search, size: 28),
+                                  focusedBorder: UnderlineInputBorder(
+                                      borderSide: BorderSide.none),
+                                  enabledBorder: UnderlineInputBorder(
+                                      borderSide: BorderSide.none),
+                                  hintText: 'Search bCLOUD',
+                                  hintStyle: TU.tesmall(context, 48)),
+                              onChanged: (query) {
+                                if (query.trim().isNotEmpty) {
+                                  searchInList(query: query);
+                                } else {
+                                  gChanges.updateWList(list: []);
+                                }
+                              },
+                            ),
                           ),
                         ),
                       ),
@@ -102,25 +105,28 @@ class _SearchPageState extends State<SearchPage> {
                 color: Colors.black38,
                 child: Consumer<GetChanges>(
                     builder: (BuildContext context, changes, win) {
-                  return SingleChildScrollView(
-                      child: Column(children: changes.getWList()));
+                  return changes.getWList().length > 0 ?SingleChildScrollView(
+                      child: Container(
+                        margin:EdgeInsets.only(top:3),
+                        child: Column(children: changes.getWList()))):Container();
                 }),
               )),
             ],
           ),
         ),
+        floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
         floatingActionButton: Card(
-          color: Colors.blue[800],
+          color: cu.c2white,
           shape:RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(20),
           ),
           child: Container(
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(20),
-                color: Colors.black26,
+                color: Colors.black45,
               ),
               padding: const EdgeInsets.all(3),
-              child: IU.diconl(
+              child: IU.ditask(
                   icon: Icons.close,
                   callback: () {
                     if (con.text.trim().length == 0) {

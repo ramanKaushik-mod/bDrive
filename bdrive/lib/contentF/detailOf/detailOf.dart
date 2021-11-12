@@ -1,3 +1,4 @@
+import 'package:bdrive/utilityF/constants.dart';
 import 'package:bdrive/utilityF/firebaseUtility.dart';
 import 'package:bdrive/utilityF/localUtility.dart';
 import 'package:flutter/material.dart';
@@ -16,10 +17,11 @@ class DetailOfFolder extends StatefulWidget {
 }
 
 class _DetailOfFolderState extends State<DetailOfFolder> {
+  CU cu = CU();
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: Colors.black,
       body: FutureBuilder(
           future: widget.handlingFS.getFolderDetails(docID: widget.docID),
           builder: (BuildContext context, snapshot) {
@@ -36,44 +38,42 @@ class _DetailOfFolderState extends State<DetailOfFolder> {
                   headerSliverBuilder:
                       (BuildContext context, bool innerBoxIsScrolled) => [
                             SliverAppBar(
-              toolbarHeight: 70,
-                              backgroundColor: Colors.black38,
-                              leading: IU.dstask(
+                              toolbarHeight: 50,
+                              backgroundColor: Colors.white10,
+                              leading: IU.iwc(
                                   icon: Icons.arrow_back_ios_new_outlined,
                                   callback: () {
                                     Navigator.pop(context);
                                   },
-                                  size: 28),
+                                  size: 24),
                               title: Text(
                                 map['fName'].toString().toLowerCase(),
-                                style: TU.teeesmall(context, 32),
+                                style: TU.tesmall(context, 36),
                               ),
                             )
                           ],
                   body: Container(
                     padding: EdgeInsets.all(10),
-                    color: Colors.black26,
+                    color: Colors.black,
                     child: SingleChildScrollView(
                       child: Column(children: [
                         SizedBox(
                           height: 20,
                         ),
-                        getTItle(text: "folder details"),
+                        getTItle(text: "Folder Details"),
                         SizedBox(
                           height: 20,
                         ),
                         Card(
                           elevation: 0,
-                          color: Colors.white,
+                          color: Colors.black,
                           shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(20)),
                           child: Container(
                               padding: EdgeInsets.all(10),
                               decoration: BoxDecoration(
                                   borderRadius: BorderRadius.circular(19.8),
-                                  color: Colors.black38),
-                              margin: EdgeInsets.symmetric(
-                                  horizontal: 0.5, vertical: 0.7),
+                                  color: Colors.white10),
                               child: Row(
                                 children: [
                                   Container(
@@ -118,7 +118,12 @@ class _DetailOfFolderState extends State<DetailOfFolder> {
                                                   .toString()),
                                           detailOfFolder(
                                               label: 'location',
-                                              detail: Provider.of<GetChanges>(context, listen:false).getPathList().last[1].toLowerCase()
+                                              detail: Provider.of<GetChanges>(
+                                                      context,
+                                                      listen: false)
+                                                  .getPathList()
+                                                  .last[1]
+                                                  .toLowerCase()
                                                   .toString()),
                                         ],
                                       ),
@@ -141,30 +146,19 @@ class _DetailOfFolderState extends State<DetailOfFolder> {
         children: [
           Padding(
             padding: const EdgeInsets.all(5.0),
-            child: RichText(
-                text: TextSpan(text: label, style: TU.teesmall(context)),
-                textAlign: TextAlign.center,
-                softWrap: true,
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis),
+            child: TU.cat(context, text: label, factor: 60)
           ),
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 10.0, vertical: 5),
-            child: RichText(
-                text: TextSpan(
-                    text: detail.toString(), style: TU.teesmall(context)),
-                textAlign: TextAlign.center,
-                softWrap: true,
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis),
+            child: TU.cat(context, text: detail, factor: 60)
           ),
         ],
       );
-  getTItle({required String text}) => Row(children: [
+ getTItle({required String text}) => Row(children: [
         TU.tuDw(),
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 8.0),
-          child: Text(text, style: TU.tesmall(context, 38)),
+          child: TU.cat(context, text: text, factor: 42),
         ),
       ]);
 }
@@ -185,10 +179,11 @@ class DetailOfFile extends StatefulWidget {
 }
 
 class _DetailOfFileState extends State<DetailOfFile> {
+  CU cu = CU();
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: cu.accent,
       body: FutureBuilder(
           future: widget.handlingFS.getFileDetails(
             dan: widget.dan,
@@ -208,44 +203,42 @@ class _DetailOfFileState extends State<DetailOfFile> {
                   headerSliverBuilder:
                       (BuildContext context, bool innerBoxIsScrolled) => [
                             SliverAppBar(
-              toolbarHeight: 70,
-                              backgroundColor: Colors.black38,
-                              leading: IU.dstask(
+                              toolbarHeight: 50,
+                              backgroundColor: Colors.white10,
+                              leading: IU.iwc(
                                   icon: Icons.arrow_back_ios_new_outlined,
                                   callback: () {
                                     Navigator.pop(context);
                                   },
-                                  size: 28),
+                                  size: 24),
                               title: Text(
                                 map['fileName'].toString().toLowerCase(),
-                                style: TU.teeesmall(context, 32),
+                                style: TU.tesmall(context, 36),
                               ),
                             )
                           ],
                   body: Container(
                     padding: EdgeInsets.all(10),
-                    color: Colors.black26,
+                    color: Colors.black,
                     child: SingleChildScrollView(
                       child: Column(children: [
                         SizedBox(
                           height: 20,
                         ),
-                        getTItle(text: 'file details'),
+                        getTItle(text: 'File Details'),
                         SizedBox(
                           height: 20,
                         ),
                         Card(
                           elevation: 0,
-                          color: Colors.white,
+                          color: Colors.black,
                           shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(20)),
                           child: Container(
-                            padding: EdgeInsets.all(10),
+                            padding: EdgeInsets.all(14),
                             decoration: BoxDecoration(
                                 borderRadius: BorderRadius.circular(19.8),
-                                color: Colors.black38),
-                            margin: EdgeInsets.symmetric(
-                                horizontal: 0.5, vertical: 0.7),
+                                color: Colors.white10),
                             child: Row(
                               children: [
                                 Container(
@@ -306,24 +299,12 @@ class _DetailOfFileState extends State<DetailOfFile> {
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           Padding(
-            padding: const EdgeInsets.all(5.0),
-            child: RichText(
-                text: TextSpan(text: label, style: TU.teesmall(context)),
-                textAlign: TextAlign.center,
-                softWrap: true,
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis),
-          ),
+              padding: const EdgeInsets.all(5.0),
+              child: TU.cat(context, text: label, factor: 60)),
           Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 10.0, vertical: 5),
-            child: RichText(
-                text: TextSpan(
-                    text: detail.toString(), style: TU.teesmall(context)),
-                textAlign: TextAlign.center,
-                softWrap: true,
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis),
-          ),
+              padding:
+                  const EdgeInsets.symmetric(horizontal: 10.0, vertical: 5),
+              child: TU.cat(context, text: detail, factor: 60)),
         ],
       );
 
@@ -331,7 +312,7 @@ class _DetailOfFileState extends State<DetailOfFile> {
         TU.tuDw(),
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 8.0),
-          child: Text(text, style: TU.tesmall(context, 38)),
+          child: TU.cat(context, text: text, factor: 42),
         ),
       ]);
 }

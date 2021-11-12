@@ -88,6 +88,8 @@ class FirebaseFunctions {
         Phoenix.rebirth(context);
       }
     } on FirebaseAuthException catch (e) {
+      Provider.of<GetChanges>(context, listen: false)
+          .updateLoadingIndicatorStatus(flag: false);
       if (e.code == 'invalid-verification-code') {
         SB.ssb(context, text: "invalid code");
       } else {
