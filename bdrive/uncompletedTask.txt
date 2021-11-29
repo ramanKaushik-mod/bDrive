@@ -1,1 +1,4 @@
 all tasks are completed
+
+
+keytool -list -v -keystore C:\Users\modmu\.android\debug.keystore -alias androiddebugkey -storepass android -keypass android

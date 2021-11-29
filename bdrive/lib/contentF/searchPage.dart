@@ -24,6 +24,67 @@ class _SearchPageState extends State<SearchPage> {
 
   @override
   Widget build(BuildContext context) {
+    var card = Card(
+      elevation: 2,
+      margin: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+      color: cu.be,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+      child: Container(
+        decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(20), color: cu.cwhite),
+        padding: const EdgeInsets.all(10.0),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Card(
+              elevation: 10,
+              color: cu.b,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(20),
+              ),
+              child: Container(
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(20),
+                    color: cu.cwhite,
+                  ),
+                  padding: const EdgeInsets.all(3),
+                  child: IU.ditask(
+                      icon: Icons.close,
+                      callback: () {
+                        if (con.text.trim().length == 0) {
+                          gChanges.updateWList(list: []);
+                          con.text = '';
+                          Navigator.pop(context);
+                        } else {
+                          gChanges.updateWList(list: []);
+                          con.text = '';
+                        }
+                      },
+                      size: 24)),
+            ),
+            Card(
+              elevation: 10,
+              color: cu.b,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(20),
+              ),
+              child: Container(
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(20),
+                    color: cu.cwhite,
+                  ),
+                  padding: const EdgeInsets.all(3),
+                  child: IU.ditask(
+                      icon: Icons.manage_search,
+                      callback: () {
+                        gChanges.setFocus();
+                      },
+                      size: 24)),
+            ),
+          ],
+        ),
+      ),
+    );
     return WillPopScope(
       onWillPop: () {
         if (gChanges.getLoadingIndicatorStatus() == true) {
@@ -36,7 +97,7 @@ class _SearchPageState extends State<SearchPage> {
         return Future.value(true);
       },
       child: Scaffold(
-        backgroundColor: cu.accent,
+        backgroundColor: cu.be,
         body: Container(
           color: cu.cwhite,
           child: Column(
@@ -46,100 +107,112 @@ class _SearchPageState extends State<SearchPage> {
               SizedBox(
                 height: 40,
               ),
-              Padding(
+              Container(
                 padding: EdgeInsets.symmetric(horizontal: 10),
-                child: Row(children: [
-                  Expanded(
-                    child: Hero(
-                      tag: 'searchbox',
-                      child: Card(
-                        margin: EdgeInsets.symmetric(vertical: 8),
-                        color: cu.cwhite,
-                        elevation: 0,
-                        shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(10)),
-                        child: Container(
-                            decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(10),
-                                color: cu.cblack),
-                          child: Container(
-                            padding: EdgeInsets.all(4),
-                            decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(10),
-                                color: cu.cwhite),
-                            child: TextFormField(
-                              controller: con,
-                              style: TU.tesmall(context, 44),
-                              showCursor: false,
-                              keyboardType: TextInputType.text,
-                              decoration: InputDecoration(
-                                  contentPadding: EdgeInsets.only(top: 14),
-                                  prefixIcon: IU.iwoc(icon: Icons.search, size: 28),
-                                  focusedBorder: UnderlineInputBorder(
-                                      borderSide: BorderSide.none),
-                                  enabledBorder: UnderlineInputBorder(
-                                      borderSide: BorderSide.none),
-                                  hintText: 'Search bCLOUD',
-                                  hintStyle: TU.tesmall(context, 48)),
-                              onChanged: (query) {
-                                if (query.trim().isNotEmpty) {
-                                  searchInList(query: query);
-                                } else {
-                                  gChanges.updateWList(list: []);
-                                }
-                              },
+                child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      Expanded(
+                        child: Hero(
+                          tag: 'searchbox',
+                          child: Card(
+                            margin: EdgeInsets.symmetric(vertical: 8),
+                            color: cu.c4black,
+                            elevation: 2,
+                            shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(20)),
+                            child: Container(
+                              decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(20),
+                                  color: cu.be),
+                              child: Container(
+                                padding: EdgeInsets.all(10),
+                                decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(20),
+                                    color: cu.cwhite),
+                                child: Consumer<GetChanges>(builder:
+                                    (BuildContext context, changes, win) {
+                                  return TextFormField(
+                                    focusNode: changes.focusNode,
+                                    controller: con,
+                                    style: TU.tesmall(context, 44),
+                                    showCursor: false,
+                                    keyboardType: TextInputType.text,
+                                    decoration: InputDecoration(
+                                        contentPadding:
+                                            EdgeInsets.only(top: 14),
+                                        prefixIcon: IU.iwoc(
+                                            icon: Icons.search, size: 28),
+                                        focusedBorder: UnderlineInputBorder(
+                                            borderSide: BorderSide.none),
+                                        enabledBorder: UnderlineInputBorder(
+                                            borderSide: BorderSide.none),
+                                        hintText: 'Search bCLOUD',
+                                        hintStyle: TU.tesmall(context, 48)),
+                                    onChanged: (query) {
+                                      if (query.trim().isNotEmpty) {
+                                        searchInList(query: query);
+                                      } else {
+                                        gChanges.updateWList(list: []);
+                                      }
+                                    },
+                                  );
+                                }),
+                              ),
                             ),
                           ),
                         ),
                       ),
-                    ),
-                  ),
-                  
-                ]),
+                      Consumer<GetChanges>(
+                          builder: (BuildContext context, changes, win) {
+                        return changes.getLoadingIndicatorStatus() == true
+                            ? Tooltip(
+                                message:
+                                    'loading file \npress back button to stop',
+                                padding: EdgeInsets.all(3),
+                                child: Wrap(
+                                  runAlignment: WrapAlignment.center,
+                                  children: [
+                                    Container(
+                                      margin: EdgeInsets.all(10),
+                                      height: 28,
+                                      width: 28,
+                                      child: Transform.scale(
+                                        scale: 0.4,
+                                        child: CircularProgressIndicator(
+                                          color: Colors.white70,
+                                          valueColor: AlwaysStoppedAnimation(
+                                              Colors.white60),
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              )
+                            : Container();
+                      })
+                    ]),
               ),
-              SizedBox(height: 10),
+              SizedBox(height: 5),
               TU.tuD(context),
-              SizedBox(height: 14),
+              SizedBox(height: 9),
               Expanded(
                   child: Container(
-                color: Colors.black38,
+                color: cu.t,
                 child: Consumer<GetChanges>(
                     builder: (BuildContext context, changes, win) {
-                  return changes.getWList().length > 0 ?SingleChildScrollView(
-                      child: Container(
-                        margin:EdgeInsets.only(top:3),
-                        child: Column(children: changes.getWList()))):Container();
+                  return changes.getWList().length > 0
+                      ? SingleChildScrollView(
+                          physics: BouncingScrollPhysics(),
+                          child: Column(children: changes.getWList()))
+                      : Container();
                 }),
               )),
             ],
           ),
         ),
-        floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
-        floatingActionButton: Card(
-          color: cu.c2white,
-          shape:RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(20),
-          ),
-          child: Container(
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(20),
-                color: Colors.black45,
-              ),
-              padding: const EdgeInsets.all(3),
-              child: IU.ditask(
-                  icon: Icons.close,
-                  callback: () {
-                    if (con.text.trim().length == 0) {
-                      gChanges.updateWList(list: []);
-                      con.text = '';
-                      Navigator.pop(context);
-                    } else {
-                      gChanges.updateWList(list: []);
-                      con.text = '';
-                    }
-                  },
-                  size: 24)),
-        ),
+        floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
+        floatingActionButton: card,
       ),
     );
   }

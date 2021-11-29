@@ -120,7 +120,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       borderRadius: BorderRadius.circular(10),
                       color: cu.accent),
                   child: Container(
-                    padding: EdgeInsets.symmetric(horizontal: 10),
+                    padding: EdgeInsets.all(4),
                     decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(10),
                         color: cu.cwhite),
@@ -130,6 +130,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       cursorColor: Colors.white,
                       keyboardType: TextInputType.text,
                       decoration: InputDecoration(
+                      contentPadding: EdgeInsets.all(10),
                           focusedBorder:
                               UnderlineInputBorder(borderSide: BorderSide.none),
                           enabledBorder:
@@ -161,7 +162,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
       ),
     );
     var card = Card(
-      margin: EdgeInsets.symmetric(horizontal: 10),
+      margin: EdgeInsets.symmetric(horizontal: 20),
       color: Colors.white10,
       elevation: 0,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),

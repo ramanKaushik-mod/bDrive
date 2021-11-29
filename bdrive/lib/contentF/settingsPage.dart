@@ -34,7 +34,7 @@ class _SettingsPageState extends State<SettingsPage> {
         headerSliverBuilder: (BuildContext context, bool innerBoxIsScrolled) {
           return [
             SliverAppBar(
-              toolbarHeight: 50,
+              toolbarHeight: 70,
               backgroundColor: cu.cwhite,
               leading: IU.iwc(
                   icon: Icons.arrow_back_ios_new_outlined,
@@ -58,17 +58,17 @@ class _SettingsPageState extends State<SettingsPage> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 SizedBox(
-                  height: 30,
-                ),
-                Padding(
-                  padding: EdgeInsets.all(8),
-                  child: userProfile(),
-                ),
-                SizedBox(
                   height: 20,
                 ),
                 Padding(
-                  padding: EdgeInsets.all(8),
+                  padding: EdgeInsets.all(14),
+                  child: userProfile(),
+                ),
+                SizedBox(
+                  height: 10,
+                ),
+                Padding(
+                  padding: EdgeInsets.all(15),
                   child: otherDetails(),
                 )
               ],
@@ -98,7 +98,7 @@ class _SettingsPageState extends State<SettingsPage> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Container(
-                margin: EdgeInsets.all(8),
+                margin: EdgeInsets.symmetric(horizontal: 14, vertical: 10),
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(TU.getw(context) / 9),
                   gradient: LinearGradient(colors: [
@@ -113,7 +113,7 @@ class _SettingsPageState extends State<SettingsPage> {
                   radius: TU.getw(context) / 9.2,
                   backgroundColor: Colors.black,
                   child: ClipRRect(
-                    borderRadius: BorderRadius.circular(50),
+                    borderRadius: BorderRadius.circular(500),
                     child: value.getUserImage(),
                   ),
                 ),

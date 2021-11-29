@@ -38,7 +38,7 @@ class _DetailOfFolderState extends State<DetailOfFolder> {
                   headerSliverBuilder:
                       (BuildContext context, bool innerBoxIsScrolled) => [
                             SliverAppBar(
-                              toolbarHeight: 50,
+                              toolbarHeight: 70,
                               backgroundColor: Colors.white10,
                               leading: IU.iwc(
                                   icon: Icons.arrow_back_ios_new_outlined,
@@ -75,6 +75,7 @@ class _DetailOfFolderState extends State<DetailOfFolder> {
                                   borderRadius: BorderRadius.circular(19.8),
                                   color: Colors.white10),
                               child: Row(
+                                crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   Container(
                                     child: Stack(
@@ -203,7 +204,7 @@ class _DetailOfFileState extends State<DetailOfFile> {
                   headerSliverBuilder:
                       (BuildContext context, bool innerBoxIsScrolled) => [
                             SliverAppBar(
-                              toolbarHeight: 50,
+                              toolbarHeight: 70,
                               backgroundColor: Colors.white10,
                               leading: IU.iwc(
                                   icon: Icons.arrow_back_ios_new_outlined,
@@ -240,6 +241,7 @@ class _DetailOfFileState extends State<DetailOfFile> {
                                 borderRadius: BorderRadius.circular(19.8),
                                 color: Colors.white10),
                             child: Row(
+                                crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Container(
                                   child: Stack(

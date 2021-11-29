@@ -32,10 +32,10 @@ class _AuthenticationPageState extends State<AuthenticationPage> {
           child: Row(children: [
             Expanded(
               child: Container(
-                padding: EdgeInsets.symmetric(horizontal: 10),
+                padding: EdgeInsets.all(4),
                 decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(10),
-                    color: Colors.white10),
+                    color: cu.cwhite),
                 child: Consumer<GetChanges>(
                     builder: (BuildContext context, value, win) {
                   bool flag = value.codeSentSemaphore == true ? false : true;
@@ -47,6 +47,7 @@ class _AuthenticationPageState extends State<AuthenticationPage> {
                     keyboardType: TextInputType.number,
                     textAlign: TextAlign.center,
                     decoration: InputDecoration(
+                      contentPadding: EdgeInsets.all(10),
                         focusedBorder:
                             UnderlineInputBorder(borderSide: BorderSide.none),
                         enabledBorder:
@@ -77,7 +78,7 @@ class _AuthenticationPageState extends State<AuthenticationPage> {
 
     var card = Card(
       color: Colors.white10,
-      margin: EdgeInsets.symmetric(horizontal: 10),
+      margin: EdgeInsets.symmetric(horizontal: 20),
       shadowColor: Colors.black,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
       child: Container(

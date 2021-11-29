@@ -72,6 +72,7 @@ class CU extends StatefulWidget {
   final Color be = Colors.black87;
   final Color b = Colors.black;
   final Color t = Colors.transparent;
+  final Color b12 = Colors.black12;
   CU({Key? key}) : super(key: key);
 
   @override

@@ -20,7 +20,7 @@ class _HomeDocPageState extends State<HomeDocPage> {
   Widget build(BuildContext context) {
     return Expanded(
         child: Container(
-      padding: EdgeInsets.all(10),
+      padding: EdgeInsets.fromLTRB(10,5, 10, 0),
       color: Colors.white10,
       child: Consumer<GetChanges>(
         builder: (BuildContext context, value, win) {
@@ -126,10 +126,10 @@ class _HomeDocPageState extends State<HomeDocPage> {
                       )
                     : GridView.count(
                         shrinkWrap: true,
-                        crossAxisSpacing: 2,
-                        mainAxisSpacing: 10,
+                        crossAxisSpacing: 0,
+                        mainAxisSpacing: 0,
                         physics: BouncingScrollPhysics(),
-                        crossAxisCount: 2,
+                        crossAxisCount: 3,
                         children: list,
                       );
               });

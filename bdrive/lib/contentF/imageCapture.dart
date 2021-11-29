@@ -65,13 +65,14 @@ class _ImageCaptureState extends State<ImageCapture> {
         },
         child: Scaffold(
           appBar: AppBar(
+            toolbarHeight: 70,
             backgroundColor: cu.bnbc,
             leading: IU.iwc(
-                            icon: Icons.arrow_back_ios_new_outlined,
-                            callback: () {
-                              Navigator.pop(context);
-                            },
-                            size: 24),
+                icon: Icons.arrow_back_ios_new_outlined,
+                callback: () {
+                  Navigator.pop(context);
+                },
+                size: 24),
             elevation: 0,
             actions: [
               IconButton(
@@ -84,7 +85,7 @@ class _ImageCaptureState extends State<ImageCapture> {
                           file: Provider.of<GetChanges>(context, listen: false)
                               .getPickedFile());
                     } else {
-                      SB.ssb(
+                      SB.ssb2(
                         context,
                         text: 'no image is selected',
                       );
@@ -92,7 +93,7 @@ class _ImageCaptureState extends State<ImageCapture> {
                   },
                   icon: IU.dBIcon(icon: Icons.crop, size: 22)),
               IconButton(
-                color: cu.orange,
+                  color: cu.orange,
                   tooltip: "save",
                   onPressed: () async {
                     GetChanges changes =
@@ -104,7 +105,7 @@ class _ImageCaptureState extends State<ImageCapture> {
                           changes.getPickedFile().readAsBytesSync());
                       if (changes.getPickedFile().readAsBytesSync().length >=
                           800000) {
-                        SB.ssb(
+                        SB.ssb2(
                           context,
                           text: 'Image size is too big',
                         );
@@ -116,7 +117,7 @@ class _ImageCaptureState extends State<ImageCapture> {
                       changes.updatePickedFileExistsToFalse();
                       Navigator.pop(context);
                     } else {
-                      SB.ssb(
+                      SB.ssb2(
                         context,
                         text: 'no image is selected',
                       );
@@ -133,14 +134,14 @@ class _ImageCaptureState extends State<ImageCapture> {
                         .tellPickedFileExist()) {
                       _clear();
                     } else {
-                      SB.ssb(
+                      SB.ssb2(
                         context,
                         text: 'no image is selected',
                       );
                     }
                   },
                   icon: IU.dBIcon(icon: Icons.refresh, size: 25)),
-                  SizedBox(width:10),
+              SizedBox(width: 10),
             ],
           ),
           backgroundColor: Colors.black,
@@ -175,12 +176,14 @@ class _ImageCaptureState extends State<ImageCapture> {
               BottomNavigationBarItem(
                   backgroundColor: Colors.white,
                   label: 'camera',
-                  activeIcon: BU.btDialogDUI(icon: Icons.camera_outlined, size: 30),
+                  activeIcon:
+                      BU.btDialogDUI(icon: Icons.camera_outlined, size: 30),
                   icon: IU.dNIcon(icon: Icons.camera_outlined, size: 28)),
               BottomNavigationBarItem(
                   backgroundColor: Colors.white,
                   label: 'photos',
-                  activeIcon: BU.btDialogDUI(icon: Icons.photo_outlined, size: 30),
+                  activeIcon:
+                      BU.btDialogDUI(icon: Icons.photo_outlined, size: 30),
                   icon: IU.dNIcon(icon: Icons.photo_outlined, size: 28)),
             ],
           ),

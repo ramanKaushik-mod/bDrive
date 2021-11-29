@@ -150,19 +150,22 @@ class FolderDModals {
           required Function func}) =>
       InkResponse(
         onTap: () => func(),
-        child: Row(
-          children: [
-            CircleAvatar(
-              backgroundColor:cu.t,
-              child:IU.iwoc(icon: icon ,size: 22),
-            ),
-            Expanded(
-              child: Container(
-                alignment:Alignment.centerLeft,
-                  child: TU.cat(context, text: "\t\t$label", factor: 60),
+        child: Container(
+          padding: EdgeInsets.all(8),
+          child: Row(
+            children: [
+              CircleAvatar(
+                backgroundColor:cu.t,
+                child:IU.iwoc(icon: icon ,size: 22),
               ),
-            )
-          ],
+              Expanded(
+                child: Container(
+                  alignment:Alignment.centerLeft,
+                    child: TU.cat(context, text: "\t\t$label", factor: 60),
+                ),
+              )
+            ],
+          ),
         ),
       );
 }
@@ -348,18 +351,21 @@ class FileDModals {
           required Function func}) =>
       InkResponse(
         onTap: () => func(),
-        child: Row(
-          children: [
-            CircleAvatar(
-              backgroundColor: cu.t,
-              child: IU.iwoc(icon: icon, size: 22),
-            ),
-            Expanded(
-              child: Container(
-                  alignment: Alignment.centerLeft,
-                  child: TU.cat(context, text: "\t\t$label", factor: 60)),
-            )
-          ],
+        child: Container(
+          margin:EdgeInsets.all(6.5),
+          child: Row(
+            children: [
+              CircleAvatar(
+                backgroundColor: cu.t,
+                child: IU.iwoc(icon: icon, size: 22),
+              ),
+              Expanded(
+                child: Container(
+                    alignment: Alignment.centerLeft,
+                    child: TU.cat(context, text: "\t\t$label", factor: 60)),
+              )
+            ],
+          ),
         ),
       );
 }

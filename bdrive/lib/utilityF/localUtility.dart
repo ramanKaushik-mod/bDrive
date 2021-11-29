@@ -246,10 +246,10 @@ class SB {
                         String pcode = await Utility.getUPasscode();
                         if (pcode == controller.text.trim()) {
                           yesFunc();
-                        } else if( controller.text.trim().length == 0){
+                        } else if (controller.text.trim().length == 0) {
                           ssb(context, text: 'passcode is necessary');
                         } else {
-                           ssb(context, text: 'passcode do not match');
+                          ssb(context, text: 'passcode do not match');
                         }
                         Navigator.pop(con);
                       } else {
@@ -483,7 +483,7 @@ class GetChanges extends ChangeNotifier {
   cancelUploadTask(context) async {
     updateHandleUTaskSema(sema: 0);
     await task!.cancel().then((value) {
-      SB.ssb(context, text: "Upload Cancelled");
+      SB.ssb2(context, text: "Upload Cancelled");
     });
     task = null;
     notifyListeners();
@@ -561,6 +561,16 @@ class GetChanges extends ChangeNotifier {
 
   updateWList({required List<Widget> list}) {
     wList = list;
+    notifyListeners();
+  }
+
+  //***************search page focus node ********** */
+  FocusNode focusNode = FocusNode();
+
+  FocusNode getFocus() => focusNode;
+  setFocus() {
+    focusNode = FocusNode();
+    focusNode.requestFocus();
     notifyListeners();
   }
 }
@@ -737,7 +747,7 @@ class IU {
           required Function callback,
           required double size}) =>
       IconButton(
-        splashRadius:20,
+        splashRadius: 20,
         icon: Icon(
           icon,
           size: size,
@@ -767,7 +777,7 @@ class TF {
       Row(children: [
         Expanded(
           child: Container(
-            padding: EdgeInsets.symmetric(horizontal: 10),
+            padding: EdgeInsets.all(4),
             decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(10), color: Colors.white10),
             child: TextFormField(
@@ -776,6 +786,7 @@ class TF {
               cursorColor: Colors.white,
               keyboardType: TextInputType.text,
               decoration: InputDecoration(
+                  contentPadding: EdgeInsets.all(10),
                   focusedBorder:
                       UnderlineInputBorder(borderSide: BorderSide.none),
                   enabledBorder:
@@ -792,7 +803,7 @@ class TF {
       Row(children: [
         Expanded(
           child: Container(
-            padding: EdgeInsets.symmetric(horizontal: 10),
+            padding: EdgeInsets.all(4),
             decoration: BoxDecoration(
                 color: Colors.white10, borderRadius: BorderRadius.circular(10)),
             child: TextFormField(
@@ -802,6 +813,7 @@ class TF {
               keyboardType: TextInputType.number,
               textAlign: TextAlign.center,
               decoration: InputDecoration(
+                  contentPadding: EdgeInsets.all(10),
                   focusedBorder:
                       UnderlineInputBorder(borderSide: BorderSide.none),
                   enabledBorder:
@@ -922,7 +934,7 @@ class CIC {
         connectivityResult == ConnectivityResult.ethernet) {
       return true;
     } else {
-      SB.ssb(context, text: 'no internet connection found');
+      SB.ssb2(context, text: 'no internet connection found');
       return false;
     }
   }
@@ -988,7 +1000,7 @@ class BU {
   static btDialogDUI({required IconData icon, required double size}) => Card(
         color: cu.accent,
         margin: EdgeInsets.only(bottom: 4),
-        elevation: 0,
+        elevation: 4,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
         child: Container(
             padding: EdgeInsets.symmetric(vertical: 3, horizontal: 16),

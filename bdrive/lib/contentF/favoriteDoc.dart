@@ -33,7 +33,7 @@ class _StarDocPageState extends State<StarDocPage> {
     return Expanded(
       child: Container(
           color: Colors.white10,
-          padding: EdgeInsets.all(10),
+      padding: EdgeInsets.fromLTRB(10,5, 10, 0),
           child: Consumer<GetChanges>(
             builder: (BuildContext context, value, win) {
               bool flag = value.view == 1 ? true : false;
@@ -124,10 +124,10 @@ class _StarDocPageState extends State<StarDocPage> {
                             )
                           : GridView.count(
                               shrinkWrap: true,
-                              crossAxisSpacing: 2,
-                              mainAxisSpacing: 10,
+                              crossAxisSpacing: 0,
+                              mainAxisSpacing: 0,
                               physics: BouncingScrollPhysics(),
-                              crossAxisCount: 2,
+                              crossAxisCount: 3,
                               children: list,
                             );
                     }
